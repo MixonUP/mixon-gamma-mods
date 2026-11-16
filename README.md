@@ -4,6 +4,8 @@
   <img src="docs/media/banner.jpg" width="100%" alt="Mixon GAMMA Mods — моды для S.T.A.L.K.E.R. Anomaly G.A.M.M.A.">
 </p>
 
+<p align="center"><b>Русский</b> · <a href="README.en.md">English</a></p>
+
 <h1 align="center">MIXON GAMMA MODS</h1>
 
 <p align="center">
