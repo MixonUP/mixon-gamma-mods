@@ -1,7 +1,7 @@
-diff --git "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_shake_weapon.script" "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_shake_weapon.script"
+diff --git "a/Dirt & Wear/gamedata/scripts/dirt_shake_weapon.script" "b/Dirt & Wear/gamedata/scripts/dirt_shake_weapon.script"
 index 8909d12..4fd8185 100644
---- "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_shake_weapon.script"
-+++ "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_shake_weapon.script"
+--- "a/Dirt & Wear/gamedata/scripts/dirt_shake_weapon.script"
++++ "b/Dirt & Wear/gamedata/scripts/dirt_shake_weapon.script"
 @@ -41,6 +41,8 @@ local function anim_length()
  	return strokes_total * STROKE_DELAY -- фолбэк
  end

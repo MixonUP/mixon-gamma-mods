@@ -1,7 +1,7 @@
-diff --git "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_wear.script" "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_wear.script"
+diff --git "a/Dirt & Wear/gamedata/scripts/dirt_wear.script" "b/Dirt & Wear/gamedata/scripts/dirt_wear.script"
 index 3e12199..59c4fbb 100644
---- "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_wear.script"
-+++ "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_wear.script"
+--- "a/Dirt & Wear/gamedata/scripts/dirt_wear.script"
++++ "b/Dirt & Wear/gamedata/scripts/dirt_wear.script"
 @@ -80,10 +80,23 @@ local function save_state()
  	end)
  end
