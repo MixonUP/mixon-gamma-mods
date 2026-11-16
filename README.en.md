@@ -86,7 +86,9 @@
 | ![Revive](docs/media/game/downed_blood.jpg) | ![Joke](docs/media/game/joke_msg.jpg) |
 | The companion revives you: "Companion is helping you" and "UNCONSCIOUS" bars | A companion tells a joke |
 
-🎬 Video: [knockdown and revive](docs/media/game/knockdown_revive.mp4) · [training window and a joke](docs/media/game/companion_demo.mp4)
+🎬 Captioned videos: [companions](docs/media/game/companion_promo_en.mp4) · [backpacks](docs/media/game/backpack_promo_en.mp4) · [zombie raid](docs/media/game/zombie_raid_music_en.mp4) · [carry weight](docs/media/game/carry_promo_en.mp4)
+
+🎬 Raw footage: [knockdown and revive](docs/media/game/knockdown_revive.mp4) · [training window and a joke](docs/media/game/companion_demo.mp4)
 
 <a id="companion"></a>
 
@@ -107,6 +109,10 @@
 </p>
 
 > 📟 **PDA** · *companion* · "I have learned a thing or two. Level 4, free points: 2."
+
+🎬 **Video:** [training, MCM, knockdown and revive — 75 s](docs/media/game/companion_promo_en.mp4)
+
+![MCM · Companion Training](docs/media/game/mcm_companion.jpg)
 
 Companions earn experience and levels and spend points on perks in seven branches. The mod can be added to a running game: records for your current companions are created automatically.
 
@@ -374,6 +380,13 @@ The mod overwrites no one else's files. It adds no new items, sections or info p
 
 > 📟 **PDA** · *technician* · "A backpack is not a sack. Bring me a kit and I will make it worth carrying."
 
+🎬 **Video:** [MCM and the mechanic's upgrade tree — 54 s](docs/media/game/backpack_promo_en.mp4)
+
+| | |
+|---|---|
+| ![Backpack upgrade tree](docs/media/game/backpack_upgrades.jpg) | ![Container Compartment](docs/media/game/backpack_container_tip.jpg) |
+| Mechanic workbench: the tourist backpack's upgrade tree | Container Compartment: +1 artefact slot |
+
 Backpacks get an upgrade tree at technicians and at the workbench. At each fork you pick one upgrade out of two. Only the upgrades of the backpack you are **wearing** apply.
 
 ### Backpack classes
@@ -478,6 +491,13 @@ Backpack weight (kg) is set by configs and cannot be changed in MCM. The total r
 
 > 📟 **PDA** · *general channel* · "ATTENTION! A horde of zombified is closing in."
 
+🎬 **Video:** [daytime raid on Zaton, captioned — 58 s](docs/media/game/zombie_raid_music_en.mp4)
+
+| | |
+|---|---|
+| ![Horde at the fence](docs/media/game/zombie_day_90.jpg) | ![MCM · Zombie Raid](docs/media/game/mcm_zombie_raid.jpg) |
+| The raid's main group | Raid settings in MCM |
+
 The horde shows up on a hotkey (**F10** by default) or on its own, at random. It comes with the task **"Repel the zombified raid"** («Отбить атаку зомбированных») and a counter of those still standing.
 
 | Size | Headcount | Composition |
@@ -521,6 +541,8 @@ Random raids do not start in undergrounds and labs, during an emission or psi-st
 ## ☢ CARRY WEIGHT
 
 > 📟 **PDA** · *note* · "There is no such thing as too much loot. Only too little back."
+
+![MCM · Carry Weight](docs/media/game/mcm_carry.jpg)
 
 The simplest mod of the set: a single slider.
 
