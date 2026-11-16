@@ -1,0 +1,101 @@
+;==============================================================================
+; Mixon Backpack Upgrades x 'a_pack Upgradeable Backpacks' compatibility
+; a_pack crafted backpacks are separate sections that inherit from the base backpacks.
+; They get a class of their own (the anomalous module makes them high-end):
+;   *_up_a_pack    -> heavy (elite for military/tourist bases)
+;   *_upave/_upmax -> elite
+; '@' = DLTX safe override: nothing breaks if a_pack is disabled (file may also be deleted).
+; Must load AFTER mod_system_zzzzzzz_upgradeable_backpacks_a_pack.ltx (name sorts later).
+; kit_hunt_*_a_pack inherit the blank upgrades of kit_hunt (hunting kit is a tool).
+;==============================================================================
+
+@[itm_backpack_up_a_pack]
+upgrades                                 = up_gr_firstab_kbu_h, up_gr_seconab_kbu_h, up_gr_thirdab_kbu_h, up_gr_fourtab_kbu_h, up_gr_fifthab_kbu_h
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = h
+kbu_kit_tiers                            = 1, 2, 3
+
+@[itm_backpack_upave_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[itm_backpack_upmax_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_small_pack_up_a_pack]
+upgrades                                 = up_gr_firstab_kbu_h, up_gr_seconab_kbu_h, up_gr_thirdab_kbu_h, up_gr_fourtab_kbu_h, up_gr_fifthab_kbu_h
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = h
+kbu_kit_tiers                            = 1, 2, 3
+
+@[equ_small_pack_upave_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_small_pack_upmax_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_small_military_pack_up_a_pack]
+upgrades                                 = up_gr_firstab_kbu_h, up_gr_seconab_kbu_h, up_gr_thirdab_kbu_h, up_gr_fourtab_kbu_h, up_gr_fifthab_kbu_h
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = h
+kbu_kit_tiers                            = 1, 2, 3
+
+@[equ_small_military_pack_upave_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_small_military_pack_upmax_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_military_pack_up_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_military_pack_upave_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_military_pack_upmax_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_tourist_pack_up_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_tourist_pack_upave_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+@[equ_tourist_pack_upmax_a_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+

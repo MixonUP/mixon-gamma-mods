@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_cup_dlg_joke_ask">
+		<text>Tell me a joke.</text>
+	</string>
+	<string id="st_cup_dlg_joke_answer">
+		<text>Listen...</text>
+	</string>
+	<string id="st_cup_dlg_joke_busy">
+		<text>Not now.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter">
+		<text>Companion banter</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_desc">
+		<text>Companions comment on what is going on: healing, fights, artefacts, weather, emissions and so on. The text comes as a message with a portrait.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_freq">
+		<text>Banter frequency</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_freq_desc">
+		<text>How often companions speak on their own. Normal: one idle line per 5-10 minutes. Lines for healing and revival are always said.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_jokes">
+		<text>Jokes</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_jokes_desc">
+		<text>Companions tell jokes when it is calm: more often at night, at a campfire and when you crouch. The dialog line works while this is on.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_voice">
+		<text>Voiced lines</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_voice_desc">
+		<text>If gamedata\sounds\cup\banter has a file named after the line (see banter_lines_for_voice.csv), it is played from the companion.</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_off">
+		<text>off</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_rare">
+		<text>rare</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_normal">
+		<text>normal</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_often">
+		<text>often</text>
+	</string>
+	<string id="st_cup_bn_medkit_1">
+		<text>Hold still, here comes the shot. You'll be good as new, just second-hand.</text>
+	</string>
+	<string id="st_cup_bn_medkit_2">
+		<text>Leaking again? You eat my medkits faster than canned meat.</text>
+	</string>
+	<string id="st_cup_bn_medkit_3">
+		<text>Here's your shot. I'll bill you in loot.</text>
+	</string>
+	<string id="st_cup_bn_medkit_4">
+		<text>Relax, I'm almost a doctor. I've seen it done twice.</text>
+	</string>
+	<string id="st_cup_bn_medkit_5">
+		<text>I keep patching you up and you keep turning into a sieve.</text>
+	</string>
+	<string id="st_cup_bn_medkit_6">
+		<text>Done. It'll heal before your wedding, if you live that long.</text>
+	</string>
+	<string id="st_cup_bn_medkit_7">
+		<text>Injected. If you grow a third arm, that's not the medkit.</text>
+	</string>
+	<string id="st_cup_bn_medkit_8">
+		<text>Stay alive. I don't feel like hauling the loot alone.</text>
+	</string>
+	<string id="st_cup_bn_bandage_1">
+		<text>Wait, you're leaking. Let me wrap that.</text>
+	</string>
+	<string id="st_cup_bn_bandage_2">
+		<text>Blood is supposed to be worn on the inside. Remember that.</text>
+	</string>
+	<string id="st_cup_bn_bandage_3">
+		<text>Wrapped. Never promised pretty, but it doesn't drip.</text>
+	</string>
+	<string id="st_cup_bn_bandage_4">
+		<text>Collecting mutants with that blood trail? Let me bandage you.</text>
+	</string>
+	<string id="st_cup_bn_bandage_5">
+		<text>I don't mind the bandage. I mind you getting hit again.</text>
+	</string>
+	<string id="st_cup_bn_bandage_6">
+		<text>Done. Want a bow on it or will this do?</text>
+	</string>
+	<string id="st_cup_bn_antirad_1">
+		<text>You glow so hard the detector is blushing. Take the antirad.</text>
+	</string>
+	<string id="st_cup_bn_antirad_2">
+		<text>A bit more and I could carry you as a flashlight. Injecting.</text>
+	</string>
+	<string id="st_cup_bn_antirad_3">
+		<text>The Geiger counter is rapping on you. Antirad, now.</text>
+	</string>
+	<string id="st_cup_bn_antirad_4">
+		<text>Where did you pick that up? Peeked into the reactor? Here.</text>
+	</string>
+	<string id="st_cup_bn_antirad_5">
+		<text>Antirad. Tastes awful, but you'll have kids. Probably.</text>
+	</string>
+	<string id="st_cup_bn_antirad_6">
+		<text>You shine like a New Year tree in Pripyat. Let's put that out.</text>
+	</string>
+	<string id="st_cup_bn_antirad_7">
+		<text>Antirad going in. Keep the hair, it suits you.</text>
+	</string>
+	<string id="st_cup_bn_vodka_1">
+		<text>Why so glum? Have some vodka.</text>
+	</string>
+	<string id="st_cup_bn_vodka_2">
+		<text>Removing radiation the folk way. Bottoms up.</text>
+	</string>
+	<string id="st_cup_bn_vodka_3">
+		<text>It's not drinking, it's decontamination. Drink.</text>
+	</string>
+	<string id="st_cup_bn_vodka_4">
+		<text>No antirad, but there's a simpler science. Here.</text>
+	</string>
+	<string id="st_cup_bn_vodka_5">
+		<text>A hundred grams and the roentgens take offence and leave.</text>
+	</string>
+	<string id="st_cup_bn_vodka_6">
+		<text>Drink. Scientists argue, grandfathers have tested it.</text>
+	</string>
+	<string id="st_cup_bn_vodka_7">
+		<text>Nothing to chase it with, so sniff your sleeve.</text>
+	</string>
+	<string id="st_cup_bn_vodka_8">
+		<text>To having loot and not being seen. Drink.</text>
+	</string>
+	<string id="st_cup_bn_vodka_9">
+		<text>Medicine. Forty proof by volume, no prescription needed.</text>
+	</string>
+	<string id="st_cup_bn_down_1">
+		<text>Hold on! Don't you dare pass out!</text>
+	</string>
+	<string id="st_cup_bn_down_2">
+		<text>Stay down, don't move, I'm coming!</text>
+	</string>
+	<string id="st_cup_bn_down_3">
+		<text>Hey! Too early for you to meet the Monolith! Coming!</text>
+	</string>
+	<string id="st_cup_bn_down_4">
+		<text>Just don't die, you still owe me!</text>
+	</string>
+	<string id="st_cup_bn_down_5">
+		<text>Hang on, boss! I'll get you up!</text>
+	</string>
+	<string id="st_cup_bn_down_6">
+		<text>Don't close your eyes! Look at me, I'm running!</text>
+	</string>
+	<string id="st_cup_bn_down_7">
+		<text>Not again... Hold on, I'm coming!</text>
+	</string>
+	<string id="st_cup_bn_revived_1">
+		<text>Welcome back. There's no loot on the other side, I checked.</text>
+	</string>
+	<string id="st_cup_bn_revived_2">
+		<text>Up you get. Die on your own time.</text>
+	</string>
+	<string id="st_cup_bn_revived_3">
+		<text>Alive? Great. Next time, duck.</text>
+	</string>
+	<string id="st_cup_bn_revived_4">
+		<text>Get up, dust off, move. The Zone hates waiting.</text>
+	</string>
+	<string id="st_cup_bn_revived_5">
+		<text>You owe me a bottle now. No, a crate.</text>
+	</string>
+	<string id="st_cup_bn_revived_6">
+		<text>You're heavy. Lose weight or die less often.</text>
+	</string>
+	<string id="st_cup_bn_revived_7">
+		<text>Got you. But my supply of miracles isn't endless.</text>
+	</string>
+	<string id="st_cup_bn_revived_8">
+		<text>Breathe, breathe. How many fingers? Never mind, let's go.</text>
+	</string>
+	<string id="st_cup_bn_art_found_1">
+		<text>It's beeping! I smell money.</text>
+	</string>
+	<string id="st_cup_bn_art_found_2">
+		<text>The detector got excited. Either an artefact or someone dropped it again.</text>
+	</string>
+	<string id="st_cup_bn_art_found_3">
+		<text>Something's shining over there. Hopefully not a bloodsucker's eyes.</text>
+	</string>
+	<string id="st_cup_bn_art_found_4">
+		<text>Got a signal. Sidorovich is already rubbing his hands.</text>
+	</string>
+	<string id="st_cup_bn_art_found_5">
+		<text>Found one! Now we just have to get it without getting fried.</text>
+	</string>
+	<string id="st_cup_bn_art_found_6">
+		<text>Oh, loot. The Zone is kind today. Suspicious.</text>
+	</string>
+	<string id="st_cup_bn_art_found_7">
+		<text>It beeps, bless it. My little breadwinner.</text>
+	</string>
+	<string id="st_cup_bn_art_took_1">
+		<text>Got it. Still warm. Hope that's normal.</text>
+	</string>
+	<string id="st_cup_bn_art_took_2">
+		<text>Yes! Hands intact, eyebrows mostly.</text>
+	</string>
+	<string id="st_cup_bn_art_took_3">
+		<text>Took it. If I start glowing, call me a night light.</text>
+	</string>
+	<string id="st_cup_bn_art_took_4">
+		<text>Loot's in the pack. We'll tell the scientists we found it on the road.</text>
+	</string>
+	<string id="st_cup_bn_art_took_5">
+		<text>Pulled it out. The anomaly is offended but keeps quiet.</text>
+	</string>
+	<string id="st_cup_bn_art_took_6">
+		<text>Mine. I mean ours. I mean I'll hold on to it for now.</text>
+	</string>
+	<string id="st_cup_bn_art_took_7">
+		<text>Got the beauty. Now the main thing is to carry it home.</text>
+	</string>
+	<string id="st_cup_bn_art_took_8">
+		<text>Done. They pour for free at the Bar for this. Once.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_1">
+		<text>Now that was a warm-up. Who's next?</text>
+	</string>
+	<string id="st_cup_bn_fight_won_2">
+		<text>All down. I feel sorry for the ammo, not for them.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_3">
+		<text>Clear. Let's loot while they're warm.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_4">
+		<text>Good shooting. Shame they were shooting too.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_5">
+		<text>And so it goes for everyone who doesn't say hello.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_6">
+		<text>Fought them off. Didn't even break a sweat. I'm lying, I did.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_7">
+		<text>Put half of them on my tab. Fine, a third.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_8">
+		<text>It went quiet. I don't like it this quiet.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_9">
+		<text>Boss, did you see that? No? Pity, it was beautiful.</text>
+	</string>
+	<string id="st_cup_bn_overweight_1">
+		<text>Did you pack a backpack or rob a warehouse?</text>
+	</string>
+	<string id="st_cup_bn_overweight_2">
+		<text>Boss, you're creaking. Is that your knees or your conscience?</text>
+	</string>
+	<string id="st_cup_bn_overweight_3">
+		<text>Give me half before you fold in two.</text>
+	</string>
+	<string id="st_cup_bn_overweight_4">
+		<text>With that load you won't outrun a blind dog. Or a lame one.</text>
+	</string>
+	<string id="st_cup_bn_overweight_5">
+		<text>Decided to carry out the whole Zone in one trip?</text>
+	</string>
+	<string id="st_cup_bn_overweight_6">
+		<text>Greed killed the stalker. Just a reminder.</text>
+	</string>
+	<string id="st_cup_bn_overweight_7">
+		<text>Maybe drop the third canister? Fine, I'll shut up.</text>
+	</string>
+	<string id="st_cup_bn_overweight_8">
+		<text>You walk like a pseudogiant after lunch.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_1">
+		<text>You look bad. Worse than usual.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_2">
+		<text>Boss, you're leaking. Do something about it.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_3">
+		<text>Patch yourself up, will you? It hurts to look at you.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_4">
+		<text>One more hit and I'm splitting the loot alone.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_5">
+		<text>Eat a medkit. That's what it's there for.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_6">
+		<text>You're starting to look like a zombie. Except zombies are livelier.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_7">
+		<text>Get behind me, hero. Catch your breath.</text>
+	</string>
+	<string id="st_cup_bn_rain_1">
+		<text>Rain. At least someone in the Zone gets a wash.</text>
+	</string>
+	<string id="st_cup_bn_rain_2">
+		<text>Pouring. Counter's quiet, so it's drinkable. Kidding.</text>
+	</string>
+	<string id="st_cup_bn_rain_3">
+		<text>Wet again. Should have become a bartender.</text>
+	</string>
+	<string id="st_cup_bn_rain_4">
+		<text>I love rain. Nobody sees me crying over the ammo.</text>
+	</string>
+	<string id="st_cup_bn_rain_5">
+		<text>The weather is like a Duty man's mood.</text>
+	</string>
+	<string id="st_cup_bn_rain_6">
+		<text>A wet stalker is an angry stalker. Remember that.</text>
+	</string>
+	<string id="st_cup_bn_rain_7">
+		<text>At least it washes away the tracks. Ours and theirs.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_1">
+		<text>The sky's going red. I don't like it. Find a roof!</text>
+	</string>
+	<string id="st_cup_bn_surge_start_2">
+		<text>Emission coming! Run for cover, philosophy later!</text>
+	</string>
+	<string id="st_cup_bn_surge_start_3">
+		<text>The Zone is angry. Let's not stand in its way.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_4">
+		<text>Boss, time to go underground. Preferably alive.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_5">
+		<text>It's about to blow. My knee aches before these.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_6">
+		<text>Emission! Last one into the basement is a zombie!</text>
+	</string>
+	<string id="st_cup_bn_surge_start_7">
+		<text>My head is buzzing. Either last night or an emission. Let's hide.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_1">
+		<text>That was close. Check that all of us are still us.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_2">
+		<text>Alive. Brains in place? Mine seem to be.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_3">
+		<text>It's over. Let's see what the Zone rearranged for us.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_4">
+		<text>The air is fresh after an emission. So are the artefacts.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_5">
+		<text>We sat it out. Now run for the loot before the others crawl out.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_6">
+		<text>I wasn't screaming. That was a battle cry.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_7">
+		<text>Quiet. We can come out. You first.</text>
+	</string>
+	<string id="st_cup_bn_night_1">
+		<text>Getting dark. Normal people sleep, but we're stalkers.</text>
+	</string>
+	<string id="st_cup_bn_night_2">
+		<text>Night. Perfect time for something to start howling.</text>
+	</string>
+	<string id="st_cup_bn_night_3">
+		<text>Don't turn on the flashlight. Or do. They'll eat us anyway.</text>
+	</string>
+	<string id="st_cup_bn_night_4">
+		<text>In the dark all cats are grey and all bloodsuckers invisible.</text>
+	</string>
+	<string id="st_cup_bn_night_5">
+		<text>How about a campfire? It's warm there, and there are jokes.</text>
+	</string>
+	<string id="st_cup_bn_night_6">
+		<text>The Zone is beautiful at night. Pity you can't see it.</text>
+	</string>
+	<string id="st_cup_bn_night_7">
+		<text>Hear that? Me neither. Bad sign.</text>
+	</string>
+	<string id="st_cup_bn_new_level_1">
+		<text>New place, new ways to die.</text>
+	</string>
+	<string id="st_cup_bn_new_level_2">
+		<text>We're here. Never been here. Or I have and don't remember.</text>
+	</string>
+	<string id="st_cup_bn_new_level_3">
+		<text>Watch your feet. And the sides. And up, too.</text>
+	</string>
+	<string id="st_cup_bn_new_level_4">
+		<text>Well, hello, yet another hole.</text>
+	</string>
+	<string id="st_cup_bn_new_level_5">
+		<text>I sense we're not welcome here. Same as everywhere.</text>
+	</string>
+	<string id="st_cup_bn_new_level_6">
+		<text>Boss, is there a plan? Or the usual?</text>
+	</string>
+	<string id="st_cup_bn_new_level_7">
+		<text>They say the loot is good here. And the graveyard is big.</text>
+	</string>
+	<string id="st_cup_bn_new_level_8">
+		<text>Made it. Legs are humming, but they're all still attached.</text>
+	</string>
+	<string id="st_cup_bn_idle_1">
+		<text>If we get lost, not my fault. You held the map.</text>
+	</string>
+	<string id="st_cup_bn_idle_2">
+		<text>Walking, walking... When does this start paying?</text>
+	</string>
+	<string id="st_cup_bn_idle_3">
+		<text>When we get back, first thing is the Bar. Second thing too.</text>
+	</string>
+	<string id="st_cup_bn_idle_4">
+		<text>Boss, is it true Sidorovich has no legs? Nobody's ever seen them.</text>
+	</string>
+	<string id="st_cup_bn_idle_5">
+		<text>I keep thinking: the Monolith grants wishes, so why is the queue so angry?</text>
+	</string>
+	<string id="st_cup_bn_idle_6">
+		<text>If anything happens, I'm on the left. If it really happens, I'm already far away.</text>
+	</string>
+	<string id="st_cup_bn_idle_7">
+		<text>We're running low on canned meat. Just saying. For now.</text>
+	</string>
+	<string id="st_cup_bn_idle_8">
+		<text>Good walk. Nobody's shot at us for a while. I jinxed it, didn't I?</text>
+	</string>
+	<string id="st_cup_bn_idle_9">
+		<text>When I retire I'll buy a little house. Far from any reactors.</text>
+	</string>
+	<string id="st_cup_bn_idle_10">
+		<text>Do you ever sleep? Or is the Zone keeping you going too?</text>
+	</string>
+	<string id="st_cup_bn_idle_11">
+		<text>I want new boots. These remember the first emission.</text>
+	</string>
+	<string id="st_cup_bn_idle_12">
+		<text>Boring. Wish a flesh would run by or something.</text>
+	</string>
+	<string id="st_cup_bn_wake_1">
+		<text>Rise and shine! The Zone won't loot itself.</text>
+	</string>
+	<string id="st_cup_bn_wake_2">
+		<text>Slept well? I stood watch. Barely slept. Barely.</text>
+	</string>
+	<string id="st_cup_bn_wake_3">
+		<text>Good morning. You snore like a pseudogiant.</text>
+	</string>
+	<string id="st_cup_bn_wake_4">
+		<text>Awake? Check your pockets. Kidding. Probably.</text>
+	</string>
+	<string id="st_cup_bn_wake_5">
+		<text>Nothing happened while you slept. I'm surprised too.</text>
+	</string>
+	<string id="st_cup_bn_wake_6">
+		<text>Get up, boss. Breakfast won't eat itself, I checked.</text>
+	</string>
+	<string id="st_cup_bn_wake_7">
+		<text>Good morning. Or evening. You never can tell in the Zone.</text>
+	</string>
+	<string id="st_cup_bn_drink_1">
+		<text>Oh, started without me? Not nice.</text>
+	</string>
+	<string id="st_cup_bn_drink_2">
+		<text>Leave me some. At least to smell.</text>
+	</string>
+	<string id="st_cup_bn_drink_3">
+		<text>To luck! We're going to need it.</text>
+	</string>
+	<string id="st_cup_bn_drink_4">
+		<text>Drinking on duty? Respect.</text>
+	</string>
+	<string id="st_cup_bn_drink_5">
+		<text>Just don't sing afterwards. Last time a bloodsucker cried.</text>
+	</string>
+	<string id="st_cup_bn_drink_6">
+		<text>The boss is taking his medicine. Nobody disturb him.</text>
+	</string>
+	<string id="st_cup_bn_drink_7">
+		<text>Went down well? Then the second one's mine.</text>
+	</string>
+	<string id="st_cup_bn_drink_8">
+		<text>After the third one you see anomalies without a detector. Not guaranteed.</text>
+	</string>
+	<string id="st_cup_bn_rad_1">
+		<text>Boss, you crackle like a Geiger counter. Take something.</text>
+	</string>
+	<string id="st_cup_bn_rad_2">
+		<text>You're giving off warmth. The bad kind of warmth.</text>
+	</string>
+	<string id="st_cup_bn_rad_3">
+		<text>Got antirad in the pack? Good time to remember it.</text>
+	</string>
+	<string id="st_cup_bn_rad_4">
+		<text>You're glowing. Pretty, but harmful.</text>
+	</string>
+	<string id="st_cup_bn_rad_5">
+		<text>At least drink some vodka. I'm no medic, but everyone does it.</text>
+	</string>
+	<string id="st_cup_bn_rad_6">
+		<text>Step back a bit, will you? I still plan to have kids.</text>
+	</string>
+	<string id="st_cup_bn_rad_7">
+		<text>You collect roentgens better than artefacts.</text>
+	</string>
+	<string id="st_cup_bn_invictus_1">
+		<text>So how's your Invictus going? Managing?</text>
+	</string>
+	<string id="st_cup_bn_invictus_2">
+		<text>One life, boss. No spare in the backpack, I looked.</text>
+	</string>
+	<string id="st_cup_bn_invictus_3">
+		<text>Just don't die. There won't be a second take.</text>
+	</string>
+	<string id="st_cup_bn_invictus_4">
+		<text>With one life I wouldn't go into that anomaly. But you're the boss.</text>
+	</string>
+	<string id="st_cup_bn_invictus_5">
+		<text>You only live once. You - literally.</text>
+	</string>
+	<string id="st_cup_bn_invictus_6">
+		<text>Every day without dying is a record. Keep the streak.</text>
+	</string>
+	<string id="st_cup_an_1_1">
+		<text>A rookie comes to Sidorovich: "I need a job." - "Bring me an artefact."</text>
+	</string>
+	<string id="st_cup_an_1_2">
+		<text>"Where do I get one?" - "If I knew, I wouldn't be sitting in a basement."</text>
+	</string>
+	<string id="st_cup_an_2_1">
+		<text>A Duty man meets a Freedom man. Duty: "Halt, anarchy!"</text>
+	</string>
+	<string id="st_cup_an_2_2">
+		<text>Freedom: "Move along, order." They parted - both pleased, both offended.</text>
+	</string>
+	<string id="st_cup_an_3_1">
+		<text>A bandit stops a stalker: "Your loot or your life?"</text>
+	</string>
+	<string id="st_cup_an_3_2">
+		<text>"My life." - "Hey, come on, I asked nicely!"</text>
+	</string>
+	<string id="st_cup_an_4_1">
+		<text>A scientist asks a stalker: "How do you find anomalies without instruments?"</text>
+	</string>
+	<string id="st_cup_an_4_2">
+		<text>"With my foot." - "And if you miss it?" - "Then with the other foot."</text>
+	</string>
+	<string id="st_cup_an_5_1">
+		<text>A Monolith fighter prays: "O Monolith, give me a sign!"</text>
+	</string>
+	<string id="st_cup_an_5_2">
+		<text>A brick falls. The fighter: "Understood. Wear a helmet."</text>
+	</string>
+	<string id="st_cup_an_6_1">
+		<text>Two bloodsuckers sit in ambush. One: "Hey, can they see us?"</text>
+	</string>
+	<string id="st_cup_an_6_2">
+		<text>"No." - "Then why are they shooting at us?" - "They aim at the slurping."</text>
+	</string>
+	<string id="st_cup_an_7_1">
+		<text>A stalker complains to the barman: "Your vodka is radioactive!"</text>
+	</string>
+	<string id="st_cup_an_7_2">
+		<text>"But you need no snack. It lights and warms by itself."</text>
+	</string>
+	<string id="st_cup_an_8_1">
+		<text>A stalker finds an artefact and brings it to Sidorovich. He says: "Five hundred."</text>
+	</string>
+	<string id="st_cup_an_8_2">
+		<text>"It's worth ten thousand!" - "It is. In my hands. In yours - five hundred."</text>
+	</string>
+	<string id="st_cup_an_9_1">
+		<text>A Duty guard: "Password!" - "I don't know it." - "Go ahead."</text>
+	</string>
+	<string id="st_cup_an_9_2">
+		<text>"But I don't know it!" - "Mutants don't answer at all."</text>
+	</string>
+	<string id="st_cup_an_10_1">
+		<text>A Freedom man to a scientist: "Doc, the weed makes me see little green men."</text>
+	</string>
+	<string id="st_cup_an_10_2">
+		<text>"That's not the weed. That's a controller. Run."</text>
+	</string>
+	<string id="st_cup_an_11_1">
+		<text>A stalker walks through the Zone and sees a sign: "Caution, anomaly."</text>
+	</string>
+	<string id="st_cup_an_11_2">
+		<text>He walks around it. Behind it another sign: "Well done. We didn't write about this one."</text>
+	</string>
+	<string id="st_cup_an_12_1">
+		<text>Two bandits split the loot. "You get the tin, I get the artefact."</text>
+	</string>
+	<string id="st_cup_an_12_2">
+		<text>"Why's that?" - "Because I have a sawn-off and you have a tin."</text>
+	</string>
+	<string id="st_cup_an_13_1">
+		<text>Rookie: "Is it true a year in the Zone counts as three?"</text>
+	</string>
+	<string id="st_cup_an_13_2">
+		<text>Veteran: "True. Only not a year but a day. And not as three but as your last."</text>
+	</string>
+	<string id="st_cup_an_14_1">
+		<text>A controller catches a stalker, looks into his mind and sighs:</text>
+	</string>
+	<string id="st_cup_an_14_2">
+		<text>"Empty again. Just vodka and a debt to Sidorovich."</text>
+	</string>
+	<string id="st_cup_an_15_1">
+		<text>Scientists derived the formula of a stalker's luck.</text>
+	</string>
+	<string id="st_cup_an_15_2">
+		<text>Luck equals the amount of ammo divided by the amount of curiosity.</text>
+	</string>
+	<string id="st_cup_an_16_1">
+		<text>A stalker at the campfire: "Yesterday I took on a chimera with my bare hands..."</text>
+	</string>
+	<string id="st_cup_an_16_2">
+		<text>"Killed it?" - "Pushed it away. About five minutes. Then it got tired of laughing."</text>
+	</string>
+	<string id="st_cup_an_17_1">
+		<text>A soldier at the checkpoint: "The passage is closed!"</text>
+	</string>
+	<string id="st_cup_an_17_2">
+		<text>The stalker takes out money. The soldier: "The passage is closed. Behind you."</text>
+	</string>
+	<string id="st_cup_an_18_1">
+		<text>They ask an old stalker: "How did you survive so many years in the Zone?"</text>
+	</string>
+	<string id="st_cup_an_18_2">
+		<text>"Simple. I always walked second."</text>
+	</string>
+	<string id="st_cup_an_19_1">
+		<text>A zombie walks into the Bar. The barman: "What'll it be?"</text>
+	</string>
+	<string id="st_cup_an_19_2">
+		<text>"Bra-a-ains." - "Try the scientists. We only have vodka."</text>
+	</string>
+	<string id="st_cup_an_20_1">
+		<text>A Freedom man and a Duty man fall into the same anomaly.</text>
+	</string>
+	<string id="st_cup_an_20_2">
+		<text>Duty: "This is your mess!" Freedom: "No, it's your order: everyone in one heap."</text>
+	</string>
+	<string id="st_cup_an_21_1">
+		<text>Sidorovich tells a rookie: "Remember the three rules of the Zone."</text>
+	</string>
+	<string id="st_cup_an_21_2">
+		<text>"One: don't be greedy. Two: don't play hero. The third costs two hundred roubles."</text>
+	</string>
+	<string id="st_cup_an_22_1">
+		<text>A stalker prays to the Monolith: "I want lots of money!"</text>
+	</string>
+	<string id="st_cup_an_22_2">
+		<text>A voice: "Granted." He looks down - he's Sidorovich now. And can't feel his legs.</text>
+	</string>
+	<string id="st_cup_an_23_1">
+		<text>One blind dog says to another: "I see a stalker coming."</text>
+	</string>
+	<string id="st_cup_an_23_2">
+		<text>"You're blind." - "Fine, I smell him. Stop nitpicking."</text>
+	</string>
+	<string id="st_cup_an_24_1">
+		<text>A bandit to a mercenary: "What do you fight for?" - "Money."</text>
+	</string>
+	<string id="st_cup_an_24_2">
+		<text>"I fight for an idea." - "Which one?" - "That I should have your money."</text>
+	</string>
+	<string id="st_cup_an_25_1">
+		<text>A scientist: "We discovered a new artefact! It makes a man immortal!"</text>
+	</string>
+	<string id="st_cup_an_25_2">
+		<text>"Did you test it?" - "Yes. The lab assistant is immortal now. Nobody knows where he is, though."</text>
+	</string>
+	<string id="st_cup_an_26_1">
+		<text>A stalker comes to the Swamp Doctor: "Doc, will I live?"</text>
+	</string>
+	<string id="st_cup_an_26_2">
+		<text>"You will. But don't go into the Zone again." - "We're in the Zone." - "That's my point."</text>
+	</string>
+	<string id="st_cup_an_27_1">
+		<text>A notice at the Bar: "Will trade an Echo detector for two legs."</text>
+	</string>
+	<string id="st_cup_an_27_2">
+		<text>A note below: "Found my own. Thanks, no longer need the detector."</text>
+	</string>
+	<string id="st_cup_an_28_1">
+		<text>A Duty man reads the regulations: "Destroy mutants. Avoid anomalies."</text>
+	</string>
+	<string id="st_cup_an_28_2">
+		<text>"Freedom men... the page is torn out here and something's drawn on it."</text>
+	</string>
+	<string id="st_cup_an_29_1">
+		<text>A stalker finds a note in a stash: "The loot is in another stash."</text>
+	</string>
+	<string id="st_cup_an_29_2">
+		<text>He finds the other one. A note there: "Well done. Now turn around."</text>
+	</string>
+	<string id="st_cup_an_30_1">
+		<text>A flesh complains to a boar: "Everyone hurts me, shoots me, eats me."</text>
+	</string>
+	<string id="st_cup_an_30_2">
+		<text>The boar: "Then don't leave the anomaly." - "I was born in one!"</text>
+	</string>
+	<string id="st_cup_an_31_1">
+		<text>"Why do stalkers walk in pairs?"</text>
+	</string>
+	<string id="st_cup_an_31_2">
+		<text>"So someone can tell how beautifully the first one died."</text>
+	</string>
+	<string id="st_cup_an_32_1">
+		<text>The military dropped leaflets on the Zone: "Surrender, nothing will happen to you."</text>
+	</string>
+	<string id="st_cup_an_32_2">
+		<text>The stalkers thought it over and agreed: indeed, nothing would. They stayed.</text>
+	</string>
+	<string id="st_cup_an_33_1">
+		<text>A burer got a job as a loader at Yantar.</text>
+	</string>
+	<string id="st_cup_an_33_2">
+		<text>Fired after a day: carries crates well, but with the scientists still attached.</text>
+	</string>
+	<string id="st_cup_an_34_1">
+		<text>A stalker to a trader: "Does this vest really stop a bullet?"</text>
+	</string>
+	<string id="st_cup_an_34_2">
+		<text>"Sure. The previous owner never complained." - "Where is he?" - "Not complaining."</text>
+	</string>
+	<string id="st_cup_an_35_1">
+		<text>Freedom declared a day without weapons.</text>
+	</string>
+	<string id="st_cup_an_35_2">
+		<text>Duty came to congratulate them. With weapons. The holiday was rescheduled.</text>
+	</string>
+	<string id="st_cup_an_36_1">
+		<text>A rookie to a veteran: "What's the scariest thing in the Zone?"</text>
+	</string>
+	<string id="st_cup_an_36_2">
+		<text>"When the vodka is gone and the Bar is two emissions away."</text>
+	</string>
+	<string id="st_cup_an_37_1">
+		<text>An exam for the ecologists. "What do you do when you meet a pseudogiant?"</text>
+	</string>
+	<string id="st_cup_an_37_2">
+		<text>"Record observations." - "And then?" - "Then they record observations about you."</text>
+	</string>
+	<string id="st_cup_an_38_1">
+		<text>A Monolith fighter catches a stalker: "Do you believe in the Monolith?"</text>
+	</string>
+	<string id="st_cup_an_38_2">
+		<text>"I do!" - "Then go first through the Burner. The Monolith will protect you." - "I'm having doubts now."</text>
+	</string>
+	<string id="st_cup_an_39_1">
+		<text>One tushkano says to another: "Let's attack that stalker."</text>
+	</string>
+	<string id="st_cup_an_39_2">
+		<text>"There are two of us and one of him. Unfair." - "Fine, let's call forty more."</text>
+	</string>
+	<string id="st_cup_an_40_1">
+		<text>A stalker returns from a run, his wife asks: "What did you bring?"</text>
+	</string>
+	<string id="st_cup_an_40_2">
+		<text>"Myself." - "The cheapest thing again."</text>
+	</string>
+	<string id="st_cup_an_41_1">
+		<text>A mercenary gets a contract on a stalker. He arrives - the stalker is already in an anomaly.</text>
+	</string>
+	<string id="st_cup_an_41_2">
+		<text>His report: "Contract done. Subcontractor: the Zone. Please do not split the fee."</text>
+	</string>
+	<string id="st_cup_an_42_1">
+		<text>"What do an artefact and a salary have in common?"</text>
+	</string>
+	<string id="st_cup_an_42_2">
+		<text>"Both exist somewhere, both shine, and both end up with Sidorovich."</text>
+	</string>
+</string_table>

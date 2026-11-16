@@ -1,0 +1,2651 @@
+;==============================================================================
+; Mixon Backpack Upgrades - technician / workbench upgrade trees for backpacks
+; GENERATED file. Auto-included through items\outfits\upgrades\upgrade_includes.ltx
+; (#include "up_*.ltx") into BOTH system.ltx and item_upgrades.ltx.
+; Layout (rows/columns/scheme_index) copies the vanilla exoskeleton tree (up_scheme_exo_1):
+;   rows 1,2,4: a | c,d (choice) | e,f (choice);  rows 3,5: a | c,d (choice) | e
+; Classes: _kbu_s light, _kbu_m medium, _kbu_h heavy, _kbu_e elite.
+; Native params: cost (also raises item value), additional_inventory_weight(2).
+; kbu_* params are script effects read by a_kreiser_bpu.script.
+;==============================================================================
+
+;-- Property descriptors (used only by the Lua upgrade UIs; intentionally NOT listed in
+;-- [upgrades_properties], so the engine never has to resolve their functor).
+[prop_kbu_weight]
+name     = st_kbu_prop_weight
+icon     = ui_am_propery_08
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_drain]
+name     = st_kbu_prop_drain
+icon     = ui_am_propery_07
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_regen]
+name     = st_kbu_prop_regen
+icon     = ui_am_propery_07
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_rad]
+name     = st_kbu_prop_rad
+icon     = ui_am_propery_09
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_chem]
+name     = st_kbu_prop_chem
+icon     = ui_am_prop_chem
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_burn]
+name     = st_kbu_prop_burn
+icon     = ui_am_prop_thermo
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_shock]
+name     = st_kbu_prop_shock
+icon     = ui_am_prop_electro
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_psy]
+name     = st_kbu_prop_psy
+icon     = ui_am_propery_11
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_back]
+name     = st_kbu_prop_back
+icon     = ui_am_prop_damage
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_slots]
+name     = st_kbu_prop_slots
+icon     = ui_am_prop_artefact
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_sprint]
+name     = st_kbu_prop_sprint
+icon     = ui_am_prop_sprint
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_run]
+name     = st_kbu_prop_run
+icon     = ui_am_prop_sprint
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_jump]
+name     = st_kbu_prop_jump
+icon     = ui_am_prop_sprint
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_reload]
+name     = st_kbu_prop_reload
+icon     = ui_wp_prop_ergonomics
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+[prop_kbu_magload]
+name     = st_kbu_prop_magload
+icon     = ui_wp_prop_ergonomics
+functor  = a_kreiser_bpu.prop_text
+params   = fire_wound_immunity, cost
+
+;==============================================================================
+; CLASS: LIGHT
+;==============================================================================
+[up_sect_firsta_kbu_s]
+cost                    = 500
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+
+[up_sect_firstc_kbu_s]
+cost                    = 900
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+
+[up_sect_firstd_kbu_s]
+cost                    = 900
+additional_inventory_weight  = 1
+additional_inventory_weight2 = 1
+kbu_drain               = 0.03
+
+[up_sect_firste_kbu_s]
+cost                    = 1500
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+
+[up_sect_firstf_kbu_s]
+cost                    = 1500
+additional_inventory_weight  = 1
+additional_inventory_weight2 = 1
+kbu_regen               = 0.0003
+
+[up_sect_secona_kbu_s]
+cost                    = 500
+kbu_rad                 = 0.01
+kbu_chem                = 0.01
+
+[up_sect_seconc_kbu_s]
+cost                    = 900
+kbu_rad                 = 0.03
+
+[up_sect_second_kbu_s]
+cost                    = 900
+kbu_chem                = 0.03
+
+[up_sect_secone_kbu_s]
+cost                    = 1500
+kbu_burn                = 0.03
+
+[up_sect_seconf_kbu_s]
+cost                    = 1500
+kbu_shock               = 0.03
+
+[up_sect_thirda_kbu_s]
+cost                    = 500
+kbu_drain               = 0.03
+
+[up_sect_thirdc_kbu_s]
+cost                    = 900
+kbu_regen               = 0.0003
+
+[up_sect_thirdd_kbu_s]
+cost                    = 900
+kbu_back                = 0.04
+
+[up_sect_thirde_kbu_s]
+cost                    = 1500
+kbu_drain               = 0.04
+
+[up_sect_fourta_kbu_s]
+cost                    = 500
+kbu_magload             = 0.1
+
+[up_sect_fourtc_kbu_s]
+cost                    = 900
+kbu_reload              = 0.03
+kbu_magload             = 0.1
+
+[up_sect_fourtd_kbu_s]
+cost                    = 900
+kbu_sprint              = 0.02
+kbu_run                 = 0.01
+
+[up_sect_fourte_kbu_s]
+cost                    = 1500
+kbu_jump                = 0.04
+
+[up_sect_fourtf_kbu_s]
+cost                    = 1500
+kbu_magload             = 0.1
+additional_inventory_weight  = 1
+additional_inventory_weight2 = 1
+
+[up_sect_fiftha_kbu_s]
+cost                    = 500
+kbu_slots               = 1
+kbu_rad                 = 0.02
+
+[up_sect_fifthc_kbu_s]
+cost                    = 900
+kbu_rad                 = 0.02
+
+[up_sect_fifthd_kbu_s]
+cost                    = 900
+kbu_psy                 = 0.04
+
+[up_sect_fifthe_kbu_s]
+cost                    = 1500
+kbu_rad                 = 0.01
+kbu_psy                 = 0.02
+
+[up_firsta_kbu_s]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = up_gr_firstcd_kbu_s
+section                 = up_sect_firsta_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_a_name
+description             = st_kbu_cap_a_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstc_kbu_s]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = up_gr_firstef_kbu_s
+section                 = up_sect_firstc_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_c_name
+description             = st_kbu_cap_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_firstd_kbu_s]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = up_gr_firstef_kbu_s
+section                 = up_sect_firstd_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_drain
+
+name                    = st_kbu_cap_d_name
+description             = st_kbu_cap_d_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_firste_kbu_s]
+scheme_index            = 2, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_firste_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_e_name
+description             = st_kbu_cap_e_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstf_kbu_s]
+scheme_index            = 2, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_firstf_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_regen
+
+name                    = st_kbu_cap_f_name
+description             = st_kbu_cap_f_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_secona_kbu_s]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_seconcd_kbu_s
+section                 = up_sect_secona_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_chem
+
+name                    = st_kbu_prot_a_name
+description             = st_kbu_prot_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_1
+kbu_kit                 = magical
+
+[up_seconc_kbu_s]
+scheme_index            = 1, 2
+known                   = 1
+effects                 = up_gr_seconef_kbu_s
+section                 = up_sect_seconc_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_prot_c_name
+description             = st_kbu_prot_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_1
+kbu_kit                 = magical
+
+[up_second_kbu_s]
+scheme_index            = 1, 3
+known                   = 1
+effects                 = up_gr_seconef_kbu_s
+section                 = up_sect_second_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_chem
+
+name                    = st_kbu_prot_d_name
+description             = st_kbu_prot_d_descr
+icon                    = ui_inGame2_upgrade_outfit_chem_1
+kbu_kit                 = magical
+
+[up_secone_kbu_s]
+scheme_index            = 2, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_secone_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_burn
+
+name                    = st_kbu_prot_e_name
+description             = st_kbu_prot_e_descr
+icon                    = ui_inGame2_upgrade_outfit_burn_1
+kbu_kit                 = magical
+
+[up_seconf_kbu_s]
+scheme_index            = 2, 3
+known                   = 1
+effects                 = 
+section                 = up_sect_seconf_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_shock
+
+name                    = st_kbu_prot_f_name
+description             = st_kbu_prot_f_descr
+icon                    = ui_inGame2_upgrade_outfit_shock_1
+kbu_kit                 = magical
+
+[up_thirda_kbu_s]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_thirdcd_kbu_s
+section                 = up_sect_thirda_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_a_name
+description             = st_kbu_ergo_a_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_thirdc_kbu_s]
+scheme_index            = 1, 4
+known                   = 1
+effects                 = up_gr_thirdef_kbu_s
+section                 = up_sect_thirdc_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_regen
+
+name                    = st_kbu_ergo_c_name
+description             = st_kbu_ergo_c_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_thirdd_kbu_s]
+scheme_index            = 1, 9
+known                   = 1
+effects                 = up_gr_thirdef_kbu_s
+section                 = up_sect_thirdd_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_back
+
+name                    = st_kbu_ergo_d_name
+description             = st_kbu_ergo_d_descr
+icon                    = ui_inGame2_upgrade_outfit_armour_2
+kbu_kit                 = physical
+
+[up_thirde_kbu_s]
+scheme_index            = 2, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_thirde_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_e_name
+description             = st_kbu_ergo_e_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourta_kbu_s]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_fourtcd_kbu_s
+section                 = up_sect_fourta_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload
+
+name                    = st_kbu_rig_a_name
+description             = st_kbu_rig_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_2
+kbu_kit                 = utility
+
+[up_fourtc_kbu_s]
+scheme_index            = 1, 5
+known                   = 1
+effects                 = up_gr_fourtef_kbu_s
+section                 = up_sect_fourtc_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_reload, prop_kbu_magload
+
+name                    = st_kbu_rig_c_name
+description             = st_kbu_rig_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_fourtd_kbu_s]
+scheme_index            = 1, 6
+known                   = 1
+effects                 = up_gr_fourtef_kbu_s
+section                 = up_sect_fourtd_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_sprint, prop_kbu_run
+
+name                    = st_kbu_rig_d_name
+description             = st_kbu_rig_d_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourte_kbu_s]
+scheme_index            = 2, 5
+known                   = 1
+effects                 = 
+section                 = up_sect_fourte_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_jump
+
+name                    = st_kbu_rig_e_name
+description             = st_kbu_rig_e_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_fourtf_kbu_s]
+scheme_index            = 2, 6
+known                   = 1
+effects                 = 
+section                 = up_sect_fourtf_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload, prop_kbu_weight
+
+name                    = st_kbu_rig_f_name
+description             = st_kbu_rig_f_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_fiftha_kbu_s]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = up_gr_fifthcd_kbu_s
+section                 = up_sect_fiftha_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_slots, prop_kbu_rad
+
+name                    = st_kbu_comp_a_name
+description             = st_kbu_comp_a_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_1
+kbu_kit                 = magical
+
+[up_fifthc_kbu_s]
+scheme_index            = 1, 7
+known                   = 1
+effects                 = up_gr_fifthef_kbu_s
+section                 = up_sect_fifthc_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_comp_c_name
+description             = st_kbu_comp_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_2
+kbu_kit                 = magical
+
+[up_fifthd_kbu_s]
+scheme_index            = 1, 8
+known                   = 1
+effects                 = up_gr_fifthef_kbu_s
+section                 = up_sect_fifthd_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_psy
+
+name                    = st_kbu_comp_d_name
+description             = st_kbu_comp_d_descr
+icon                    = ui_inGame2_upgrade_outfit_psi_1
+kbu_kit                 = magical
+
+[up_fifthe_kbu_s]
+scheme_index            = 2, 7
+known                   = 1
+effects                 = 
+section                 = up_sect_fifthe_kbu_s
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_psy
+
+name                    = st_kbu_comp_e_name
+description             = st_kbu_comp_e_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_2
+kbu_kit                 = magical
+
+[up_gr_firstab_kbu_s]
+elements                = up_firsta_kbu_s
+
+[up_gr_firstcd_kbu_s]
+elements                = up_firstc_kbu_s, up_firstd_kbu_s
+
+[up_gr_firstef_kbu_s]
+elements                = up_firste_kbu_s, up_firstf_kbu_s
+
+[up_gr_seconab_kbu_s]
+elements                = up_secona_kbu_s
+
+[up_gr_seconcd_kbu_s]
+elements                = up_seconc_kbu_s, up_second_kbu_s
+
+[up_gr_seconef_kbu_s]
+elements                = up_secone_kbu_s, up_seconf_kbu_s
+
+[up_gr_thirdab_kbu_s]
+elements                = up_thirda_kbu_s
+
+[up_gr_thirdcd_kbu_s]
+elements                = up_thirdc_kbu_s, up_thirdd_kbu_s
+
+[up_gr_thirdef_kbu_s]
+elements                = up_thirde_kbu_s
+
+[up_gr_fourtab_kbu_s]
+elements                = up_fourta_kbu_s
+
+[up_gr_fourtcd_kbu_s]
+elements                = up_fourtc_kbu_s, up_fourtd_kbu_s
+
+[up_gr_fourtef_kbu_s]
+elements                = up_fourte_kbu_s, up_fourtf_kbu_s
+
+[up_gr_fifthab_kbu_s]
+elements                = up_fiftha_kbu_s
+
+[up_gr_fifthcd_kbu_s]
+elements                = up_fifthc_kbu_s, up_fifthd_kbu_s
+
+[up_gr_fifthef_kbu_s]
+elements                = up_fifthe_kbu_s
+
+;==============================================================================
+; CLASS: MEDIUM
+;==============================================================================
+[up_sect_firsta_kbu_m]
+cost                    = 1000
+additional_inventory_weight  = 3
+additional_inventory_weight2 = 3
+
+[up_sect_firstc_kbu_m]
+cost                    = 1800
+additional_inventory_weight  = 3
+additional_inventory_weight2 = 3
+
+[up_sect_firstd_kbu_m]
+cost                    = 1800
+additional_inventory_weight  = 1
+additional_inventory_weight2 = 1
+kbu_drain               = 0.04
+
+[up_sect_firste_kbu_m]
+cost                    = 3000
+additional_inventory_weight  = 4
+additional_inventory_weight2 = 4
+
+[up_sect_firstf_kbu_m]
+cost                    = 3000
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+kbu_regen               = 0.0004
+
+[up_sect_secona_kbu_m]
+cost                    = 1000
+kbu_rad                 = 0.02
+kbu_chem                = 0.02
+
+[up_sect_seconc_kbu_m]
+cost                    = 1800
+kbu_rad                 = 0.05
+
+[up_sect_second_kbu_m]
+cost                    = 1800
+kbu_chem                = 0.05
+
+[up_sect_secone_kbu_m]
+cost                    = 3000
+kbu_burn                = 0.05
+
+[up_sect_seconf_kbu_m]
+cost                    = 3000
+kbu_shock               = 0.05
+
+[up_sect_thirda_kbu_m]
+cost                    = 1000
+kbu_drain               = 0.04
+
+[up_sect_thirdc_kbu_m]
+cost                    = 1800
+kbu_regen               = 0.0005
+
+[up_sect_thirdd_kbu_m]
+cost                    = 1800
+kbu_back                = 0.06
+
+[up_sect_thirde_kbu_m]
+cost                    = 3000
+kbu_drain               = 0.05
+
+[up_sect_fourta_kbu_m]
+cost                    = 1000
+kbu_magload             = 0.15
+
+[up_sect_fourtc_kbu_m]
+cost                    = 1800
+kbu_reload              = 0.05
+kbu_magload             = 0.15
+
+[up_sect_fourtd_kbu_m]
+cost                    = 1800
+kbu_sprint              = 0.03
+kbu_run                 = 0.02
+
+[up_sect_fourte_kbu_m]
+cost                    = 3000
+kbu_jump                = 0.06
+
+[up_sect_fourtf_kbu_m]
+cost                    = 3000
+kbu_magload             = 0.15
+additional_inventory_weight  = 1
+additional_inventory_weight2 = 1
+
+[up_sect_fiftha_kbu_m]
+cost                    = 1000
+kbu_slots               = 1
+kbu_rad                 = 0.03
+
+[up_sect_fifthc_kbu_m]
+cost                    = 1800
+kbu_rad                 = 0.03
+
+[up_sect_fifthd_kbu_m]
+cost                    = 1800
+kbu_psy                 = 0.06
+
+[up_sect_fifthe_kbu_m]
+cost                    = 3000
+kbu_rad                 = 0.01
+kbu_psy                 = 0.03
+
+[up_firsta_kbu_m]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = up_gr_firstcd_kbu_m
+section                 = up_sect_firsta_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_a_name
+description             = st_kbu_cap_a_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstc_kbu_m]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = up_gr_firstef_kbu_m
+section                 = up_sect_firstc_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_c_name
+description             = st_kbu_cap_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_firstd_kbu_m]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = up_gr_firstef_kbu_m
+section                 = up_sect_firstd_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_drain
+
+name                    = st_kbu_cap_d_name
+description             = st_kbu_cap_d_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_firste_kbu_m]
+scheme_index            = 2, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_firste_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_e_name
+description             = st_kbu_cap_e_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstf_kbu_m]
+scheme_index            = 2, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_firstf_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_regen
+
+name                    = st_kbu_cap_f_name
+description             = st_kbu_cap_f_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_secona_kbu_m]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_seconcd_kbu_m
+section                 = up_sect_secona_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_chem
+
+name                    = st_kbu_prot_a_name
+description             = st_kbu_prot_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_1
+kbu_kit                 = magical
+
+[up_seconc_kbu_m]
+scheme_index            = 1, 2
+known                   = 1
+effects                 = up_gr_seconef_kbu_m
+section                 = up_sect_seconc_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_prot_c_name
+description             = st_kbu_prot_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_1
+kbu_kit                 = magical
+
+[up_second_kbu_m]
+scheme_index            = 1, 3
+known                   = 1
+effects                 = up_gr_seconef_kbu_m
+section                 = up_sect_second_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_chem
+
+name                    = st_kbu_prot_d_name
+description             = st_kbu_prot_d_descr
+icon                    = ui_inGame2_upgrade_outfit_chem_1
+kbu_kit                 = magical
+
+[up_secone_kbu_m]
+scheme_index            = 2, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_secone_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_burn
+
+name                    = st_kbu_prot_e_name
+description             = st_kbu_prot_e_descr
+icon                    = ui_inGame2_upgrade_outfit_burn_1
+kbu_kit                 = magical
+
+[up_seconf_kbu_m]
+scheme_index            = 2, 3
+known                   = 1
+effects                 = 
+section                 = up_sect_seconf_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_shock
+
+name                    = st_kbu_prot_f_name
+description             = st_kbu_prot_f_descr
+icon                    = ui_inGame2_upgrade_outfit_shock_1
+kbu_kit                 = magical
+
+[up_thirda_kbu_m]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_thirdcd_kbu_m
+section                 = up_sect_thirda_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_a_name
+description             = st_kbu_ergo_a_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_thirdc_kbu_m]
+scheme_index            = 1, 4
+known                   = 1
+effects                 = up_gr_thirdef_kbu_m
+section                 = up_sect_thirdc_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_regen
+
+name                    = st_kbu_ergo_c_name
+description             = st_kbu_ergo_c_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_thirdd_kbu_m]
+scheme_index            = 1, 9
+known                   = 1
+effects                 = up_gr_thirdef_kbu_m
+section                 = up_sect_thirdd_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_back
+
+name                    = st_kbu_ergo_d_name
+description             = st_kbu_ergo_d_descr
+icon                    = ui_inGame2_upgrade_outfit_armour_2
+kbu_kit                 = physical
+
+[up_thirde_kbu_m]
+scheme_index            = 2, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_thirde_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_e_name
+description             = st_kbu_ergo_e_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourta_kbu_m]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_fourtcd_kbu_m
+section                 = up_sect_fourta_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload
+
+name                    = st_kbu_rig_a_name
+description             = st_kbu_rig_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_2
+kbu_kit                 = utility
+
+[up_fourtc_kbu_m]
+scheme_index            = 1, 5
+known                   = 1
+effects                 = up_gr_fourtef_kbu_m
+section                 = up_sect_fourtc_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_reload, prop_kbu_magload
+
+name                    = st_kbu_rig_c_name
+description             = st_kbu_rig_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_fourtd_kbu_m]
+scheme_index            = 1, 6
+known                   = 1
+effects                 = up_gr_fourtef_kbu_m
+section                 = up_sect_fourtd_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_sprint, prop_kbu_run
+
+name                    = st_kbu_rig_d_name
+description             = st_kbu_rig_d_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourte_kbu_m]
+scheme_index            = 2, 5
+known                   = 1
+effects                 = 
+section                 = up_sect_fourte_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_jump
+
+name                    = st_kbu_rig_e_name
+description             = st_kbu_rig_e_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_fourtf_kbu_m]
+scheme_index            = 2, 6
+known                   = 1
+effects                 = 
+section                 = up_sect_fourtf_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload, prop_kbu_weight
+
+name                    = st_kbu_rig_f_name
+description             = st_kbu_rig_f_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_fiftha_kbu_m]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = up_gr_fifthcd_kbu_m
+section                 = up_sect_fiftha_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_slots, prop_kbu_rad
+
+name                    = st_kbu_comp_a_name
+description             = st_kbu_comp_a_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_1
+kbu_kit                 = magical
+
+[up_fifthc_kbu_m]
+scheme_index            = 1, 7
+known                   = 1
+effects                 = up_gr_fifthef_kbu_m
+section                 = up_sect_fifthc_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_comp_c_name
+description             = st_kbu_comp_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_2
+kbu_kit                 = magical
+
+[up_fifthd_kbu_m]
+scheme_index            = 1, 8
+known                   = 1
+effects                 = up_gr_fifthef_kbu_m
+section                 = up_sect_fifthd_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_psy
+
+name                    = st_kbu_comp_d_name
+description             = st_kbu_comp_d_descr
+icon                    = ui_inGame2_upgrade_outfit_psi_1
+kbu_kit                 = magical
+
+[up_fifthe_kbu_m]
+scheme_index            = 2, 7
+known                   = 1
+effects                 = 
+section                 = up_sect_fifthe_kbu_m
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_psy
+
+name                    = st_kbu_comp_e_name
+description             = st_kbu_comp_e_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_2
+kbu_kit                 = magical
+
+[up_gr_firstab_kbu_m]
+elements                = up_firsta_kbu_m
+
+[up_gr_firstcd_kbu_m]
+elements                = up_firstc_kbu_m, up_firstd_kbu_m
+
+[up_gr_firstef_kbu_m]
+elements                = up_firste_kbu_m, up_firstf_kbu_m
+
+[up_gr_seconab_kbu_m]
+elements                = up_secona_kbu_m
+
+[up_gr_seconcd_kbu_m]
+elements                = up_seconc_kbu_m, up_second_kbu_m
+
+[up_gr_seconef_kbu_m]
+elements                = up_secone_kbu_m, up_seconf_kbu_m
+
+[up_gr_thirdab_kbu_m]
+elements                = up_thirda_kbu_m
+
+[up_gr_thirdcd_kbu_m]
+elements                = up_thirdc_kbu_m, up_thirdd_kbu_m
+
+[up_gr_thirdef_kbu_m]
+elements                = up_thirde_kbu_m
+
+[up_gr_fourtab_kbu_m]
+elements                = up_fourta_kbu_m
+
+[up_gr_fourtcd_kbu_m]
+elements                = up_fourtc_kbu_m, up_fourtd_kbu_m
+
+[up_gr_fourtef_kbu_m]
+elements                = up_fourte_kbu_m, up_fourtf_kbu_m
+
+[up_gr_fifthab_kbu_m]
+elements                = up_fiftha_kbu_m
+
+[up_gr_fifthcd_kbu_m]
+elements                = up_fifthc_kbu_m, up_fifthd_kbu_m
+
+[up_gr_fifthef_kbu_m]
+elements                = up_fifthe_kbu_m
+
+;==============================================================================
+; CLASS: HEAVY
+;==============================================================================
+[up_sect_firsta_kbu_h]
+cost                    = 2000
+additional_inventory_weight  = 4
+additional_inventory_weight2 = 4
+
+[up_sect_firstc_kbu_h]
+cost                    = 3500
+additional_inventory_weight  = 5
+additional_inventory_weight2 = 5
+
+[up_sect_firstd_kbu_h]
+cost                    = 3500
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+kbu_drain               = 0.05
+
+[up_sect_firste_kbu_h]
+cost                    = 6000
+additional_inventory_weight  = 5
+additional_inventory_weight2 = 5
+
+[up_sect_firstf_kbu_h]
+cost                    = 6000
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+kbu_regen               = 0.0006
+
+[up_sect_secona_kbu_h]
+cost                    = 2000
+kbu_rad                 = 0.02
+kbu_chem                = 0.02
+
+[up_sect_seconc_kbu_h]
+cost                    = 3500
+kbu_rad                 = 0.07
+
+[up_sect_second_kbu_h]
+cost                    = 3500
+kbu_chem                = 0.07
+
+[up_sect_secone_kbu_h]
+cost                    = 6000
+kbu_burn                = 0.07
+
+[up_sect_seconf_kbu_h]
+cost                    = 6000
+kbu_shock               = 0.07
+
+[up_sect_thirda_kbu_h]
+cost                    = 2000
+kbu_drain               = 0.05
+
+[up_sect_thirdc_kbu_h]
+cost                    = 3500
+kbu_regen               = 0.0007
+
+[up_sect_thirdd_kbu_h]
+cost                    = 3500
+kbu_back                = 0.08
+
+[up_sect_thirde_kbu_h]
+cost                    = 6000
+kbu_drain               = 0.07
+
+[up_sect_fourta_kbu_h]
+cost                    = 2000
+kbu_magload             = 0.2
+
+[up_sect_fourtc_kbu_h]
+cost                    = 3500
+kbu_reload              = 0.07
+kbu_magload             = 0.2
+
+[up_sect_fourtd_kbu_h]
+cost                    = 3500
+kbu_sprint              = 0.05
+kbu_run                 = 0.03
+
+[up_sect_fourte_kbu_h]
+cost                    = 6000
+kbu_jump                = 0.1
+
+[up_sect_fourtf_kbu_h]
+cost                    = 6000
+kbu_magload             = 0.2
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+
+[up_sect_fiftha_kbu_h]
+cost                    = 2000
+kbu_slots               = 1
+kbu_rad                 = 0.04
+
+[up_sect_fifthc_kbu_h]
+cost                    = 3500
+kbu_rad                 = 0.04
+
+[up_sect_fifthd_kbu_h]
+cost                    = 3500
+kbu_psy                 = 0.08
+
+[up_sect_fifthe_kbu_h]
+cost                    = 6000
+kbu_rad                 = 0.02
+kbu_psy                 = 0.04
+
+[up_firsta_kbu_h]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = up_gr_firstcd_kbu_h
+section                 = up_sect_firsta_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_a_name
+description             = st_kbu_cap_a_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstc_kbu_h]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = up_gr_firstef_kbu_h
+section                 = up_sect_firstc_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_c_name
+description             = st_kbu_cap_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_firstd_kbu_h]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = up_gr_firstef_kbu_h
+section                 = up_sect_firstd_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_drain
+
+name                    = st_kbu_cap_d_name
+description             = st_kbu_cap_d_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_firste_kbu_h]
+scheme_index            = 2, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_firste_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_e_name
+description             = st_kbu_cap_e_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstf_kbu_h]
+scheme_index            = 2, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_firstf_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_regen
+
+name                    = st_kbu_cap_f_name
+description             = st_kbu_cap_f_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_secona_kbu_h]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_seconcd_kbu_h
+section                 = up_sect_secona_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_chem
+
+name                    = st_kbu_prot_a_name
+description             = st_kbu_prot_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_1
+kbu_kit                 = magical
+
+[up_seconc_kbu_h]
+scheme_index            = 1, 2
+known                   = 1
+effects                 = up_gr_seconef_kbu_h
+section                 = up_sect_seconc_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_prot_c_name
+description             = st_kbu_prot_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_1
+kbu_kit                 = magical
+
+[up_second_kbu_h]
+scheme_index            = 1, 3
+known                   = 1
+effects                 = up_gr_seconef_kbu_h
+section                 = up_sect_second_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_chem
+
+name                    = st_kbu_prot_d_name
+description             = st_kbu_prot_d_descr
+icon                    = ui_inGame2_upgrade_outfit_chem_1
+kbu_kit                 = magical
+
+[up_secone_kbu_h]
+scheme_index            = 2, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_secone_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_burn
+
+name                    = st_kbu_prot_e_name
+description             = st_kbu_prot_e_descr
+icon                    = ui_inGame2_upgrade_outfit_burn_1
+kbu_kit                 = magical
+
+[up_seconf_kbu_h]
+scheme_index            = 2, 3
+known                   = 1
+effects                 = 
+section                 = up_sect_seconf_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_shock
+
+name                    = st_kbu_prot_f_name
+description             = st_kbu_prot_f_descr
+icon                    = ui_inGame2_upgrade_outfit_shock_1
+kbu_kit                 = magical
+
+[up_thirda_kbu_h]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_thirdcd_kbu_h
+section                 = up_sect_thirda_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_a_name
+description             = st_kbu_ergo_a_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_thirdc_kbu_h]
+scheme_index            = 1, 4
+known                   = 1
+effects                 = up_gr_thirdef_kbu_h
+section                 = up_sect_thirdc_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_regen
+
+name                    = st_kbu_ergo_c_name
+description             = st_kbu_ergo_c_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_thirdd_kbu_h]
+scheme_index            = 1, 9
+known                   = 1
+effects                 = up_gr_thirdef_kbu_h
+section                 = up_sect_thirdd_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_back
+
+name                    = st_kbu_ergo_d_name
+description             = st_kbu_ergo_d_descr
+icon                    = ui_inGame2_upgrade_outfit_armour_2
+kbu_kit                 = physical
+
+[up_thirde_kbu_h]
+scheme_index            = 2, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_thirde_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_e_name
+description             = st_kbu_ergo_e_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourta_kbu_h]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_fourtcd_kbu_h
+section                 = up_sect_fourta_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload
+
+name                    = st_kbu_rig_a_name
+description             = st_kbu_rig_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_2
+kbu_kit                 = utility
+
+[up_fourtc_kbu_h]
+scheme_index            = 1, 5
+known                   = 1
+effects                 = up_gr_fourtef_kbu_h
+section                 = up_sect_fourtc_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_reload, prop_kbu_magload
+
+name                    = st_kbu_rig_c_name
+description             = st_kbu_rig_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_fourtd_kbu_h]
+scheme_index            = 1, 6
+known                   = 1
+effects                 = up_gr_fourtef_kbu_h
+section                 = up_sect_fourtd_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_sprint, prop_kbu_run
+
+name                    = st_kbu_rig_d_name
+description             = st_kbu_rig_d_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourte_kbu_h]
+scheme_index            = 2, 5
+known                   = 1
+effects                 = 
+section                 = up_sect_fourte_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_jump
+
+name                    = st_kbu_rig_e_name
+description             = st_kbu_rig_e_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_fourtf_kbu_h]
+scheme_index            = 2, 6
+known                   = 1
+effects                 = 
+section                 = up_sect_fourtf_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload, prop_kbu_weight
+
+name                    = st_kbu_rig_f_name
+description             = st_kbu_rig_f_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_fiftha_kbu_h]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = up_gr_fifthcd_kbu_h
+section                 = up_sect_fiftha_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_slots, prop_kbu_rad
+
+name                    = st_kbu_comp_a_name
+description             = st_kbu_comp_a_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_1
+kbu_kit                 = magical
+
+[up_fifthc_kbu_h]
+scheme_index            = 1, 7
+known                   = 1
+effects                 = up_gr_fifthef_kbu_h
+section                 = up_sect_fifthc_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_comp_c_name
+description             = st_kbu_comp_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_2
+kbu_kit                 = magical
+
+[up_fifthd_kbu_h]
+scheme_index            = 1, 8
+known                   = 1
+effects                 = up_gr_fifthef_kbu_h
+section                 = up_sect_fifthd_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_psy
+
+name                    = st_kbu_comp_d_name
+description             = st_kbu_comp_d_descr
+icon                    = ui_inGame2_upgrade_outfit_psi_1
+kbu_kit                 = magical
+
+[up_fifthe_kbu_h]
+scheme_index            = 2, 7
+known                   = 1
+effects                 = 
+section                 = up_sect_fifthe_kbu_h
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_psy
+
+name                    = st_kbu_comp_e_name
+description             = st_kbu_comp_e_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_2
+kbu_kit                 = magical
+
+[up_gr_firstab_kbu_h]
+elements                = up_firsta_kbu_h
+
+[up_gr_firstcd_kbu_h]
+elements                = up_firstc_kbu_h, up_firstd_kbu_h
+
+[up_gr_firstef_kbu_h]
+elements                = up_firste_kbu_h, up_firstf_kbu_h
+
+[up_gr_seconab_kbu_h]
+elements                = up_secona_kbu_h
+
+[up_gr_seconcd_kbu_h]
+elements                = up_seconc_kbu_h, up_second_kbu_h
+
+[up_gr_seconef_kbu_h]
+elements                = up_secone_kbu_h, up_seconf_kbu_h
+
+[up_gr_thirdab_kbu_h]
+elements                = up_thirda_kbu_h
+
+[up_gr_thirdcd_kbu_h]
+elements                = up_thirdc_kbu_h, up_thirdd_kbu_h
+
+[up_gr_thirdef_kbu_h]
+elements                = up_thirde_kbu_h
+
+[up_gr_fourtab_kbu_h]
+elements                = up_fourta_kbu_h
+
+[up_gr_fourtcd_kbu_h]
+elements                = up_fourtc_kbu_h, up_fourtd_kbu_h
+
+[up_gr_fourtef_kbu_h]
+elements                = up_fourte_kbu_h, up_fourtf_kbu_h
+
+[up_gr_fifthab_kbu_h]
+elements                = up_fiftha_kbu_h
+
+[up_gr_fifthcd_kbu_h]
+elements                = up_fifthc_kbu_h, up_fifthd_kbu_h
+
+[up_gr_fifthef_kbu_h]
+elements                = up_fifthe_kbu_h
+
+;==============================================================================
+; CLASS: ELITE
+;==============================================================================
+[up_sect_firsta_kbu_e]
+cost                    = 3500
+additional_inventory_weight  = 6
+additional_inventory_weight2 = 6
+
+[up_sect_firstc_kbu_e]
+cost                    = 6000
+additional_inventory_weight  = 6
+additional_inventory_weight2 = 6
+
+[up_sect_firstd_kbu_e]
+cost                    = 6000
+additional_inventory_weight  = 3
+additional_inventory_weight2 = 3
+kbu_drain               = 0.06
+
+[up_sect_firste_kbu_e]
+cost                    = 10000
+additional_inventory_weight  = 6
+additional_inventory_weight2 = 6
+
+[up_sect_firstf_kbu_e]
+cost                    = 10000
+additional_inventory_weight  = 3
+additional_inventory_weight2 = 3
+kbu_regen               = 0.0008
+
+[up_sect_secona_kbu_e]
+cost                    = 3500
+kbu_rad                 = 0.03
+kbu_chem                = 0.03
+
+[up_sect_seconc_kbu_e]
+cost                    = 6000
+kbu_rad                 = 0.09
+
+[up_sect_second_kbu_e]
+cost                    = 6000
+kbu_chem                = 0.09
+
+[up_sect_secone_kbu_e]
+cost                    = 10000
+kbu_burn                = 0.09
+
+[up_sect_seconf_kbu_e]
+cost                    = 10000
+kbu_shock               = 0.09
+
+[up_sect_thirda_kbu_e]
+cost                    = 3500
+kbu_drain               = 0.06
+
+[up_sect_thirdc_kbu_e]
+cost                    = 6000
+kbu_regen               = 0.001
+
+[up_sect_thirdd_kbu_e]
+cost                    = 6000
+kbu_back                = 0.1
+
+[up_sect_thirde_kbu_e]
+cost                    = 10000
+kbu_drain               = 0.09
+
+[up_sect_fourta_kbu_e]
+cost                    = 3500
+kbu_magload             = 0.25
+
+[up_sect_fourtc_kbu_e]
+cost                    = 6000
+kbu_reload              = 0.1
+kbu_magload             = 0.25
+
+[up_sect_fourtd_kbu_e]
+cost                    = 6000
+kbu_sprint              = 0.08
+kbu_run                 = 0.04
+
+[up_sect_fourte_kbu_e]
+cost                    = 10000
+kbu_jump                = 0.15
+
+[up_sect_fourtf_kbu_e]
+cost                    = 10000
+kbu_magload             = 0.25
+additional_inventory_weight  = 2
+additional_inventory_weight2 = 2
+
+[up_sect_fiftha_kbu_e]
+cost                    = 3500
+kbu_slots               = 1
+kbu_rad                 = 0.05
+
+[up_sect_fifthc_kbu_e]
+cost                    = 6000
+kbu_rad                 = 0.05
+
+[up_sect_fifthd_kbu_e]
+cost                    = 6000
+kbu_psy                 = 0.1
+
+[up_sect_fifthe_kbu_e]
+cost                    = 10000
+kbu_rad                 = 0.02
+kbu_psy                 = 0.05
+
+[up_firsta_kbu_e]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = up_gr_firstcd_kbu_e
+section                 = up_sect_firsta_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_a_name
+description             = st_kbu_cap_a_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstc_kbu_e]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = up_gr_firstef_kbu_e
+section                 = up_sect_firstc_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_c_name
+description             = st_kbu_cap_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_firstd_kbu_e]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = up_gr_firstef_kbu_e
+section                 = up_sect_firstd_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_drain
+
+name                    = st_kbu_cap_d_name
+description             = st_kbu_cap_d_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_firste_kbu_e]
+scheme_index            = 2, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_firste_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight
+
+name                    = st_kbu_cap_e_name
+description             = st_kbu_cap_e_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_firstf_kbu_e]
+scheme_index            = 2, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_firstf_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_weight, prop_kbu_regen
+
+name                    = st_kbu_cap_f_name
+description             = st_kbu_cap_f_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_secona_kbu_e]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_seconcd_kbu_e
+section                 = up_sect_secona_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_chem
+
+name                    = st_kbu_prot_a_name
+description             = st_kbu_prot_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_1
+kbu_kit                 = magical
+
+[up_seconc_kbu_e]
+scheme_index            = 1, 2
+known                   = 1
+effects                 = up_gr_seconef_kbu_e
+section                 = up_sect_seconc_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_prot_c_name
+description             = st_kbu_prot_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_1
+kbu_kit                 = magical
+
+[up_second_kbu_e]
+scheme_index            = 1, 3
+known                   = 1
+effects                 = up_gr_seconef_kbu_e
+section                 = up_sect_second_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_chem
+
+name                    = st_kbu_prot_d_name
+description             = st_kbu_prot_d_descr
+icon                    = ui_inGame2_upgrade_outfit_chem_1
+kbu_kit                 = magical
+
+[up_secone_kbu_e]
+scheme_index            = 2, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_secone_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_burn
+
+name                    = st_kbu_prot_e_name
+description             = st_kbu_prot_e_descr
+icon                    = ui_inGame2_upgrade_outfit_burn_1
+kbu_kit                 = magical
+
+[up_seconf_kbu_e]
+scheme_index            = 2, 3
+known                   = 1
+effects                 = 
+section                 = up_sect_seconf_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_shock
+
+name                    = st_kbu_prot_f_name
+description             = st_kbu_prot_f_descr
+icon                    = ui_inGame2_upgrade_outfit_shock_1
+kbu_kit                 = magical
+
+[up_thirda_kbu_e]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_thirdcd_kbu_e
+section                 = up_sect_thirda_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_a_name
+description             = st_kbu_ergo_a_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_1
+kbu_kit                 = utility
+
+[up_thirdc_kbu_e]
+scheme_index            = 1, 4
+known                   = 1
+effects                 = up_gr_thirdef_kbu_e
+section                 = up_sect_thirdc_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_regen
+
+name                    = st_kbu_ergo_c_name
+description             = st_kbu_ergo_c_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_thirdd_kbu_e]
+scheme_index            = 1, 9
+known                   = 1
+effects                 = up_gr_thirdef_kbu_e
+section                 = up_sect_thirdd_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_back
+
+name                    = st_kbu_ergo_d_name
+description             = st_kbu_ergo_d_descr
+icon                    = ui_inGame2_upgrade_outfit_armour_2
+kbu_kit                 = physical
+
+[up_thirde_kbu_e]
+scheme_index            = 2, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_thirde_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_drain
+
+name                    = st_kbu_ergo_e_name
+description             = st_kbu_ergo_e_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourta_kbu_e]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_fourtcd_kbu_e
+section                 = up_sect_fourta_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload
+
+name                    = st_kbu_rig_a_name
+description             = st_kbu_rig_a_descr
+icon                    = ui_inGame2_upgrade_outfit_durability_2
+kbu_kit                 = utility
+
+[up_fourtc_kbu_e]
+scheme_index            = 1, 5
+known                   = 1
+effects                 = up_gr_fourtef_kbu_e
+section                 = up_sect_fourtc_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_reload, prop_kbu_magload
+
+name                    = st_kbu_rig_c_name
+description             = st_kbu_rig_c_descr
+icon                    = ui_inGame2_upgrade_outfit_weight_1
+kbu_kit                 = utility
+
+[up_fourtd_kbu_e]
+scheme_index            = 1, 6
+known                   = 1
+effects                 = up_gr_fourtef_kbu_e
+section                 = up_sect_fourtd_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_sprint, prop_kbu_run
+
+name                    = st_kbu_rig_d_name
+description             = st_kbu_rig_d_descr
+icon                    = ui_inGame2_upgrade_outfit_run_1
+kbu_kit                 = utility
+
+[up_fourte_kbu_e]
+scheme_index            = 2, 5
+known                   = 1
+effects                 = 
+section                 = up_sect_fourte_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_jump
+
+name                    = st_kbu_rig_e_name
+description             = st_kbu_rig_e_descr
+icon                    = ui_inGame2_upgrade_outfit_stamins_2
+kbu_kit                 = utility
+
+[up_fourtf_kbu_e]
+scheme_index            = 2, 6
+known                   = 1
+effects                 = 
+section                 = up_sect_fourtf_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_magload, prop_kbu_weight
+
+name                    = st_kbu_rig_f_name
+description             = st_kbu_rig_f_descr
+icon                    = ui_inGame2_upgrade_outfit_carry_1
+kbu_kit                 = utility
+
+[up_fiftha_kbu_e]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = up_gr_fifthcd_kbu_e
+section                 = up_sect_fiftha_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_slots, prop_kbu_rad
+
+name                    = st_kbu_comp_a_name
+description             = st_kbu_comp_a_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_1
+kbu_kit                 = magical
+
+[up_fifthc_kbu_e]
+scheme_index            = 1, 7
+known                   = 1
+effects                 = up_gr_fifthef_kbu_e
+section                 = up_sect_fifthc_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad
+
+name                    = st_kbu_comp_c_name
+description             = st_kbu_comp_c_descr
+icon                    = ui_inGame2_upgrade_outfit_rad_2
+kbu_kit                 = magical
+
+[up_fifthd_kbu_e]
+scheme_index            = 1, 8
+known                   = 1
+effects                 = up_gr_fifthef_kbu_e
+section                 = up_sect_fifthd_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_psy
+
+name                    = st_kbu_comp_d_name
+description             = st_kbu_comp_d_descr
+icon                    = ui_inGame2_upgrade_outfit_psi_1
+kbu_kit                 = magical
+
+[up_fifthe_kbu_e]
+scheme_index            = 2, 7
+known                   = 1
+effects                 = 
+section                 = up_sect_fifthe_kbu_e
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           =
+
+property                = prop_kbu_rad, prop_kbu_psy
+
+name                    = st_kbu_comp_e_name
+description             = st_kbu_comp_e_descr
+icon                    = ui_inGame2_upgrade_outfit_arty_2
+kbu_kit                 = magical
+
+[up_gr_firstab_kbu_e]
+elements                = up_firsta_kbu_e
+
+[up_gr_firstcd_kbu_e]
+elements                = up_firstc_kbu_e, up_firstd_kbu_e
+
+[up_gr_firstef_kbu_e]
+elements                = up_firste_kbu_e, up_firstf_kbu_e
+
+[up_gr_seconab_kbu_e]
+elements                = up_secona_kbu_e
+
+[up_gr_seconcd_kbu_e]
+elements                = up_seconc_kbu_e, up_second_kbu_e
+
+[up_gr_seconef_kbu_e]
+elements                = up_secone_kbu_e, up_seconf_kbu_e
+
+[up_gr_thirdab_kbu_e]
+elements                = up_thirda_kbu_e
+
+[up_gr_thirdcd_kbu_e]
+elements                = up_thirdc_kbu_e, up_thirdd_kbu_e
+
+[up_gr_thirdef_kbu_e]
+elements                = up_thirde_kbu_e
+
+[up_gr_fourtab_kbu_e]
+elements                = up_fourta_kbu_e
+
+[up_gr_fourtcd_kbu_e]
+elements                = up_fourtc_kbu_e, up_fourtd_kbu_e
+
+[up_gr_fourtef_kbu_e]
+elements                = up_fourte_kbu_e, up_fourtf_kbu_e
+
+[up_gr_fifthab_kbu_e]
+elements                = up_fiftha_kbu_e
+
+[up_gr_fifthcd_kbu_e]
+elements                = up_fifthc_kbu_e, up_fifthd_kbu_e
+
+[up_gr_fifthef_kbu_e]
+elements                = up_fifthe_kbu_e
+

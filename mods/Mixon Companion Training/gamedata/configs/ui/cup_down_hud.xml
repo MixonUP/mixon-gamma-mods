@@ -1,0 +1,32 @@
+<w>
+	<tunnel x="0" y="0" width="1024" height="768" stretch="1">
+		<texture>cup_tex_vignette</texture>
+	</tunnel>
+	<blood x="0" y="0" width="1024" height="768" stretch="1">
+		<texture>cup_tex_vignette</texture>
+	</blood>
+	<blink x="0" y="0" width="1024" height="768" stretch="1">
+		<texture>cup_tex_white</texture>
+	</blink>
+	<help_title x="262" y="612" width="500" height="22">
+		<text font="letterica18" align="c" vert_align="c" r="150" g="230" b="120" complex_mode="0"/>
+	</help_title>
+	<help_back x="312" y="638" width="400" height="10" stretch="1">
+		<texture>cup_tex_white</texture>
+	</help_back>
+	<help_fill x="314" y="640" width="396" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</help_fill>
+	<title x="262" y="668" width="500" height="24">
+		<text font="graffiti22" align="c" vert_align="c" r="230" g="60" b="50" complex_mode="0"/>
+	</title>
+	<bar_back x="312" y="698" width="400" height="10" stretch="1">
+		<texture>cup_tex_white</texture>
+	</bar_back>
+	<bar_fill x="314" y="700" width="396" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</bar_fill>
+	<sub x="162" y="712" width="700" height="22">
+		<text font="letterica18" align="c" vert_align="c" r="230" g="230" b="230" complex_mode="0"/>
+	</sub>
+</w>

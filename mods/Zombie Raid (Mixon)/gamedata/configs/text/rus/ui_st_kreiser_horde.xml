@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="ui_mcm_kreiser_horde_title">
+		<text>Рейд зомбированных (Mixon)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size">
+		<text>Размер рейда</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_1">
+		<text>1 - Лёгкий (~10)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_2">
+		<text>2 - Средний (~20)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_3">
+		<text>3 - Большой (~50, до мастеров)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_4">
+		<text>4 - Огромный (~90, много мастеров)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_distance">
+		<text>Расстояние появления, м</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_target">
+		<text>Цель атаки</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_target_camp">
+		<text>Ближайший лагерь (база)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_target_actor">
+		<text>Игрок</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_key">
+		<text>Клавиша вызова рейда</text>
+	</string>
+	<string id="st_kreiser_raid_title">
+		<text>Отбить атаку зомбированных</text>
+	</string>
+	<string id="st_kreiser_raid_descr">
+		<text>Отбейте атаку орды зомбированных. Осталось: %d из %d. Убито вашей группой: %d.</text>
+	</string>
+	<string id="st_kreiser_raid_descr_static">
+		<text>Отбейте атаку орды зомбированных.</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_enable">
+		<text>Случайные рейды</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_chance">
+		<text>Шанс рейда за игровой час, %</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_interval">
+		<text>Не чаще чем раз в N игровых часов</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_max">
+		<text>Максимальный размер случайного рейда</text>
+	</string>
+	<string id="ui_mcm_menu_kreiser_horde">
+		<text>Рейд зомбированных (Mixon)</text>
+	</string>
+	<string id="st_kreiser_raid_result">
+		<text>Рейд отбит! Убито группой: %d из %d (ты: %d, напарники: %d). Награда: %d RU, тайников: %d.</text>
+	</string>
+	<string id="st_kreiser_raid_result_fail">
+		<text>Рейд не отбит до конца. Убито: %d из %d (ты: %d, напарники: %d). Половина оплаты за убитых: %d RU (тайников: %d).</text>
+	</string>
+</string_table>

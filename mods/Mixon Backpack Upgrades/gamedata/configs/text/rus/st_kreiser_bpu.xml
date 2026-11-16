@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_kbu_cap_a_name">
+		<text>Дополнительные карманы</text>
+	</string>
+	<string id="st_kbu_cap_a_descr">
+		<text>Нашивные карманы и клапаны по бокам рюкзака. Немного увеличивают переносимый вес.</text>
+	</string>
+	<string id="st_kbu_cap_c_name">
+		<text>Расширенный объём</text>
+	</string>
+	<string id="st_kbu_cap_c_descr">
+		<text>Вставки-расширители основного отделения. Заметно увеличивают переносимый вес.\n \nВыбор: исключает «Облегчённый каркас».</text>
+	</string>
+	<string id="st_kbu_cap_d_name">
+		<text>Облегчённый каркас</text>
+	</string>
+	<string id="st_kbu_cap_d_descr">
+		<text>Каркас из лёгкого сплава: чуть меньше прибавка к весу, зато ниже расход выносливости при движении.\n \nВыбор: исключает «Расширенный объём».</text>
+	</string>
+	<string id="st_kbu_cap_e_name">
+		<text>Грузовая рама</text>
+	</string>
+	<string id="st_kbu_cap_e_descr">
+		<text>Жёсткая грузовая рама с дополнительными точками крепления. Максимальная прибавка к переносимому весу.\n \nВыбор: исключает «Компрессионные стяжки».</text>
+	</string>
+	<string id="st_kbu_cap_f_name">
+		<text>Компрессионные стяжки</text>
+	</string>
+	<string id="st_kbu_cap_f_descr">
+		<text>Стяжки прижимают груз к спине: небольшая прибавка к весу и ускоренное восстановление выносливости.\n \nВыбор: исключает «Грузовую раму».</text>
+	</string>
+	<string id="st_kbu_prot_a_name">
+		<text>Защитная пропитка</text>
+	</string>
+	<string id="st_kbu_prot_a_descr">
+		<text>Ткань рюкзака обработана защитным составом. Слегка ослабляет радиационные и химические поражения владельца.</text>
+	</string>
+	<string id="st_kbu_prot_c_name">
+		<text>Свинцовая подкладка</text>
+	</string>
+	<string id="st_kbu_prot_c_descr">
+		<text>Листы просвинцованной резины в спинке и стенках. Снижает получаемое радиационное облучение.\n \nВыбор: исключает «Химзащитный чехол».</text>
+	</string>
+	<string id="st_kbu_prot_d_name">
+		<text>Химзащитный чехол</text>
+	</string>
+	<string id="st_kbu_prot_d_descr">
+		<text>Герметичный чехол из прорезиненной ткани. Снижает урон от химических ожогов.\n \nВыбор: исключает «Свинцовую подкладку».</text>
+	</string>
+	<string id="st_kbu_prot_e_name">
+		<text>Термоизоляция</text>
+	</string>
+	<string id="st_kbu_prot_e_descr">
+		<text>Слой огнестойкого волокна и фольги. Снижает урон от огня и жара.\n \nВыбор: исключает «Диэлектрическую прокладку».</text>
+	</string>
+	<string id="st_kbu_prot_f_name">
+		<text>Диэлектрическая прокладка</text>
+	</string>
+	<string id="st_kbu_prot_f_descr">
+		<text>Изолирующий слой и заземляющая шина каркаса. Снижает урон от электричества.\n \nВыбор: исключает «Термоизоляцию».</text>
+	</string>
+	<string id="st_kbu_ergo_a_name">
+		<text>Анатомические лямки</text>
+	</string>
+	<string id="st_kbu_ergo_a_descr">
+		<text>Широкие лямки с мягкими вставками. Снижают расход выносливости при движении.</text>
+	</string>
+	<string id="st_kbu_ergo_c_name">
+		<text>Поясной ремень</text>
+	</string>
+	<string id="st_kbu_ergo_c_descr">
+		<text>Разгрузочный поясной ремень переносит часть веса на бёдра. Ускоряет восстановление выносливости.\n \nВыбор: исключает «Кевларовую вставку».</text>
+	</string>
+	<string id="st_kbu_ergo_d_name">
+		<text>Кевларовая вставка</text>
+	</string>
+	<string id="st_kbu_ergo_d_descr">
+		<text>Кевларовый пакет в спинке рюкзака. Снижает урон от пуль, осколков и когтей при попаданиях в спину.\n \nВыбор: исключает «Поясной ремень».</text>
+	</string>
+	<string id="st_kbu_ergo_e_name">
+		<text>Система распределения веса</text>
+	</string>
+	<string id="st_kbu_ergo_e_descr">
+		<text>Регулируемая подвесная система с вентилируемой спинкой. Существенно снижает расход выносливости.</text>
+	</string>
+	<string id="st_kbu_rig_a_name">
+		<text>Подсумки на лямках</text>
+	</string>
+	<string id="st_kbu_rig_a_descr">
+		<text>Подсумки под магазины и патроны на плечевых лямках. Ускоряют снаряжение и разряжание магазинов.</text>
+	</string>
+	<string id="st_kbu_rig_c_name">
+		<text>Быстрые карманы</text>
+	</string>
+	<string id="st_kbu_rig_c_descr">
+		<text>Клапаны быстрого доступа под магазины. Ускоряют перезарядку оружия и снаряжение магазинов.\n \nВыбор: исключает «Облегчённую подвеску».</text>
+	</string>
+	<string id="st_kbu_rig_d_name">
+		<text>Облегчённая подвеска</text>
+	</string>
+	<string id="st_kbu_rig_d_descr">
+		<text>Облегчённая подвесная система, не стесняющая движений. Повышает скорость спринта и бега.\n \nВыбор: исключает «Быстрые карманы».</text>
+	</string>
+	<string id="st_kbu_rig_e_name">
+		<text>Усиленные лямки</text>
+	</string>
+	<string id="st_kbu_rig_e_descr">
+		<text>Усиленные лямки с грудной перемычкой жёстко фиксируют груз. Увеличивают высоту прыжка.\n \nВыбор: исключает «Подсумки быстрого доступа».</text>
+	</string>
+	<string id="st_kbu_rig_f_name">
+		<text>Подсумки быстрого доступа</text>
+	</string>
+	<string id="st_kbu_rig_f_descr">
+		<text>Дополнительные подсумки на поясе и боковых стропах. Ещё быстрее снаряжение магазинов и немного больше переносимый вес.\n \nВыбор: исключает «Усиленные лямки».</text>
+	</string>
+	<string id="st_kbu_comp_a_name">
+		<text>Контейнерный отсек</text>
+	</string>
+	<string id="st_kbu_comp_a_descr">
+		<text>Экранированное гнездо под артефакт с выводом на пояс: +1 ячейка для артефакта (нужен надетый костюм, всего не больше 5 ячеек). Свинцовая обкладка гнезда заодно немного снижает радиационное облучение.</text>
+	</string>
+	<string id="st_kbu_comp_c_name">
+		<text>Свинцовый отсек</text>
+	</string>
+	<string id="st_kbu_comp_c_descr">
+		<text>Стенки отсека усилены свинцовыми пластинами. Дополнительно снижает радиационное облучение.\n \nВыбор: исключает «Пси-экран».</text>
+	</string>
+	<string id="st_kbu_comp_d_name">
+		<text>Пси-экран</text>
+	</string>
+	<string id="st_kbu_comp_d_descr">
+		<text>Сетка из экранирующего сплава в стенках рюкзака. Снижает пси-воздействие на владельца.\n \nВыбор: исключает «Свинцовый отсек».</text>
+	</string>
+	<string id="st_kbu_comp_e_name">
+		<text>Экранированный модуль</text>
+	</string>
+	<string id="st_kbu_comp_e_descr">
+		<text>Комбинированный экранирующий модуль. Немного снижает радиационное облучение и пси-воздействие.</text>
+	</string>
+	<string id="st_kbu_prop_weight">
+		<text>Переносимый вес</text>
+	</string>
+	<string id="st_kbu_prop_drain">
+		<text>Расход выносливости</text>
+	</string>
+	<string id="st_kbu_prop_regen">
+		<text>Восстановление выносливости</text>
+	</string>
+	<string id="st_kbu_prop_rad">
+		<text>Радиационное облучение</text>
+	</string>
+	<string id="st_kbu_prop_chem">
+		<text>Химический ожог</text>
+	</string>
+	<string id="st_kbu_prop_burn">
+		<text>Урон от огня</text>
+	</string>
+	<string id="st_kbu_prop_shock">
+		<text>Урон от электричества</text>
+	</string>
+	<string id="st_kbu_prop_psy">
+		<text>Пси-воздействие</text>
+	</string>
+	<string id="st_kbu_prop_back">
+		<text>Урон при попадании в спину</text>
+	</string>
+	<string id="st_kbu_prop_slots">
+		<text>Ячейки для артефактов</text>
+	</string>
+	<string id="st_kbu_prop_sprint">
+		<text>Скорость спринта</text>
+	</string>
+	<string id="st_kbu_prop_run">
+		<text>Скорость бега</text>
+	</string>
+	<string id="st_kbu_prop_jump">
+		<text>Высота прыжка</text>
+	</string>
+	<string id="st_kbu_prop_reload">
+		<text>Скорость перезарядки</text>
+	</string>
+	<string id="st_kbu_prop_magload">
+		<text>Скорость снаряжения магазинов</text>
+	</string>
+	<string id="st_kbu_unit_persec">
+		<text>%/с</text>
+	</string>
+	<string id="ui_mcm_menu_kreiser_bpu">
+		<text>Улучшения рюкзаков</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_title">
+		<text>Mixon: улучшения рюкзаков</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_desc">
+		<text>Настройка скриптовых эффектов улучшений рюкзака. Вес рюкзака (кг) задаётся конфигами и здесь не меняется.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_strength">
+		<text>Сила эффектов (множитель)</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_strength_desc">
+		<text>Общий множитель всех скриптовых эффектов улучшений (защита, выносливость, скорость, перезарядка).</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_hits">
+		<text>Защита от урона</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_hits_desc">
+		<text>Радиация, химия, огонь, электричество, пси и кевларовая вставка.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_stamina">
+		<text>Эффекты выносливости</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_stamina_desc">
+		<text>Снижение расхода и ускоренное восстановление выносливости.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_mobility">
+		<text>Скорость и прыжок</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_mobility_desc">
+		<text>Бонусы к спринту, бегу и высоте прыжка.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_reload">
+		<text>Перезарядка и магазины</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_reload_desc">
+		<text>Ускорение анимаций перезарядки и снаряжения магазинов (Mags Redux).</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_slots">
+		<text>Доп. ячейка артефакта</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_slots_desc">
+		<text>+1 ячейка для артефакта на поясе от улучшения «Контейнерный отсек».</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_debug">
+		<text>Отладка в лог</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_debug_desc">
+		<text>Писать в лог суммарные эффекты при смене рюкзака или улучшений.</text>
+	</string>
+</string_table>

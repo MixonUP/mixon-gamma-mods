@@ -1,0 +1,8 @@
+*.ogg binary
+*.dds binary
+*.webp binary
+*.png binary
+*.script -text
+*.xml -text
+*.ltx -text
+*.diff -text

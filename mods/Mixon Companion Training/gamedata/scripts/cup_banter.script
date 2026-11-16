@@ -1,0 +1,467 @@
+--[[
+	Mixon Companion Training (CUP) - banter: funny lines and anekdots of our companions.
+
+	Texts: configs\text\*\cup_banter.xml, counts: cup_banter_data.script (both generated).
+	A line is a news message with the companion's portrait. Voice-ready: if
+	sounds\cup\banter\<key>.ogg exists (key = bn_<category>_<n> or an_<n>_<part>, see
+	banter_lines_for_voice.csv in the mod root) it is played from the companion.
+
+	event(cat, npc, forced) is called by the other cup_* scripts; forced lines replace their
+	plain messages (medic, knockdown) and ignore the cooldowns.
+]]
+
+-- idle interval (real s, min / max) and multiplier of the per-category cooldowns
+local FREQ = {
+	[1] = { 720, 1200, 2.0 },
+	[2] = { 300, 600, 1.0 },
+	[3] = { 150, 300, 0.5 },
+}
+-- real seconds between two lines of one category
+local TYPE_CD = {
+	art_found = 120, art_took = 30, fight_won = 180, overweight = 600, low_hp = 300, rain = 1200,
+	surge_start = 300, surge_end = 300, night = 1800, new_level = 30, wake = 30, drink = 120, rad = 300,
+}
+local SPEAK_RANGE = 30
+local FIGHT_KILLS, FIGHT_WINDOW, FIGHT_QUIET = 4, 90000, 12000
+local LOW_HP, RAD_HIGH, RAIN_ON = 0.30, 0.35, 0.35
+local JOKE_CHANCE, JOKE_CHANCE_COSY = 0.35, 0.70
+local INVICTUS_CHANCE = 0.30
+local CAMPFIRE_R2 = 15 * 15
+
+local MEDIC_MAP = {
+	st_cup_medic_kit = "medkit", st_cup_medic_kit_stock = "medkit",
+	st_cup_medic_antirad = "antirad", st_cup_medic_antirad_stock = "antirad",
+	st_cup_medic_vodka = "vodka", st_cup_medic_vodka_stock = "vodka",
+}
+local VODKA = { vodka = true, vodka2 = true, vodka_quality = true }
+
+local bags = {}			-- [category] = remaining line numbers (shuffle bag)
+local last_cat = {}		-- [category] = time_global of the last line
+local busy_until = 0	-- somebody is talking
+local t_tick = 0
+local t_idle = nil
+local snd_exists = {}	-- [key] = bool
+local snd_keep = {}		-- playing sound objects (kept from the garbage collector)
+local kills = {}		-- time_global of recent kills by the squad
+local prev = {}			-- previous values for edge detection
+local saved_level = nil
+local level_checked = false
+local t_muted_drink = 0
+
+local function opt(key)
+	return cup_mcm.get(key)
+end
+
+local function enabled()
+	local CFG = cup_core.CFG
+	return CFG.enable and opt("banter") and (tonumber(opt("banter_freq")) or 2) > 0 and true or false
+end
+
+local function freq()
+	return FREQ[tonumber(opt("banter_freq")) or 2] or FREQ[2]
+end
+
+local function draw(cat, count)
+	local bag = bags[cat]
+	if not bag or #bag == 0 then
+		bag = {}
+		for i = 1, count do
+			bag[i] = i
+		end
+		bags[cat] = bag
+	end
+	return table.remove(bag, math.random(#bag))
+end
+
+-- one life: Anomaly ironman that is still clean (what GAMMA calls an Invictus run)
+local function one_life()
+	local ok, res = pcall(function()
+		return IsHardcoreMode() and not has_alife_info("ironman_flag_off") and not has_alife_info("ironman_flag_died")
+	end)
+	return ok and res and true or false
+end
+
+local function play_voice(npc, key)
+	if not opt("banter_voice") then
+		return
+	end
+	local function exists(k)
+		local ex = snd_exists[k]
+		if ex == nil then
+			local ok, res = pcall(function()
+				return getFS():exist("$game_sounds$", "cup\\banter\\" .. k .. ".ogg") ~= nil
+			end)
+			ex = ok and res and true or false
+			snd_exists[k] = ex
+		end
+		return ex
+	end
+	if not exists(key) then
+		return
+	end
+	-- each companion keeps "his" voice take: take = companion id mod number of takes
+	-- present for this line (base, _b, _c, _d, _e); missing takes fall back to the base file
+	local takes = { "" }
+	for _, sfx in ipairs({ "_b", "_c", "_d", "_e" }) do
+		if exists(key .. sfx) then
+			takes[#takes + 1] = sfx
+		else
+			break
+		end
+	end
+	local id = (npc and npc.id and npc:id()) or 0
+	key = key .. takes[(id % #takes) + 1]
+	local path = "cup\\banter\\" .. key
+	pcall(function()
+		local snd = sound_object(path)
+		snd:play_at_pos(npc, npc:position(), 0, sound_object.s3d)
+		snd_keep[#snd_keep + 1] = snd
+		if #snd_keep > 4 then
+			table.remove(snd_keep, 1)
+		end
+	end)
+end
+
+-- returns how long the line stays "in the air", real ms
+local function speak(npc, str_id, key)
+	local text = game.translate_string(str_id)
+	local show = math.max(6, math.min(14, math.floor(#text / 9)))
+	dynamic_news_helper.send_tip(text, cup_core.fmtname(npc), nil, show, npc:character_icon(), "beep_1", "npc")
+	play_voice(npc, key)
+	cup_core.dbg("banter: id=%s says %s", npc:id(), key)
+	return 3500 + #text * 45
+end
+
+local function can_talk(npc, calm)
+	if not (npc and npc:alive()) or npc:has_info("npcx_downed") then
+		return false
+	end
+	if calm and npc:best_enemy() then
+		return false
+	end
+	return true
+end
+
+-- random companion near the player
+local function pick_speaker(calm)
+	local apos = db.actor:position()
+	local list = {}
+	for id, npc in pairs(cup_core.COMP) do
+		if can_talk(npc, calm) and npc:position():distance_to_sqr(apos) <= SPEAK_RANGE * SPEAK_RANGE then
+			list[#list + 1] = npc
+		end
+	end
+	if #list == 0 then
+		return nil
+	end
+	return list[math.random(#list)]
+end
+
+local function event_unsafe(cat, npc, forced)
+	local count = cup_banter_data.LINES[cat]
+	if not (count and count > 0 and db.actor and enabled()) then
+		return false
+	end
+	local now = time_global()
+	if not forced then
+		if now < busy_until then
+			return false
+		end
+		local cd = (TYPE_CD[cat] or 0) * 1000 * freq()[3]
+		if last_cat[cat] and now - last_cat[cat] < cd then
+			return false
+		end
+	end
+	npc = npc or pick_speaker(false)
+	if not npc then
+		return false
+	end
+	local n = draw(cat, count)
+	local dur = speak(npc, "st_cup_bn_" .. cat .. "_" .. n, "bn_" .. cat .. "_" .. n)
+	last_cat[cat] = now
+	busy_until = now + dur
+	if cat == "vodka" then
+		t_muted_drink = now + 15000
+	end
+	return true
+end
+
+-- cat: category of cup_banter_data.LINES; npc: speaker (nil = somebody near the player)
+function event(cat, npc, forced)
+	local ok, res = pcall(event_unsafe, cat, npc, forced)
+	if not ok then
+		cup_core.warn_once("banter_" .. tostring(cat), "banter: line of '%s' failed: %s", cat, res)
+		return false
+	end
+	return res
+end
+
+-- used by cup_medic.tip: true = a funny line was said instead of the plain one
+function medic_line(npc, str_id)
+	local cat = MEDIC_MAP[str_id]
+	return cat and event(cat, npc, true) or false
+end
+
+---------------------------------------------------------------------
+-- anekdots
+---------------------------------------------------------------------
+local function tell_joke(npc)
+	local n = draw("joke", #cup_banter_data.JOKES)
+	local parts = cup_banter_data.JOKES[n]
+	local now = time_global()
+	local delay = 0
+	local id = npc:id()
+	for i = 1, parts do
+		local str_id, key = "st_cup_an_" .. n .. "_" .. i, "an_" .. n .. "_" .. i
+		if i == 1 then
+			delay = speak(npc, str_id, key)
+		else
+			local at = delay
+			CreateTimeEvent("cup_banter", "joke_" .. n .. "_" .. i, at / 1000, function()
+				pcall(function()
+					local who = level.object_by_id(id)
+					if who and who:alive() and db.actor and db.actor:alive() then
+						speak(who, str_id, key)
+					end
+				end)
+				return true
+			end)
+			delay = delay + 3500 + #game.translate_string(str_id) * 45
+		end
+	end
+	busy_until = now + delay + 2000
+	last_cat.joke = now
+end
+
+local function cosy()
+	local ok, res = pcall(function()
+		local h = level.get_time_hours()
+		if h >= 21 or h < 5 then
+			return true
+		end
+		if IsMoveState and IsMoveState("mcCrouch") then
+			return true
+		end
+		local cf = bind_campfire and bind_campfire.get_nearby_campfire and bind_campfire.get_nearby_campfire(CAMPFIRE_R2, true)
+		return cf and cf:is_on() or false
+	end)
+	return ok and res and true or false
+end
+
+function dlg_can_joke(a, b)
+	local ok, res = pcall(function()
+		return enabled() and opt("banter_jokes") and cup_core.dlg_is_trainable(a, b)
+	end)
+	return ok and res and true or false
+end
+
+function dlg_joke(a, b)
+	local ok, err = pcall(function()
+		local npc = dialogs.who_is_npc(a, b)
+		local id = npc and npc:id()
+		a:stop_talk()
+		b:stop_talk()
+		CreateTimeEvent("cup_banter", "dlg_joke", 0.6, function()
+			pcall(function()
+				local who = id and level.object_by_id(id)
+				if who and who:alive() then
+					tell_joke(who)
+				end
+			end)
+			return true
+		end)
+	end)
+	if not ok then
+		cup_core.warn_once("banter_dlg", "banter: dialog joke failed: %s", err)
+	end
+end
+
+---------------------------------------------------------------------
+-- situations
+---------------------------------------------------------------------
+local function next_idle(now)
+	local f = freq()
+	t_idle = now + math.random(f[1], f[2]) * 1000
+end
+
+local function idle(now)
+	if not t_idle then
+		next_idle(now)
+		return
+	end
+	if now < t_idle or now < busy_until then
+		return
+	end
+	local npc = pick_speaker(true)
+	if not npc or db.actor:is_talking() then
+		t_idle = now + 30000
+		return
+	end
+	next_idle(now)
+	if opt("banter_jokes") and math.random() < (cosy() and JOKE_CHANCE_COSY or JOKE_CHANCE) then
+		tell_joke(npc)
+	elseif one_life() and math.random() < INVICTUS_CHANCE then
+		event_unsafe("invictus", npc, false)
+	else
+		event_unsafe("idle", npc, false)
+	end
+end
+
+local function edge(key, value)
+	local was = prev[key]
+	prev[key] = value
+	return was ~= nil and was ~= value
+end
+
+local function situations(now)
+	local actor = db.actor
+
+	-- emission / psi-storm
+	local surge = GetEvent and (GetEvent("surge", "state") or GetEvent("psi_storm", "state")) and true or false
+	if edge("surge", surge) then
+		event(surge and "surge_start" or "surge_end")
+		return
+	end
+	if surge then
+		return
+	end
+
+	-- a fight is over
+	if #kills >= FIGHT_KILLS and now - kills[#kills] >= FIGHT_QUIET then
+		kills = {}
+		local npc = pick_speaker(true)
+		if npc then
+			event("fight_won", npc)
+			return
+		end
+	elseif #kills > 0 and now - kills[#kills] > FIGHT_WINDOW then
+		kills = {}
+	end
+
+	if actor.health < LOW_HP and not (cup_downed and cup_downed.is_down()) then
+		if event("low_hp") then return end
+	end
+
+	if (actor.radiation or 0) >= RAD_HIGH then
+		-- with a medic in the squad he treats it himself (cup_medic)
+		local medic = false
+		for id in pairs(cup_core.COMP) do
+			local p = cup_core.PERK[id]
+			if p and p.medic > 0 then
+				medic = true
+				break
+			end
+		end
+		if not medic and event("rad") then return end
+	end
+
+	local rain = level.rain_factor() >= RAIN_ON
+	if edge("rain", rain) and rain then
+		if event("rain", pick_speaker(true)) then return end
+	end
+
+	local h = level.get_time_hours()
+	local night = h >= 22 or h < 4
+	if edge("night", night) and night then
+		if event("night", pick_speaker(true)) then return end
+	end
+
+	local heavy = false
+	pcall(function()
+		heavy = actor:get_total_weight() > actor:get_actor_max_walk_weight()
+	end)
+	if heavy and event("overweight", pick_speaker(true)) then
+		return
+	end
+
+	idle(now)
+end
+
+local function actor_on_update()
+	local now = time_global()
+	if now < t_tick then
+		return
+	end
+	t_tick = now + 2000
+	if not (db.actor and db.actor:alive() and cup_core.is_started()) then
+		return
+	end
+	if not enabled() or not next(cup_core.COMP) then
+		return
+	end
+	if not level_checked then
+		level_checked = true
+		local name = level.name()
+		if saved_level and saved_level ~= name then
+			last_cat.new_level = nil
+			CreateTimeEvent("cup_banter", "new_level", 8, function()
+				event("new_level")
+				return true
+			end)
+		end
+		saved_level = name
+		t_tick = now + 10000
+		return
+	end
+	local ok, err = pcall(situations, now)
+	if not ok then
+		cup_core.warn_once("banter_tick", "banter: update error: %s", err)
+	end
+end
+
+local function on_death(victim, who)
+	if not (victim and who) then
+		return
+	end
+	local ok = pcall(function()
+		local kid = who:id()
+		if kid == 0 or cup_core.COMP[kid] then
+			kills[#kills + 1] = time_global()
+		end
+	end)
+	if not ok then
+		kills = {}
+	end
+end
+
+local function actor_on_sleep()
+	CreateTimeEvent("cup_banter", "wake", 3, function()
+		event("wake")
+		return true
+	end)
+end
+
+local function actor_on_item_use(obj)
+	if not obj then
+		return
+	end
+	local ok, sec = pcall(function() return obj:section() end)
+	if ok and sec and VODKA[sec] and time_global() >= t_muted_drink then
+		event("drink")
+	end
+end
+
+local function save_state(m_data)
+	m_data.cup_banter = { lvl = saved_level }
+end
+
+local function load_state(m_data)
+	local d = m_data.cup_banter
+	saved_level = type(d) == "table" and d.lvl or nil
+	level_checked = false
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		RegisterScriptCallback("actor_on_update", actor_on_update)
+		RegisterScriptCallback("npc_on_death_callback", on_death)
+		RegisterScriptCallback("monster_on_death_callback", on_death)
+		RegisterScriptCallback("actor_on_sleep", actor_on_sleep)
+		RegisterScriptCallback("actor_on_item_use", actor_on_item_use)
+		RegisterScriptCallback("save_state", save_state)
+		RegisterScriptCallback("load_state", load_state)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_banter.on_game_start failed: " .. tostring(err))
+	end
+end

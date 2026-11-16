@@ -1,0 +1,106 @@
+--[[
+	Mixon Companion Training (CUP) - damage hooks.
+
+	axr_main keeps script callbacks in a hash table, so the order of npc_on_before_hit
+	handlers is undefined. To be sure our multipliers are applied BEFORE Companion DBNO
+	checks "is this hit lethal", the global engine entry points are wrapped instead
+	(same technique as Experience Framework). The original is always called.
+]]
+
+local installed = false
+local PERK, AURA
+local HIT_EXPLOSION = nil
+
+local function is_monster(obj)
+	return IsMonster(obj) and true or false
+end
+
+-- victim is a stalker
+local function stalker_pre(npc, shit)
+	local power = shit.power
+	if not power or power <= 0 then
+		return
+	end
+	local who = shit.draftsman
+	local mult = 1
+
+	local p = PERK[npc:id()]
+	if p then
+		mult = mult * p.inc
+		if p.inc_mut ~= 1 then
+			if (HIT_EXPLOSION ~= nil and shit.type == HIT_EXPLOSION) or (who and is_monster(who)) then
+				mult = mult * p.inc_mut
+			end
+		end
+		local a = AURA[npc:id()]
+		if a then
+			mult = mult * a.inc
+		end
+	end
+
+	if who then
+		local pa = PERK[who:id()]
+		if pa and pa.dmg_st ~= 1 and not p then
+			mult = mult * pa.dmg_st
+		end
+	end
+
+	if mult ~= 1 then
+		shit.power = power * mult
+	end
+end
+
+-- victim is a mutant
+local function monster_pre(monster, shit)
+	local who = shit.draftsman
+	if not who then
+		return
+	end
+	local pa = PERK[who:id()]
+	if pa and pa.dmg_mut ~= 1 and shit.power and shit.power > 0 then
+		shit.power = shit.power * pa.dmg_mut
+	end
+end
+
+local function install()
+	if installed then
+		return
+	end
+	installed = true
+	PERK = cup_core.PERK
+	AURA = cup_core.AURA
+	if hit then
+		HIT_EXPLOSION = hit.explosion
+	end
+
+	local orig_st = _G.CAI_Stalker__BeforeHitCallback
+	if type(orig_st) == "function" then
+		_G.CAI_Stalker__BeforeHitCallback = function(npc, shit, bone_id)
+			if npc and shit and next(PERK) then
+				local ok, err = pcall(stalker_pre, npc, shit)
+				if not ok then cup_core.warn_once("prehit_st", "stalker pre-hit error: %s", err) end
+			end
+			return orig_st(npc, shit, bone_id)
+		end
+	else
+		cup_core.warn_once("no_st_hook", "_G.CAI_Stalker__BeforeHitCallback not found, damage perks are off")
+	end
+
+	local orig_mo = _G.CBaseMonster__BeforeHitCallback
+	if type(orig_mo) == "function" then
+		_G.CBaseMonster__BeforeHitCallback = function(monster, shit, bone_id)
+			if monster and shit and next(PERK) then
+				local ok, err = pcall(monster_pre, monster, shit)
+				if not ok then cup_core.warn_once("prehit_mo", "monster pre-hit error: %s", err) end
+			end
+			return orig_mo(monster, shit, bone_id)
+		end
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(install)
+	if not ok then
+		printf("%s", "![CUP] a_cup_prehit.on_game_start failed: " .. tostring(err))
+	end
+end

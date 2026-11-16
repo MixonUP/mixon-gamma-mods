@@ -1,0 +1,580 @@
+--[[
+	Mixon Companion Training (CUP) - training window.
+	Layout: configs\ui\cup_ui.xml / cup_ui_16.xml (generated). All texts: configs\text\*\cup.xml
+]]
+
+local GUI = nil
+
+local function T(id)
+	return game.translate_string(id)
+end
+
+local function argb(a, r, g, b)
+	return GetARGB(a, r, g, b)
+end
+
+local STATE_COLORS = {
+	-- state      = { LED,                     text,                    cell }
+	learned   = { { 255, 110, 220,  90 }, { 255, 240, 245, 225 }, { 255,  62, 100,  52 } },
+	available = { { 255, 240, 200,  70 }, { 255, 240, 228, 195 }, { 255, 118,  96,  44 } },
+	locked    = { { 255,  85,  85,  78 }, { 255, 135, 132, 118 }, { 255,  50,  50,  46 } },
+	excluded  = { { 255, 160,  55,  45 }, { 255, 125,  98,  92 }, { 255,  72,  36,  32 } },
+	disabled  = { { 255,  55,  55,  55 }, { 255,  98,  98,  95 }, { 255,  34,  34,  34 } },
+	nobridge  = { { 255,  55,  55,  55 }, { 255,  98,  98,  95 }, { 255,  34,  34,  34 } },
+}
+local C_OLIVE = { 255, 104, 110, 70 }
+local C_DARK = { 255, 12, 12, 10 }
+local C_EDGE = { 255, 92, 92, 74 }
+local C_AMBER = { 255, 215, 170, 70 }
+
+local function tint(wnd, c)
+	wnd:SetTextureColor(GetARGB(c[1], c[2], c[3], c[4]))
+end
+
+class "UICup" (CUIScriptWnd)
+
+function UICup:__init() super()
+	self.id = nil
+	self.sel = nil			-- { c = col, r = row }
+	self.nodes = {}			-- [c][r] = { btn, mark, cell, branch, tier, choice, extra }
+	self.rows = {}
+	self.row_ids = {}
+	self.t_next = 0
+	self.hint_until = 0
+
+	self:SetWndRect(Frect():set(0, 0, 1024, 768))
+	self:SetAutoDelete(true)
+
+	local xml = CScriptXmlInit()
+	xml:ParseFile("cup_ui.xml")
+	self.xml = xml
+
+	local bg = xml:InitStatic("background", self)
+	self.bg = bg
+
+	-- header (shown on the tree page only, except the name and the money)
+	self.head = {}
+	local function head(wnd)
+		self.head[#self.head + 1] = wnd
+		return wnd
+	end
+	xml:InitStatic("head_back", bg)
+	head(xml:InitStatic("pframe", bg))
+	self.portrait = head(xml:InitStatic("portrait", bg))
+	self.name = xml:InitTextWnd("name", bg)
+	self.sub = head(xml:InitTextWnd("sub", bg))
+	self.money = xml:InitTextWnd("money", bg)
+	tint(xml:InitStatic("money_icon", bg), C_AMBER)
+	self.level = head(xml:InitTextWnd("level", bg))
+	self.xp_back = head(xml:InitStatic("xp_back", bg))
+	self.xp_fill = head(xml:InitStatic("xp_fill", bg))
+	tint(self.xp_fill, { 255, 110, 205, 85 })
+	self.xp_w = self.xp_fill:GetWidth()
+	self.xp_h = self.xp_fill:GetHeight()
+	self.xp_text = head(xml:InitTextWnd("xp_text", bg))
+	self.points = head(xml:InitTextWnd("points", bg))
+	tint(head(xml:InitStatic("pts_icon", bg)), { 255, 130, 225, 110 })
+	self.stats = head(xml:InitTextWnd("stats", bg))
+	tint(xml:InitStatic("line_1", bg), C_OLIVE)
+	tint(xml:InitStatic("line_1b", bg), C_DARK)
+
+	-- tree page
+	self.tree = {}
+	local function tree(wnd)
+		self.tree[#self.tree + 1] = wnd
+		return wnd
+	end
+	local branches = cup_perks.BRANCHES
+	for c = 1, #branches do
+		local branch = branches[c]
+		tree(xml:InitStatic("plate_" .. c, bg))
+		tint(tree(xml:InitStatic("bicon_" .. c, bg)), C_AMBER)
+		local title = tree(xml:InitTextWnd("title_" .. c, bg))
+		title:SetText(T("st_cup_br_" .. branch))
+		self.nodes[c] = {}
+		for r = 1, #cup_perks.ROWS do
+			local nd = cup_perks.node(branch, r)
+			if nd then
+				local name = "node_" .. c .. "_" .. r
+				local cell = tree(xml:InitStatic("cell_" .. c .. "_" .. r, bg))
+				local mark = tree(xml:InitStatic("mark_" .. c .. "_" .. r, bg))
+				local btn = tree(xml:Init3tButton(name, bg))
+				self:Register(btn, name)
+				self:AddCallback(name, ui_events.BUTTON_CLICKED, function()
+					self:OnNode(c, r)
+				end, self)
+				-- the ladder 1 -> 2 -> 3; alternatives and extra perks hang without a link
+				if r <= 2 then
+					tint(tree(xml:InitStatic("conn_" .. c .. "_" .. r, bg)), C_OLIVE)
+				end
+				self.nodes[c][r] = { btn = btn, mark = mark, cell = cell, branch = branch,
+					tier = nd.tier, choice = nd.choice, extra = nd.extra,
+					label = T("st_cup_p_" .. branch .. "_" .. cup_perks.perk_key(branch, nd.tier, nd.choice, nd.extra)) }
+			end
+		end
+	end
+	tint(tree(xml:InitStatic("line_2", bg)), C_DARK)
+	tree(xml:InitStatic("desc_back", bg))
+	tint(tree(xml:InitStatic("desc_bt", bg)), C_DARK)
+	tint(tree(xml:InitStatic("desc_bl", bg)), C_DARK)
+	tint(tree(xml:InitStatic("desc_bb", bg)), C_EDGE)
+	tint(tree(xml:InitStatic("desc_br", bg)), C_EDGE)
+	self.desc_title = tree(xml:InitTextWnd("desc_title", bg))
+	self.cost_pts = tree(xml:InitTextWnd("cost_pts", bg))
+	self.cost_pts_icon = tree(xml:InitStatic("cost_pts_icon", bg))
+	tint(self.cost_pts_icon, { 255, 130, 225, 110 })
+	self.cost_ru = tree(xml:InitTextWnd("cost_ru", bg))
+	self.cost_ru_icon = tree(xml:InitStatic("cost_ru_icon", bg))
+	tint(self.cost_ru_icon, C_AMBER)
+	tint(tree(xml:InitStatic("desc_sep", bg)), C_OLIVE)
+	self.desc_text = tree(xml:InitTextWnd("desc_text", bg))
+	self.hint = xml:InitTextWnd("hint", bg)
+
+	-- list page
+	self.list = {}
+	self.list_title = xml:InitTextWnd("list_title", bg)
+	self.list_title:SetText(T("st_cup_list_title"))
+	self.list[#self.list + 1] = self.list_title
+	for i = 1, 10 do
+		local name = "row_" .. i
+		local btn = xml:Init3tButton(name, bg)
+		self:Register(btn, name)
+		self:AddCallback(name, ui_events.BUTTON_CLICKED, function()
+			self:OnRow(i)
+		end, self)
+		self.rows[i] = btn
+		self.list[#self.list + 1] = btn
+	end
+	self.mem_title = xml:InitTextWnd("mem_title", bg)
+	self.mem_title:SetText(T("st_cup_mem_title"))
+	self.mem_text = xml:InitTextWnd("mem_text", bg)
+	self.list[#self.list + 1] = self.mem_title
+	self.list[#self.list + 1] = self.mem_text
+
+	-- bottom buttons
+	self.btn_squad = xml:Init3tButton("btn_squad", bg)
+	self.btn_squad:TextControl():SetText(T("st_cup_btn_squad"))
+	self:Register(self.btn_squad, "btn_squad")
+	self:AddCallback("btn_squad", ui_events.BUTTON_CLICKED, self.OnSquad, self)
+
+	self.btn_learn = xml:Init3tButton("btn_learn", bg)
+	self.btn_learn:TextControl():SetText(T("st_cup_btn_learn"))
+	self:Register(self.btn_learn, "btn_learn")
+	self:AddCallback("btn_learn", ui_events.BUTTON_CLICKED, self.OnLearn, self)
+
+	self.btn_reset = xml:Init3tButton("btn_reset", bg)
+	self:Register(self.btn_reset, "btn_reset")
+	self:AddCallback("btn_reset", ui_events.BUTTON_CLICKED, self.OnReset, self)
+
+	self.btn_close = xml:Init3tButton("btn_close", bg)
+	self.btn_close:TextControl():SetText(T("st_cup_btn_close"))
+	self:Register(self.btn_close, "btn_close")
+	self:AddCallback("btn_close", ui_events.BUTTON_CLICKED, self.Close, self)
+end
+
+function UICup:__finalize()
+end
+
+local function show_all(list, flag)
+	for i = 1, #list do
+		list[i]:Show(flag)
+	end
+end
+
+function UICup:SetTarget(id)
+	if id and cup_core.COMP[id] and cup_core.get_rec(id, true) then
+		self.id = id
+	else
+		self.id = nil
+	end
+	self.sel = nil
+	self.reset_armed = false
+	self:Refresh()
+end
+
+function UICup:SetHint(text)
+	self.hint:SetText(text or "")
+	self.hint_until = time_global() + 5000
+end
+
+function UICup:Refresh()
+	local ok, err = pcall(self.RefreshUnsafe, self)
+	if not ok then
+		cup_core.warn_once("ui_refresh", "ui refresh error: %s", err)
+	end
+end
+
+function UICup:RefreshUnsafe()
+	self.money:SetText(cup_core.tr("st_cup_money", db.actor:money()))
+	local id = self.id
+	local npc = id and cup_core.COMP[id]
+	local rec = npc and cup_core.get_rec(id, true)
+	if id and not rec then
+		self.id = nil
+		id = nil
+	end
+	local tree = id ~= nil
+	show_all(self.tree, tree)
+	show_all(self.head, tree)
+	show_all(self.list, not tree)
+	self.btn_squad:Show(tree)
+	self.btn_learn:Show(tree)
+	self.btn_reset:Show(tree)
+	if tree then
+		self:RefreshTree(id, npc, rec)
+	else
+		self:RefreshList()
+	end
+end
+
+function UICup:ShowCost(pts, ru)
+	local on = pts ~= nil
+	self.cost_pts:Show(on)
+	self.cost_pts_icon:Show(on)
+	self.cost_ru:Show(on)
+	self.cost_ru_icon:Show(on)
+	if on then
+		self.cost_pts:SetText(tostring(pts))
+		self.cost_ru:SetText(tostring(ru))
+	end
+end
+
+function UICup:RefreshTree(id, npc, rec)
+	local P = cup_perks
+	local icon = npc:character_icon()
+	if icon and icon ~= self.icon then
+		self.icon = icon
+		self.portrait:InitTexture(icon)
+	end
+	self.name:SetText(npc:character_name())
+	local rank = ranks.get_obj_rank_name(npc) or ""
+	self.sub:SetText(T(npc:character_community()) .. "  -  " .. T("st_rank_" .. rank))
+
+	local lvl = rec.lvl
+	self.level:SetText(cup_core.tr("st_cup_level", lvl))
+	local frac, xp_s
+	if lvl >= P.MAX_LEVEL then
+		frac = 1
+		xp_s = T("st_cup_xp_max")
+	else
+		local lo, hi = P.XP[lvl], P.XP[lvl + 1]
+		frac = (rec.xp - lo) / (hi - lo)
+		xp_s = cup_core.tr("st_cup_xp", math.floor(rec.xp), hi)
+	end
+	if frac < 0 then frac = 0 elseif frac > 1 then frac = 1 end
+	self.xp_fill:SetWndSize(vector2():set(self.xp_w * frac, self.xp_h))
+	self.xp_text:SetText(xp_s)
+	self.points:SetText(cup_core.tr("st_cup_points", rec.pts))
+
+	local st = rec.st
+	local days = math.floor((st.gs or 0) / 86400)
+	local stats = cup_core.tr("st_cup_stats", st.ks or 0, st.km or 0, days, st.heal or 0, st.rev or 0)
+	local ef = nil
+	if experience_npcs and experience_npcs.get_npc_level then
+		local ok, v = pcall(experience_npcs.get_npc_level, id)
+		ef = ok and v or nil
+	end
+	if ef then
+		stats = stats .. "   " .. cup_core.tr("st_cup_stats_ef", ef)
+	end
+	self.stats:SetText(stats)
+
+	for c = 1, #self.nodes do
+		for r, n in pairs(self.nodes[c]) do
+			local state = cup_core.perk_state(rec, n.branch, n.tier, n.choice, n.extra)
+			n.state = state
+			local col = STATE_COLORS[state] or STATE_COLORS.locked
+			tint(n.mark, col[1])
+			local selected = self.sel and self.sel.c == c and self.sel.r == r
+			local cell = col[3]
+			if selected then
+				-- the chosen cell is lit up
+				tint(n.cell, { 255, math.min(255, cell[2] + 45), math.min(255, cell[3] + 40), math.min(255, cell[4] + 22) })
+			else
+				tint(n.cell, cell)
+			end
+			local tc = n.btn:TextControl()
+			tc:SetText(n.label)
+			if selected then
+				tc:SetTextColor(argb(255, 255, 225, 110))
+			else
+				tc:SetTextColor(argb(col[2][1], col[2][2], col[2][3], col[2][4]))
+			end
+		end
+	end
+
+	local reset_ru = cup_core.reset_cost(rec)
+	if self.reset_armed then
+		self.btn_reset:TextControl():SetText(cup_core.tr("st_cup_btn_reset_confirm", reset_ru))
+	else
+		self.btn_reset:TextControl():SetText(cup_core.tr("st_cup_btn_reset", reset_ru))
+	end
+	self.btn_reset:Enable(P.spent_points(rec) > 0)
+
+	local n = self.sel and self.nodes[self.sel.c] and self.nodes[self.sel.c][self.sel.r]
+	if not n then
+		self.desc_title:SetText(T("st_cup_desc_none_title"))
+		self.desc_text:SetText(T("st_cup_desc_none"))
+		self:ShowCost(nil)
+		self.btn_learn:Enable(false)
+		return
+	end
+	local key = P.perk_key(n.branch, n.tier, n.choice, n.extra)
+	local pts, ru = cup_core.costs(n.branch, n.tier, n.extra)
+	self.desc_title:SetText(n.label)
+	self:ShowCost(pts, ru)
+	local text = T("st_cup_p_" .. n.branch .. "_" .. key .. "_d")
+	text = text .. "\\n \\n" .. T("st_cup_state_" .. (n.state or "locked"))
+	if n.branch == "tough" and hxf_tough_important_npcs then
+		text = text .. "\\n" .. T("st_cup_note_tougher")
+	end
+	if cup_core.CFG.power ~= 1 then
+		text = text .. "\\n" .. cup_core.tr("st_cup_note_power", cup_core.CFG.power)
+	end
+	if n.extra == "reanimator" and cup_downed and cup_downed.cooldown_left then
+		local left = cup_downed.cooldown_left()
+		if not cup_core.CFG.actor_down then
+			text = text .. "\\n" .. T("st_cup_note_down_off")
+		elseif left > 0 then
+			text = text .. "\\n" .. cup_core.tr("st_cup_note_down_cd", math.ceil(left / 60))
+		else
+			text = text .. "\\n" .. T("st_cup_note_down_ready")
+		end
+	end
+	self.desc_text:SetText(text)
+	self.btn_learn:Enable(n.state == "available")
+end
+
+function UICup:RefreshList()
+	self.name:SetText(T("st_cup_list_header"))
+	local ids = cup_core.list_ids()
+	self.row_ids = ids
+	for i = 1, #self.rows do
+		local btn = self.rows[i]
+		local id = ids[i]
+		local npc = id and cup_core.COMP[id]
+		local rec = npc and cup_core.get_rec(id, true)
+		if rec then
+			btn:Show(true)
+			btn:TextControl():SetText(cup_core.tr("st_cup_list_row", npc:character_name(), rec.lvl, rec.pts))
+		else
+			btn:Show(false)
+		end
+	end
+	if #ids == 0 then
+		self.list_title:SetText(T("st_cup_list_empty"))
+	else
+		self.list_title:SetText(T("st_cup_list_title"))
+	end
+
+	local mem = cup_core.get_memorial()
+	local lines = {}
+	for i = #mem, math.max(1, #mem - 11), -1 do
+		local m = mem[i]
+		if type(m) == "table" then
+			lines[#lines + 1] = cup_core.tr("st_cup_mem_row", m.name or "?", T(m.comm or "stalker"), m.lvl or 1, m.ks or 0, m.km or 0, T(m.level or ""), m.day or 0)
+		end
+	end
+	if #lines == 0 then
+		self.mem_text:SetText(T("st_cup_mem_empty"))
+	else
+		self.mem_text:SetText(table.concat(lines, "\\n"))
+	end
+end
+
+function UICup:OnNode(c, r)
+	self.sel = { c = c, r = r }
+	self.reset_armed = false
+	self:Refresh()
+end
+
+function UICup:OnRow(i)
+	local id = self.row_ids[i]
+	if id then
+		self:SetTarget(id)
+	end
+end
+
+function UICup:OnSquad()
+	self:SetTarget(nil)
+end
+
+function UICup:OnLearn()
+	local n = self.sel and self.nodes[self.sel.c] and self.nodes[self.sel.c][self.sel.r]
+	if not (n and self.id) then
+		return
+	end
+	local ok, res, reason = pcall(cup_core.buy, self.id, n.branch, n.tier, n.choice, n.extra)
+	if not ok then
+		cup_core.warn_once("ui_buy", "buy error: %s", res)
+		return
+	end
+	if res then
+		self:SetHint(cup_core.tr("st_cup_learned", n.label))
+	else
+		self:SetHint(T(reason or "st_cup_err_locked"))
+	end
+	self.reset_armed = false
+	self:Refresh()
+end
+
+function UICup:OnReset()
+	if not self.id then
+		return
+	end
+	if not self.reset_armed then
+		self.reset_armed = true
+		self:Refresh()
+		return
+	end
+	self.reset_armed = false
+	local ok, res, reason = pcall(cup_core.reset, self.id)
+	if ok and res then
+		self:SetHint(T("st_cup_reset_done"))
+	elseif ok then
+		self:SetHint(T(reason or "st_cup_err_money"))
+	end
+	self:Refresh()
+end
+
+function UICup:Update()
+	CUIScriptWnd.Update(self)
+	local now = time_global()
+	if now >= self.t_next then
+		self.t_next = now + 500
+		if self.hint_until > 0 and now >= self.hint_until then
+			self.hint_until = 0
+			self.hint:SetText("")
+		end
+		if not (db.actor and db.actor:alive()) then
+			self:Close()
+			return
+		end
+		self:Refresh()
+	end
+end
+
+function UICup:OnKeyboard(dik, keyboard_action)
+	local res = CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+	if res == false and keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if DIK_keys and dik == DIK_keys.DIK_ESCAPE then
+			self:Close()
+		end
+	end
+	return res
+end
+
+function UICup:Close()
+	if self:IsShown() then
+		self:HideDialog()
+	end
+	Unregister_UI("UICup")
+	GUI = nil
+end
+
+---------------------------------------------------------------------
+-- entry points
+---------------------------------------------------------------------
+function is_open()
+	return GUI ~= nil
+end
+
+local function open_unsafe(id)
+	if GUI or not (db.actor and db.actor:alive()) then
+		return
+	end
+	if not cup_core.CFG.enable then
+		actor_menu.set_msg(1, T("st_cup_disabled"), 5)
+		return
+	end
+	cup_core.refresh_companions()
+	if not next(cup_core.COMP) and #cup_core.get_memorial() == 0 then
+		actor_menu.set_msg(1, T("st_cup_no_companions"), 5)
+		return
+	end
+	hide_hud_inventory()
+	local ok, err = pcall(function()
+		GUI = UICup()
+		GUI:SetTarget(id)
+		GUI:ShowDialog(true)
+		Register_UI("UICup", "cup_ui")
+	end)
+	if not ok then
+		GUI = nil
+		cup_core.warn_once("ui_open", "cannot open the window: %s", err)
+	end
+end
+
+function open(id)
+	local ok, err = pcall(open_unsafe, id)
+	if not ok then
+		GUI = nil
+		cup_core.warn_once("ui_open2", "cannot open the window: %s", err)
+	end
+end
+
+local function open_later(id)
+	CreateTimeEvent("cup_ui", "open", 0.25, function()
+		open(id)
+		return true
+	end)
+end
+
+-- hotkey: the companion under the crosshair, otherwise the squad list
+function open_for_target()
+	if GUI or not (db.actor and db.actor:alive()) or db.actor:is_talking() then
+		return
+	end
+	local obj = level.get_target_obj()
+	local id = nil
+	if obj and IsStalker(obj) and cup_core.COMP[obj:id()] then
+		id = obj:id()
+	end
+	open(id)
+end
+
+-- dialog action (phrase said by the NPC)
+function dlg_open(a, b)
+	local ok, err = pcall(function()
+		local npc = dialogs.who_is_npc(a, b)
+		local id = npc and npc:id()
+		a:stop_talk()
+		b:stop_talk()
+		open_later(id)
+	end)
+	if not ok then
+		cup_core.warn_once("dlg", "dialog action error: %s", err)
+	end
+end
+
+-- Useful Idiots title bar button (see modxml_cup.script)
+local function on_idiots_button(group, action, gui)
+	if action ~= "cup_training" then
+		return
+	end
+	local ok, err = pcall(function()
+		local id = gui and gui.ID
+		if gui and gui.Close then
+			gui:Close()
+		end
+		open_later(id)
+	end)
+	if not ok then
+		cup_core.warn_once("idiots_btn", "Useful Idiots button error: %s", err)
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		-- the callback only exists when idiots_ui.script is installed (it is created at its load)
+		if idiots_ui and idiots_ui.openUI then
+			RegisterScriptCallback("idiots_on_use_button", on_idiots_button)
+			printf("%s", "[CUP] Useful Idiots button hooked")
+		else
+			printf("%s", "[CUP] Useful Idiots not found, title bar button is off (dialog line and hotkey still work)")
+		end
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_ui.on_game_start failed: " .. tostring(err))
+	end
+end

@@ -1,0 +1,54 @@
+;==============================================================================
+; Mixon Backpack Upgrades - attach upgrade trees to backpacks (DLTX)
+; Class by base carry bonus / price:
+;   light  (s): itm_backpack (21 kg, 2000 RU)
+;   medium (m): equ_small_pack (28 kg, 4500), equ_small_military_pack (34 kg, 7500)
+;   heavy  (h): equ_military_pack (41 kg, 15000)
+;   elite  (e): equ_tourist_pack (47 kg, 20000)
+; kbu_kit_tiers = workbench upgrade-kit tier for columns 1 / 2 / 3 of the tree.
+; kit_hunt is a tool in GAMMA (no slot) and test_container (+ artefact containers) inherit
+; from itm_backpack -> upgrades are explicitly blanked for them.
+;==============================================================================
+
+![itm_backpack]
+upgrades                                 = up_gr_firstab_kbu_s, up_gr_seconab_kbu_s, up_gr_thirdab_kbu_s, up_gr_fourtab_kbu_s, up_gr_fifthab_kbu_s
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = s
+kbu_kit_tiers                            = 1, 1, 2
+
+![equ_small_pack]
+upgrades                                 = up_gr_firstab_kbu_m, up_gr_seconab_kbu_m, up_gr_thirdab_kbu_m, up_gr_fourtab_kbu_m, up_gr_fifthab_kbu_m
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = m
+kbu_kit_tiers                            = 1, 2, 2
+
+![equ_small_military_pack]
+upgrades                                 = up_gr_firstab_kbu_m, up_gr_seconab_kbu_m, up_gr_thirdab_kbu_m, up_gr_fourtab_kbu_m, up_gr_fifthab_kbu_m
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = m
+kbu_kit_tiers                            = 1, 2, 2
+
+![equ_military_pack]
+upgrades                                 = up_gr_firstab_kbu_h, up_gr_seconab_kbu_h, up_gr_thirdab_kbu_h, up_gr_fourtab_kbu_h, up_gr_fifthab_kbu_h
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = h
+kbu_kit_tiers                            = 1, 2, 3
+
+![equ_tourist_pack]
+upgrades                                 = up_gr_firstab_kbu_e, up_gr_seconab_kbu_e, up_gr_thirdab_kbu_e, up_gr_fourtab_kbu_e, up_gr_fifthab_kbu_e
+upgrade_scheme                           = up_scheme_exo_1
+kbu_class                                = e
+kbu_kit_tiers                            = 2, 3, 3
+
+![kit_hunt]
+upgrades                                 =
+upgrade_scheme                           =
+kbu_class                                =
+
+;-- GAMMA containers ([test_container]:itm_backpack, 139- Craft and Repair Overhaul); '@' = safe override
+
+@[test_container]
+upgrades                                 =
+upgrade_scheme                           =
+kbu_class                                =
+

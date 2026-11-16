@@ -1,0 +1,266 @@
+--[[
+	Mixon Companion Training (CUP) - perk data (data-driven, no engine calls here).
+	All texts live in configs\text\*\cup.xml:
+		st_cup_br_<branch>            branch title
+		st_cup_p_<branch>_<key>       perk name     (key = 1, 2, 3, A, B)
+		st_cup_p_<branch>_<key>_d     perk description
+]]
+
+MAX_LEVEL = 10
+XP = { 0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200 }
+
+BRANCHES = { "shooter", "tough", "medic", "scout", "carrier", "leader", "artefact" }
+
+-- v2: prices x10, v5: x2 again
+COST_RU = { 50000, 120000, 240000 }
+RESET_RU_PER_LEVEL = 80000
+
+-- record layout version (see cup_core.get_rec: migration of the point costs)
+REC_VERSION = 3
+
+-- v2: a tier costs as many points as its number (1 / 2 / 3), so a full branch is 6 points.
+-- Levels 4, 7 and 10 give 2 points instead of 1: 12 points at the maximum level = two full branches.
+BONUS_LEVEL = { [4] = true, [7] = true, [10] = true }
+
+-- points given for reaching this level
+function level_points(lvl)
+	return BONUS_LEVEL[lvl] and 2 or 1
+end
+
+-- all points earned by a companion of this level
+function earned_points(lvl)
+	local n = 0
+	for l = 2, math.min(tonumber(lvl) or 1, MAX_LEVEL) do
+		n = n + level_points(l)
+	end
+	return n
+end
+BASE_WEIGHT = 30
+
+-- XP sources (before the MCM multiplier)
+KILL_XP_RANK = {
+	novice = 10, trainee = 14, experienced = 18, professional = 24,
+	veteran = 32, expert = 42, master = 55, legend = 75,
+}
+KILL_XP_MONSTER = { small = 8, medium = 22, large = 60 }
+-- clsid field names; resolved with guards at runtime (a missing constant is simply skipped)
+MONSTER_CLASS = {
+	small  = { "tushkano", "tushkano_s", "rat", "rat_s", "dog_red", "dog_s", "flesh", "flesh_s", "boar", "boar_s", "cat", "cat_s", "zombie", "zombie_s", "psy_dog_phantom", "psy_dog_phantom_s" },
+	medium = { "snork", "snork_s", "dog_black", "pseudodog_s", "psy_dog", "psy_dog_s", "fracture", "fracture_s", "bloodsucker", "bloodsucker_s", "poltergeist", "poltergeist_s" },
+	large  = { "burer", "burer_s", "controller", "controller_s", "chimera", "chimera_s", "pseudo_gigant", "gigant_s" },
+}
+-- "dangerous" for scout warnings
+MONSTER_DANGEROUS = { "burer", "burer_s", "controller", "controller_s", "chimera", "chimera_s", "pseudo_gigant", "gigant_s", "bloodsucker", "bloodsucker_s" }
+
+XP_SHARE_RADIUS = 40
+XP_SHARE = 0.30
+XP_SURGE = 40
+XP_TASK = 60
+XP_HOUR = 5
+XP_HOUR_DAY_CAP = 60
+XP_NPC_STAT = { artefacts_found = 25, wounded_helped = 20, corpse_looted = 2 }
+XP_MEDIC_HELP = 15
+XP_MEDIC_REVIVE = 30
+
+-- rows of the tree as the UI shows them
+ROWS = {
+	{ tier = 1 },
+	{ tier = 2 },
+	{ tier = 3, choice = "A" },
+	{ tier = 3, choice = "B" },
+}
+
+-- v5: the Medic has no choice any more: tier 3 is the Field Surgeon and the Reanimator is
+-- a separate perk (rec.ex.reanimator) that needs Medic tier 2. Both can be learned.
+function has_choice(branch)
+	return branch ~= "carrier" and branch ~= "medic"
+end
+
+-- perks outside the 1-2-3 ladder: [name] = { branch, req = branch tier needed, pts, ru, key = text key }
+EXTRA = {
+	reanimator = { branch = "medic", req = 2, pts = 4, ru = 320000, key = "R" },
+}
+-- which extra perk sits in the 4th row of a branch without a choice
+EXTRA_ROW = { medic = "reanimator" }
+
+-- what the UI shows in row r of a branch: { tier, choice } / { extra } / nil (empty cell)
+function node(branch, r)
+	local row = ROWS[r]
+	if not row then
+		return nil
+	end
+	if has_choice(branch) then
+		return { tier = row.tier, choice = row.choice }
+	end
+	if r <= 3 then
+		return { tier = row.tier }
+	end
+	local ex = EXTRA_ROW[branch]
+	return ex and { extra = ex } or nil
+end
+
+function has_extra(rec, name)
+	return rec and type(rec.ex) == "table" and rec.ex[name] and true or false
+end
+
+-- v2 -> v3 layout of the Medic branch; safe to call on any record
+function migrate_structure(rec)
+	local br, ch = rec.br or {}, rec.ch or {}
+	rec.ex = type(rec.ex) == "table" and rec.ex or {}
+	if (tonumber(br.medic) or 0) >= 3 then
+		if ch.medic == "B" then
+			br.medic = 3				-- Field Surgeon stays tier 3
+		else
+			br.medic = 2				-- old 3A: the Reanimator becomes the separate perk
+			rec.ex.reanimator = true
+		end
+	end
+	ch.medic = nil
+end
+
+function tier_points(branch, tier)
+	return tonumber(tier) or 1
+end
+
+function tier_money(tier)
+	return COST_RU[tier] or 0
+end
+
+-- perks that only work through the DBNO bridge
+-- (v2: the Reanimator also picks up the downed PLAYER, which needs no bridge)
+function needs_bridge(branch, tier, choice)
+	return tier == 3 and choice == "A" and branch == "tough"
+end
+
+-- string key of a perk: 1, 2, A, B (3 for branches without a choice, EXTRA[..].key for extras)
+function perk_key(branch, tier, choice, extra)
+	if extra then
+		return EXTRA[extra] and EXTRA[extra].key or "?"
+	end
+	if tier == 3 and has_choice(branch) then
+		return choice or "A"
+	end
+	return tostring(tier)
+end
+
+function spent_points(rec)
+	local n = 0
+	if rec and rec.br then
+		for i = 1, #BRANCHES do
+			local b = BRANCHES[i]
+			local t = tonumber(rec.br[b]) or 0
+			for k = 1, t do
+				n = n + tier_points(b, k)
+			end
+		end
+	end
+	if rec and type(rec.ex) == "table" then
+		for name, def in pairs(EXTRA) do
+			if rec.ex[name] then
+				n = n + def.pts
+			end
+		end
+	end
+	return n
+end
+
+local function sc(v, power)
+	return 1 + (v - 1) * power
+end
+
+local AURAS = {
+	[1]   = { disp = 0.95, inc = 1.00, xp = 0.10, r = 25 },
+	[2]   = { disp = 0.95, inc = 0.95, xp = 0.20, r = 25 },
+	["A"] = { disp = 0.90, inc = 0.90, xp = 0.20, r = 35 },
+	["B"] = { disp = 0.95, inc = 0.95, xp = 0.20, r = 25, mentor = true },
+}
+
+-- Builds the flat effect table for one companion record.
+-- power: MCM strength multiplier, en: { branch = bool }, bridge_ok: DBNO bridge is alive
+function resolve(rec, power, en, bridge_ok)
+	power = tonumber(power) or 1
+	en = en or {}
+	local br = rec.br or {}
+	local ch = rec.ch or {}
+	local p = {
+		lvl = tonumber(rec.lvl) or 1,
+		disp = 1, disp_move = 1, dmg_st = 1, dmg_mut = 1,
+		inc = 1, inc_mut = 1, bleed = false, unbreak = false,
+		weight = BASE_WEIGHT,
+		medic = 0, surgeon = false, reanim = false,
+		scout = 0, scout_ch = nil,
+		art = 0, art_ch = nil,
+		aura = nil,
+	}
+
+	local t = en.shooter and tonumber(br.shooter) or 0
+	if t == 1 then
+		p.disp = sc(0.90, power)
+		p.disp_move = p.disp
+	elseif t == 2 then
+		p.disp = sc(0.80, power)
+		p.disp_move = p.disp
+		p.dmg_st = sc(1.05, power)
+	elseif t >= 3 then
+		if ch.shooter == "B" then
+			p.disp = sc(0.80, power)
+			p.disp_move = p.disp
+			p.dmg_mut = sc(1.25, power)
+		else
+			p.disp = sc(0.60, power)
+			p.disp_move = sc(0.80, power)
+			p.dmg_st = sc(1.10, power)
+		end
+	end
+
+	t = en.tough and tonumber(br.tough) or 0
+	if t == 1 then
+		p.inc = sc(0.92, power)
+	elseif t == 2 then
+		p.inc = sc(0.85, power)
+		p.bleed = true
+	elseif t >= 3 then
+		p.bleed = true
+		if ch.tough == "B" then
+			p.inc = sc(0.75, power)
+			p.inc_mut = sc(0.85, power)
+		else
+			-- 3A keeps the tier 2 numbers and adds the DBNO effects
+			p.inc = sc(0.85, power)
+			p.unbreak = bridge_ok and true or false
+		end
+	end
+
+	t = en.carrier and tonumber(br.carrier) or 0
+	local w = (t == 1 and 45) or (t == 2 and 60) or (t >= 3 and 90) or BASE_WEIGHT
+	p.weight = BASE_WEIGHT + (w - BASE_WEIGHT) * power
+
+	t = en.medic and tonumber(br.medic) or 0
+	p.medic = t
+	p.surgeon = t >= 3
+	p.reanim = en.medic and t >= EXTRA.reanimator.req and has_extra(rec, "reanimator") or false
+
+	t = en.scout and tonumber(br.scout) or 0
+	p.scout = t
+	p.scout_ch = t >= 3 and (ch.scout or "A") or nil
+
+	t = en.artefact and tonumber(br.artefact) or 0
+	p.art = t
+	p.art_ch = t >= 3 and (ch.artefact or "A") or nil
+
+	t = en.leader and tonumber(br.leader) or 0
+	if t > 0 then
+		local src = (t >= 3) and AURAS[ch.leader or "A"] or AURAS[t]
+		if src then
+			p.aura = {
+				disp = sc(src.disp, power),
+				inc = sc(src.inc, power),
+				xp = src.xp,
+				r = src.r,
+				mentor = src.mentor or false,
+			}
+		end
+	end
+
+	return p
+end

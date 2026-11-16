@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_cup_br_shooter">
+		<text>СТРЕЛОК</text>
+	</string>
+	<string id="st_cup_br_tough">
+		<text>ЖИВУЧЕСТЬ</text>
+	</string>
+	<string id="st_cup_br_medic">
+		<text>МЕДИК</text>
+	</string>
+	<string id="st_cup_br_scout">
+		<text>РАЗВЕДЧИК</text>
+	</string>
+	<string id="st_cup_br_carrier">
+		<text>НОСИЛЬЩИК</text>
+	</string>
+	<string id="st_cup_br_leader">
+		<text>КОМАНДИР</text>
+	</string>
+	<string id="st_cup_p_shooter_1">
+		<text>Твёрдая рука</text>
+	</string>
+	<string id="st_cup_p_shooter_1_d">
+		<text>Разброс при стрельбе x0.90.</text>
+	</string>
+	<string id="st_cup_p_shooter_2">
+		<text>Контроль отдачи</text>
+	</string>
+	<string id="st_cup_p_shooter_2_d">
+		<text>Разброс x0.80 (вместо x0.90).\nУрон по сталкерам +5%.</text>
+	</string>
+	<string id="st_cup_p_shooter_A">
+		<text>Снайпер</text>
+	</string>
+	<string id="st_cup_p_shooter_A_d">
+		<text>Разброс x0.60, когда стоит или сидит на месте, и x0.80 в движении.\nУрон по сталкерам +10%.\nИсключает перк «Охотник».</text>
+	</string>
+	<string id="st_cup_p_shooter_B">
+		<text>Охотник</text>
+	</string>
+	<string id="st_cup_p_shooter_B_d">
+		<text>Разброс x0.80.\nУрон по мутантам +25%.\nИсключает перк «Снайпер».</text>
+	</string>
+	<string id="st_cup_p_tough_1">
+		<text>Закалка</text>
+	</string>
+	<string id="st_cup_p_tough_1_d">
+		<text>Входящий урон x0.92.</text>
+	</string>
+	<string id="st_cup_p_tough_2">
+		<text>Толстая шкура</text>
+	</string>
+	<string id="st_cup_p_tough_2_d">
+		<text>Входящий урон x0.85 (вместо x0.92).\nРаны затягиваются быстрее.</text>
+	</string>
+	<string id="st_cup_p_tough_A">
+		<text>Несгибаемый</text>
+	</string>
+	<string id="st_cup_p_tough_A_d">
+		<text>Сохраняет эффекты «Толстой шкуры».\nКогда напарник выведен из строя: время до смерти +50%, после подъёма +25% здоровья.\n40% шанс, что несмертельное попадание в голову не уложит его (перезарядка 60 с).\nТребует мод Companion Downed But Not Out. Исключает перк «Броненосец».</text>
+	</string>
+	<string id="st_cup_p_tough_B">
+		<text>Броненосец</text>
+	</string>
+	<string id="st_cup_p_tough_B_d">
+		<text>Входящий урон x0.75.\nОт мутантов и взрывов дополнительно x0.85.\nРаны затягиваются быстрее.\nИсключает перк «Несгибаемый».</text>
+	</string>
+	<string id="st_cup_p_medic_1">
+		<text>Санитар</text>
+	</string>
+	<string id="st_cup_p_medic_1_d">
+		<text>Если вы истекаете кровью, а напарник в 6 м от вас, он вас перевяжет. Тратит бинт из своего рюкзака, если он есть. Перезарядка 180 с.\n«Сто грамм»: если вас бьёт радиация (второе деление значка и выше), а боя нет, наливает вам водки из своего рюкзака; если водки нет, раз в 6 игровых часов находит бутылку в личном запасе. Водка действует как обычно: выводит радиацию и пьянит. Перезарядка 180 с.</text>
+	</string>
+	<string id="st_cup_p_medic_2">
+		<text>Фельдшер</text>
+	</string>
+	<string id="st_cup_p_medic_2_d">
+		<text>Если ваше здоровье ниже 40%, а напарник в 6 м от вас, он сам применяет на вас аптечку из своего рюкзака (остаток многоразовой аптечки забирает обратно). Если аптечек нет, колет обычную из личного запаса раз в 12 игровых часов. Перезарядка 90 с.\nПри сильной радиации (от 35%) вне боя даёт вам антирад из рюкзака, а если его нет — из личного запаса раз в 12 игровых часов. Перезарядка 120 с. Водку наливает, только когда антирада нет.\nПрепараты действуют как обычно.</text>
+	</string>
+	<string id="st_cup_p_medic_A">
+		<text>Реаниматолог</text>
+	</string>
+	<string id="st_cup_p_medic_A_d">
+		<text>Вас можно вывести из строя вместо смерти: если Реаниматолог жив, на ногах и в 50 м от вас, смертельное попадание укладывает вас на 60 с. Он бежит к вам и подходит вплотную, присаживается рядом и за 8 с поднимает вас на 35% здоровья.\nПосле подъёма перезарядка 4 игровых часа: упадёте за это время ещё раз — умрёте. Никто не успел — тоже смерть.\nНапарников поднимает так же: 8 с в 15 м, 50% здоровья, перезарядка 120 с (нужен мод Companion Downed But Not Out).\nИсключает перк «Полевой хирург».</text>
+	</string>
+	<string id="st_cup_p_medic_B">
+		<text>Полевой хирург</text>
+	</string>
+	<string id="st_cup_p_medic_B_d">
+		<text>Личный запас пополняется раз в 6 часов и даёт армейскую аптечку.\nПерезарядка перевязки 90 с.\nНапарники в 20 м от него получают +5% здоровья каждые 10 с.\nИсключает перк «Реаниматолог».</text>
+	</string>
+	<string id="st_cup_p_scout_1">
+		<text>Зоркий глаз</text>
+	</string>
+	<string id="st_cup_p_scout_1_d">
+		<text>Враги, которых напарник видит (до 80 м), отмечаются на миникарте и в КПК на 20 с.</text>
+	</string>
+	<string id="st_cup_p_scout_2">
+		<text>Дозорный</text>
+	</string>
+	<string id="st_cup_p_scout_2_d">
+		<text>Метка держится 45 с.\nСообщает о первом контакте с опасным мутантом или с группой от трёх врагов (не чаще раза в минуту).</text>
+	</string>
+	<string id="st_cup_p_scout_A">
+		<text>Следопыт</text>
+	</string>
+	<string id="st_cup_p_scout_A_d">
+		<text>Дальность обнаружения 150 м.\nВ подсказке метки видны группировка и ранг врага.\nИсключает перк «Слухач».</text>
+	</string>
+	<string id="st_cup_p_scout_B">
+		<text>Слухач</text>
+	</string>
+	<string id="st_cup_p_scout_B_d">
+		<text>В режимах «ждать» и «укрытие» отмечает всех врагов в 50 м, даже без прямой видимости.\nИсключает перк «Следопыт».</text>
+	</string>
+	<string id="st_cup_p_carrier_1">
+		<text>Груз 45 кг</text>
+	</string>
+	<string id="st_cup_p_carrier_1_d">
+		<text>Напарник несёт до 45 кг ваших вещей (вместо 30 кг).</text>
+	</string>
+	<string id="st_cup_p_carrier_2">
+		<text>Груз 60 кг</text>
+	</string>
+	<string id="st_cup_p_carrier_2_d">
+		<text>Напарник несёт до 60 кг.</text>
+	</string>
+	<string id="st_cup_p_carrier_3">
+		<text>Груз 90 кг</text>
+	</string>
+	<string id="st_cup_p_carrier_3_d">
+		<text>Напарник несёт до 90 кг.</text>
+	</string>
+	<string id="st_cup_p_leader_1">
+		<text>Слаженность</text>
+	</string>
+	<string id="st_cup_p_leader_1_d">
+		<text>Аура на других напарников в радиусе 25 м (на себя не действует):\nразброс x0.95, получаемый опыт +10%.</text>
+	</string>
+	<string id="st_cup_p_leader_2">
+		<text>Прикрытие</text>
+	</string>
+	<string id="st_cup_p_leader_2_d">
+		<text>Аура 25 м: разброс x0.95, входящий урон x0.95, опыт +20%.</text>
+	</string>
+	<string id="st_cup_p_leader_A">
+		<text>Тактик</text>
+	</string>
+	<string id="st_cup_p_leader_A_d">
+		<text>Аура 35 м: разброс x0.90, входящий урон x0.90, опыт +20%.\nИсключает перк «Наставник».</text>
+	</string>
+	<string id="st_cup_p_leader_B">
+		<text>Наставник</text>
+	</string>
+	<string id="st_cup_p_leader_B_d">
+		<text>Аура 25 м: разброс x0.95, входящий урон x0.95, опыт +20%.\nНапарники ниже его уровня получают ещё +50% опыта.\nДоля опыта за убийство рядом растёт с 30% до 60%.\nИсключает перк «Тактик».</text>
+	</string>
+	<string id="st_cup_money">
+		<text>Деньги: %s RU</text>
+	</string>
+	<string id="st_cup_level">
+		<text>Уровень %s</text>
+	</string>
+	<string id="st_cup_xp">
+		<text>%s / %s опыта</text>
+	</string>
+	<string id="st_cup_xp_max">
+		<text>максимальный уровень</text>
+	</string>
+	<string id="st_cup_points">
+		<text>Свободные очки: %s</text>
+	</string>
+	<string id="st_cup_stats">
+		<text>Убито: сталкеров %s, мутантов %s.  В отряде: %s дн.  Помог вам: %s.  Поднял напарников: %s.</text>
+	</string>
+	<string id="st_cup_stats_ef">
+		<text>(уровень Experience Framework: %s)</text>
+	</string>
+	<string id="st_cup_cost">
+		<text>очков: %s, цена: %s RU</text>
+	</string>
+	<string id="st_cup_desc_none_title">
+		<text>Выберите навык</text>
+	</string>
+	<string id="st_cup_desc_none">
+		<text>Уровни 4, 7 и 10 дают напарнику по два очка, остальные — по одному (всего 12). Ступень ветки стоит столько очков, каков её номер: 1, 2 и 3. На третьей ступени выбирается один из двух перков; у Носильщика и Медика выбора нет, а «Реаниматолог» у Медика — отдельный перк за 4 очка.\nОпыт идёт за убийства, за убийства рядом с напарником, за пережитые выбросы, сданные вами задания и время в отряде.</text>
+	</string>
+	<string id="st_cup_state_learned">
+		<text>Изучено.</text>
+	</string>
+	<string id="st_cup_state_available">
+		<text>Доступно для изучения.</text>
+	</string>
+	<string id="st_cup_state_locked">
+		<text>Закрыто: сначала изучите предыдущую ступень.</text>
+	</string>
+	<string id="st_cup_state_excluded">
+		<text>Недоступно: в этой ветке выбран другой перк третьей ступени.</text>
+	</string>
+	<string id="st_cup_state_disabled">
+		<text>Ветка выключена в настройках MCM.</text>
+	</string>
+	<string id="st_cup_state_nobridge">
+		<text>Недоступно: связь с модом Companion Downed But Not Out не работает (см. лог).</text>
+	</string>
+	<string id="st_cup_note_tougher">
+		<text>Tougher NPCs уже снижает урон по напарникам (x0.35 от сталкеров, x0.45 от мутантов); множители перемножаются.</text>
+	</string>
+	<string id="st_cup_note_power">
+		<text>Сила перков в MCM: x%s (числа в описании даны для x1).</text>
+	</string>
+	<string id="st_cup_btn_learn">
+		<text>Изучить</text>
+	</string>
+	<string id="st_cup_btn_reset">
+		<text>Сбросить (%s RU)</text>
+	</string>
+	<string id="st_cup_btn_reset_confirm">
+		<text>Точно сбросить? (%s RU)</text>
+	</string>
+	<string id="st_cup_btn_squad">
+		<text>Отряд</text>
+	</string>
+	<string id="st_cup_btn_close">
+		<text>Закрыть</text>
+	</string>
+	<string id="st_cup_learned">
+		<text>Изучено: %s</text>
+	</string>
+	<string id="st_cup_reset_done">
+		<text>Навыки сброшены, очки возвращены.</text>
+	</string>
+	<string id="st_cup_err_points">
+		<text>Не хватает очков.</text>
+	</string>
+	<string id="st_cup_err_money">
+		<text>Не хватает денег.</text>
+	</string>
+	<string id="st_cup_err_gone">
+		<text>Напарника нет рядом.</text>
+	</string>
+	<string id="st_cup_err_nothing">
+		<text>Сбрасывать нечего.</text>
+	</string>
+	<string id="st_cup_err_learned">
+		<text>Уже изучено.</text>
+	</string>
+	<string id="st_cup_err_locked">
+		<text>Сначала изучите предыдущую ступень.</text>
+	</string>
+	<string id="st_cup_err_excluded">
+		<text>В этой ветке уже выбран другой перк.</text>
+	</string>
+	<string id="st_cup_err_disabled">
+		<text>Ветка выключена в MCM.</text>
+	</string>
+	<string id="st_cup_err_nobridge">
+		<text>Нет связи с модом Companion Downed But Not Out.</text>
+	</string>
+	<string id="st_cup_list_header">
+		<text>Подготовка напарников</text>
+	</string>
+	<string id="st_cup_list_title">
+		<text>Отряд</text>
+	</string>
+	<string id="st_cup_list_empty">
+		<text>Сейчас в отряде никого нет</text>
+	</string>
+	<string id="st_cup_list_row">
+		<text>%s: уровень %s, очки: %s</text>
+	</string>
+	<string id="st_cup_mem_title">
+		<text>Память</text>
+	</string>
+	<string id="st_cup_mem_empty">
+		<text>Никто из напарников не погиб.</text>
+	</string>
+	<string id="st_cup_mem_row">
+		<text>%s (%s), уровень %s. Убил: %s / %s. %s, день %s.</text>
+	</string>
+	<string id="st_cup_disabled">
+		<text>Развитие напарников выключено в MCM.</text>
+	</string>
+	<string id="st_cup_no_companions">
+		<text>В отряде нет напарников.</text>
+	</string>
+	<string id="st_cup_news_levelup">
+		<text>Я набрался опыта. Уровень %s, свободных очков: %s.</text>
+	</string>
+	<string id="st_cup_medic_bandaged">
+		<text>перевязал вас</text>
+	</string>
+	<string id="st_cup_medic_kit">
+		<text>Держись, вколол тебе аптечку.</text>
+	</string>
+	<string id="st_cup_medic_kit_stock">
+		<text>Держись, вколол тебе аптечку из своего запаса.</text>
+	</string>
+	<string id="st_cup_medic_revived">
+		<text>Поднял на ноги: %s.</text>
+	</string>
+	<string id="st_cup_scout_big">
+		<text>Вижу опасного мутанта, отметил на карте.</text>
+	</string>
+	<string id="st_cup_scout_group">
+		<text>Вижу группу врагов: %s. Отметил на карте.</text>
+	</string>
+	<string id="st_cup_spot_enemy">
+		<text>Враг (заметил напарник)</text>
+	</string>
+	<string id="st_cup_spot_mutant">
+		<text>Мутант</text>
+	</string>
+	<string id="st_cup_mrank_weak">
+		<text>слабый</text>
+	</string>
+	<string id="st_cup_mrank_normal">
+		<text>обычный</text>
+	</string>
+	<string id="st_cup_mrank_strong">
+		<text>сильный</text>
+	</string>
+	<string id="st_cup_dlg_ask">
+		<text>Поговорим о твоей подготовке.</text>
+	</string>
+	<string id="st_cup_dlg_answer">
+		<text>Давай посмотрим, чему я научился.</text>
+	</string>
+	<string id="st_idiots_cup_training">
+		<text>Подготовка напарника</text>
+	</string>
+	<string id="ui_mcm_menu_kreiser_cup">
+		<text>Развитие напарников</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_title">
+		<text>Развитие напарников (Mixon)</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_desc">
+		<text>Напарники получают опыт и уровни, очки тратятся на перки в семи ветках. Окно открывается кнопкой в панели Useful Idiots, репликой в диалоге с напарником или клавишей ниже.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_enable">
+		<text>Включить мод</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_enable_desc">
+		<text>Если выключить, опыт не начисляется и перки не действуют. Прогресс в сохранении остаётся.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_xp_mult">
+		<text>Множитель опыта</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_xp_mult_desc">
+		<text>Умножает весь опыт напарников.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_cost_mult">
+		<text>Множитель цен</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_cost_mult_desc">
+		<text>Цена перков (50000 / 120000 / 240000 RU, «Реаниматолог» 320000 RU) и сброса (80000 RU за уровень) умножается на это число. 0 — бесплатно.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_power">
+		<text>Сила перков</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_power_desc">
+		<text>Насколько сильно действуют числовые эффекты перков. 1 — как в описании.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_shooter">
+		<text>Ветка «Стрелок»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_shooter_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_tough">
+		<text>Ветка «Живучесть»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_tough_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_medic">
+		<text>Ветка «Медик»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_medic_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_scout">
+		<text>Ветка «Разведчик»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_scout_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_carrier">
+		<text>Ветка «Носильщик»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_carrier_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_leader">
+		<text>Ветка «Командир»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_leader_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_free">
+		<text>Личный запас медика</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_free_desc">
+		<text>Медик может перевязать без бинта и раз в несколько часов применить на вас аптечку, антирад или водку из запаса. Если выключить, он тратит только то, что лежит у него в рюкзаке.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_notify">
+		<text>Сообщение о новом уровне</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_notify_desc">
+		<text>Показывать сообщение, когда напарник получает уровень.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_scout_news">
+		<text>Сообщения разведчика</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_scout_news_desc">
+		<text>Сообщения об опасных мутантах и группах врагов. Метки на карте остаются в любом случае.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_idiots_button">
+		<text>Кнопка в панели Useful Idiots</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_idiots_button_desc">
+		<text>Изменение вступит в силу после перезапуска игры.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_dbno_bridge">
+		<text>Связь с Companion DBNO</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_dbno_bridge_desc">
+		<text>Нужна перку «Несгибаемый» и подъёму напарников «Реаниматологом». Изменение вступит в силу после загрузки сохранения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_key_open">
+		<text>Клавиша окна подготовки</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_key_open_desc">
+		<text>Открывает окно напарника под прицелом или список отряда.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_debug">
+		<text>Отладка в лог</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_debug_desc">
+		<text>Пишет в лог строки [CUP][dbg]: опыт, разброс, действия медика.</text>
+	</string>
+	<string id="st_cup_br_artefact">
+		<text>АРТЕФАКТЫ</text>
+	</string>
+	<string id="st_cup_p_artefact_1">
+		<text>Детекторщик</text>
+	</string>
+	<string id="st_cup_p_artefact_1_d">
+		<text>Нужен детектор артефактов в рюкзаке напарника (Отклик, Медведь, Гризли, Велес или Сварог).\nАртефакты рядом с напарником отмечаются жёлтой точкой на миникарте и в КПК, он сообщает расстояние и направление.\nРадиус по детектору: Отклик 15 м, Медведь и Гризли 25 м, Велес 35 м, Сварог 50 м.</text>
+	</string>
+	<string id="st_cup_p_artefact_2">
+		<text>Сборщик</text>
+	</string>
+	<string id="st_cup_p_artefact_2_d">
+		<text>Радиус поиска x1.5, в сообщении и на метке видно название артефакта.\nЕсли артефакт в 15 м от напарника и боя нет, он за 20 с достаёт его сам и кладёт в свой рюкзак. Состояние добытого артефакта +5%.\nПерезарядка добычи 30 игровых минут.</text>
+	</string>
+	<string id="st_cup_p_artefact_A">
+		<text>Добытчик</text>
+	</string>
+	<string id="st_cup_p_artefact_A_d">
+		<text>Радиус поиска x2, достаёт артефакты с 25 м, перезарядка 15 игровых минут.\nСостояние добытого +5%. С шансом 15% находит рядом второй такой же артефакт.\nИсключает перк «Знаток».</text>
+	</string>
+	<string id="st_cup_p_artefact_B">
+		<text>Знаток</text>
+	</string>
+	<string id="st_cup_p_artefact_B_d">
+		<text>Радиус поиска x1.5. Достаёт артефакты аккуратно: состояние добытого +15%.\nАртефакты и контейнеры с артефактами в его рюкзаке восстанавливают 1% состояния за игровой час, до 60%.\nИсключает перк «Добытчик».</text>
+	</string>
+	<string id="st_cup_down_title">
+		<text>БЕЗ СОЗНАНИЯ</text>
+	</string>
+	<string id="st_cup_down_start">
+		<text>Держись, иду к тебе! Не отключайся.</text>
+	</string>
+	<string id="st_cup_down_revived">
+		<text>Поднял. Второй раз за ближайшие %s ч не вытащу, береги себя.</text>
+	</string>
+	<string id="st_cup_down_hud_none">
+		<text>Помочь некому. Осталось %s с</text>
+	</string>
+	<string id="st_cup_down_hud_run">
+		<text>Ждите помощи: %s бежит к вам, %s м. Осталось %s с</text>
+	</string>
+	<string id="st_cup_down_hud_work">
+		<text>%s приводит вас в чувство: %s%%</text>
+	</string>
+	<string id="st_cup_note_down_off">
+		<text>Вывод игрока из строя выключен в MCM.</text>
+	</string>
+	<string id="st_cup_note_down_cd">
+		<text>Подъём игрока на перезарядке: ещё %s игровых минут. Сейчас смертельное попадание убьёт вас.</text>
+	</string>
+	<string id="st_cup_note_down_ready">
+		<text>Подъём игрока готов.</text>
+	</string>
+	<string id="st_cup_spot_artefact">
+		<text>Артефакт (нашёл напарник)</text>
+	</string>
+	<string id="st_cup_dir_n">
+		<text>севере</text>
+	</string>
+	<string id="st_cup_dir_ne">
+		<text>северо-востоке</text>
+	</string>
+	<string id="st_cup_dir_e">
+		<text>востоке</text>
+	</string>
+	<string id="st_cup_dir_se">
+		<text>юго-востоке</text>
+	</string>
+	<string id="st_cup_dir_s">
+		<text>юге</text>
+	</string>
+	<string id="st_cup_dir_sw">
+		<text>юго-западе</text>
+	</string>
+	<string id="st_cup_dir_w">
+		<text>западе</text>
+	</string>
+	<string id="st_cup_dir_nw">
+		<text>северо-западе</text>
+	</string>
+	<string id="st_cup_art_found">
+		<text>Детектор пищит. Артефакт в %s м от тебя, на %s. Отметил на карте.</text>
+	</string>
+	<string id="st_cup_art_found_named">
+		<text>Засёк артефакт «%s»: %s м от тебя, на %s. Отметил на карте.</text>
+	</string>
+	<string id="st_cup_art_took">
+		<text>Достал «%s», состояние %s%%. Лежит у меня в рюкзаке.</text>
+	</string>
+	<string id="st_cup_art_took_raw">
+		<text>Достал «%s». Лежит у меня в рюкзаке.</text>
+	</string>
+	<string id="st_cup_art_bonus">
+		<text>Повезло: рядом был ещё один «%s». Тоже у меня.</text>
+	</string>
+	<string id="st_cup_art_no_detector">
+		<text>Без детектора артефакты искать не могу. Положи мне в рюкзак детектор.</text>
+	</string>
+	<string id="st_cup_art_working">
+		<text>достаю артефакт «%s», прикрой</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_artefact">
+		<text>Ветка «Артефакты»</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_artefact_desc">
+		<text>Выключенная ветка не действует и недоступна для изучения.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_actor_down">
+		<text>Игрока можно вывести из строя</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_actor_down_desc">
+		<text>Перк «Реаниматолог»: смертельное попадание укладывает вас, напарник поднимает. Перезарядка 4 игровых часа. Если выключить, вы умираете как обычно.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_art_news">
+		<text>Сообщения искателя артефактов</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_art_news_desc">
+		<text>Сообщения о найденных и добытых артефактах. Метки на карте остаются в любом случае.</text>
+	</string>
+	<string id="st_cup_medic_antirad">
+		<text>Фонишь. Держи антирад.</text>
+	</string>
+	<string id="st_cup_medic_antirad_stock">
+		<text>Фонишь. Держи антирад из моего запаса.</text>
+	</string>
+	<string id="st_cup_medic_vodka">
+		<text>Нахватался радиации. На, выпей, полегчает.</text>
+	</string>
+	<string id="st_cup_medic_vodka_stock">
+		<text>Нахватался радиации. Была у меня заначка, пей.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_vodka">
+		<text>Медик поит водкой от радиации</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_vodka_desc">
+		<text>Если выключить, медик лечит радиацию только антирадом (со второй ступени) и не спаивает вас.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze">
+		<text>Спаивать сталкера</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze_desc">
+		<text>Напарники регулярно поят вас водкой, даже без радиации: любой напарник в 6 м вне боя, у которого в рюкзаке есть водка; если водки ни у кого нет — медик из личного запаса. Водка действует как обычно. Не чаще чем через 15 игровых минут после любой выпитой вами водки.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze_min">
+		<text>Спаивать: интервал, игровых минут</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze_min_desc">
+		<text>Как часто напарники наливают при включённой опции «Спаивать сталкера».</text>
+	</string>
+	<string id="st_cup_p_medic_3">
+		<text>Полевой хирург</text>
+	</string>
+	<string id="st_cup_p_medic_3_d">
+		<text>Личный запас пополняется раз в 6 игровых часов и даёт армейскую аптечку; антирад из запаса — тоже раз в 6 часов.\nПерезарядка перевязки 90 с.\nНапарники в 20 м от него получают +5% здоровья каждые 10 с.\nС «Реаниматологом» совместим: можно изучить оба перка.</text>
+	</string>
+	<string id="st_cup_p_medic_R">
+		<text>Реаниматолог</text>
+	</string>
+	<string id="st_cup_p_medic_R_d">
+		<text>Отдельный перк: нужна вторая ступень Медика, стоит 4 очка. Совместим с «Полевым хирургом».\nВас можно вывести из строя вместо смерти: если Реаниматолог жив, на ногах и в 50 м от вас, смертельное попадание укладывает вас на 60 с. Он бежит к вам и подходит вплотную, присаживается рядом и за 8 с поднимает вас на 35% здоровья.\nПосле подъёма перезарядка 4 игровых часа: упадёте за это время ещё раз — умрёте. Никто не успел — тоже смерть.\nНапарников поднимает так же: 8 с в 15 м, 50% здоровья, перезарядка 120 с (нужен мод Companion Downed But Not Out).</text>
+	</string>
+	<string id="st_cup_down_help">
+		<text>Напарник оказывает помощь</text>
+	</string>
+</string_table>

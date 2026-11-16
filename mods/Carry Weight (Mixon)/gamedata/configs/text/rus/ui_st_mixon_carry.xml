@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="ui_mcm_menu_mixon_carry">
+		<text>Переносимый вес (Mixon)</text>
+	</string>
+	<string id="ui_mcm_mixon_carry_bonus">
+		<text>Доп. переносимый вес, кг</text>
+	</string>
+	<string id="ui_mcm_mixon_carry_bonus_desc">
+		<text>Сколько килограммов добавить к переносимому весу (10-150). Применяется сразу.</text>
+	</string>
+</string_table>

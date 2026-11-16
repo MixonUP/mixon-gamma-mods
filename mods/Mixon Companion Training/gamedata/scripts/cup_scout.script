@@ -1,0 +1,223 @@
+--[[
+	Mixon Companion Training (CUP) - Scout branch: enemy marks and warnings.
+	Marks use the non-serialized map_add_object_spot, so nothing gets into the save.
+	Spot type "cup_enemy" is injected into ui\map_spots*.xml by modxml_cup.script.
+]]
+
+local SPOT = "cup_enemy"
+local RANGE, RANGE_TRACKER = 80, 150
+local TTL, TTL_SENTRY = 20000, 45000
+local HEAR_RANGE = 50
+local NEWS_CD = 60000
+
+local marks = {}		-- [id] = expire time_global
+local warned_big = {}	-- [id] = true
+local prev_cnt = {}		-- [scout id] = enemies seen on the previous scan
+local last_news = 0
+local ENEMY = 2
+local dangerous = nil
+local spot_ok = true
+local spot_checked = false
+
+-- The engine asserts on an unknown spot type, so make sure the DXML injection really happened.
+local function check_spot()
+	spot_checked = true
+	local ok, res = pcall(function()
+		local xml = CScriptXmlInit()
+		xml:ParseFile("map_spots.xml")
+		return xml:NodeExist(SPOT) and xml:NodeExist(SPOT .. "_spot")
+	end)
+	spot_ok = ok and res and true or false
+	if spot_ok then
+		cup_core.log("scout: map spot '%s' is registered", SPOT)
+	else
+		cup_core.warn_once("spot", "scout: map spot '%s' not found in map_spots.xml (DXML patch failed?), marks are off", SPOT)
+	end
+end
+
+local function build_dangerous()
+	dangerous = {}
+	local names = cup_perks.MONSTER_DANGEROUS
+	for i = 1, #names do
+		local c = clsid[names[i]]
+		if c ~= nil then
+			dangerous[c] = true
+		end
+	end
+end
+
+local function unmark(id)
+	marks[id] = nil
+	if level.map_has_object_spot(id, SPOT) ~= 0 then
+		level.map_remove_object_spot(id, SPOT)
+	end
+end
+
+function clear_all()
+	for id in pairs(marks) do
+		unmark(id)
+	end
+end
+
+local function is_enemy(obj, cls)
+	if IsMonster(nil, cls) then
+		return obj:alive()
+	elseif IsStalker(nil, cls) then
+		return obj:alive() and obj:relation(db.actor) == ENEMY
+	end
+	return false
+end
+
+local function build_hint(obj, cls, detailed)
+	if not detailed then
+		return game.translate_string("st_cup_spot_enemy")
+	end
+	local ok, s = pcall(function()
+		if IsStalker(nil, cls) then
+			local rn = ranks.get_obj_rank_name(obj) or ""
+			return game.translate_string(obj:character_community()) .. ", " .. game.translate_string("st_rank_" .. rn)
+		end
+		local rn = ranks.get_obj_rank_name(obj) or "normal"
+		return game.translate_string("st_cup_spot_mutant") .. " (" .. game.translate_string("st_cup_mrank_" .. rn) .. ")"
+	end)
+	return ok and s or game.translate_string("st_cup_spot_enemy")
+end
+
+local function mark(obj, id, cls, expire, detailed)
+	if not marks[id] then
+		if level.map_has_object_spot(id, SPOT) == 0 then
+			level.map_add_object_spot(id, SPOT, build_hint(obj, cls, detailed))
+		end
+		marks[id] = expire
+	elseif expire > marks[id] then
+		marks[id] = expire
+	end
+end
+
+local function send_news(scout, str_id, ...)
+	local args = { ... }
+	pcall(function()
+		local header = cup_core.fmtname(scout)
+		dynamic_news_helper.send_tip(cup_core.tr(str_id, unpack(args)), header, nil, 6, scout:character_icon(), "danger", "npc")
+	end)
+end
+
+local function scan(sid, scout, p, now, COMP)
+	local tracker = p.scout >= 3 and p.scout_ch == "A"
+	local hearing = p.scout >= 3 and p.scout_ch == "B"
+	local range = tracker and RANGE_TRACKER or RANGE
+	local expire = now + (p.scout >= 2 and TTL_SENTRY or TTL)
+	local spos = scout:position()
+	local r2 = range * range
+	local cnt, big = 0, nil
+
+	local function consider(obj, need_see)
+		local id = obj:id()
+		if id == 0 or COMP[id] then
+			return
+		end
+		local cls = obj:clsid()
+		if not is_enemy(obj, cls) then
+			return
+		end
+		local d2 = obj:position():distance_to_sqr(spos)
+		if need_see then
+			if d2 > r2 or not scout:see(obj) then
+				return
+			end
+		elseif d2 > HEAR_RANGE * HEAR_RANGE then
+			return
+		end
+		mark(obj, id, cls, expire, tracker)
+		cnt = cnt + 1
+		if dangerous[cls] and not warned_big[id] then
+			warned_big[id] = true
+			big = big or obj
+		end
+	end
+
+	for o in scout:memory_visible_objects() do
+		local obj = o and o:object()
+		if obj then
+			consider(obj, true)
+		end
+	end
+
+	if hearing and (scout:has_info("npcx_beh_wait") or scout:has_info("npcx_beh_hide_in_cover")) then
+		for id, st in pairs(db.storage) do
+			local obj = type(st) == "table" and st.object
+			if obj and id ~= 0 and not marks[id] then
+				consider(obj, false)
+			end
+		end
+	end
+
+	if p.scout >= 2 and cup_core.CFG.scout_news and now - last_news >= NEWS_CD then
+		if big then
+			last_news = now
+			send_news(scout, "st_cup_scout_big")
+		elseif cnt >= 3 and (prev_cnt[sid] or 0) < 3 then
+			last_news = now
+			send_news(scout, "st_cup_scout_group", cnt)
+		end
+	end
+	prev_cnt[sid] = cnt
+end
+
+function tick(now)
+	if not spot_ok then
+		return
+	end
+	if next(marks) then
+		for id, exp in pairs(marks) do
+			local obj = level.object_by_id(id)
+			if now >= exp or not obj or not obj:alive() then
+				unmark(id)
+			end
+		end
+	end
+	local CFG = cup_core.CFG
+	if not (CFG.enable and CFG.en.scout and db.actor and db.actor:alive()) then
+		return
+	end
+	if not dangerous then
+		build_dangerous()
+	end
+	local PERK, COMP = cup_core.PERK, cup_core.COMP
+	for sid, scout in pairs(COMP) do
+		local p = PERK[sid]
+		if p and p.scout > 0 and not scout:has_info("npcx_downed") then
+			if not spot_checked then
+				check_spot()
+				if not spot_ok then
+					return
+				end
+			end
+			scan(sid, scout, p, now, COMP)
+		end
+	end
+end
+
+local function on_net_destroy(obj)
+	if obj then
+		local id = obj:id()
+		warned_big[id] = nil
+		prev_cnt[id] = nil
+		if marks[id] then
+			pcall(unmark, id)
+		end
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		if game_object and game_object.enemy ~= nil then
+			ENEMY = game_object.enemy
+		end
+		RegisterScriptCallback("npc_on_net_destroy", on_net_destroy)
+		RegisterScriptCallback("monster_on_net_destroy", on_net_destroy)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_scout.on_game_start failed: " .. tostring(err))
+	end
+end

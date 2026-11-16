@@ -1,0 +1,212 @@
+--[[
+	Mixon Companion Training (CUP) - optional bridge to "Companion Downed But Not Out".
+
+	DBNO keeps its state in local tables and has no API, so the table is reached through
+	debug.getupvalue on its global callbacks. Everything here is optional: if anything is
+	missing the bridge reports "unavailable", perks Unbreakable (Tough 3A) and
+	Reanimator (Medic 3A) are shown as unavailable and the rest of the mod works.
+]]
+
+local tbl = nil			-- companion_dbno: local downed_companions
+local fn_update = nil
+local idx_duration = nil
+local health_floor = 0.04
+local orig_hit = nil
+local hooked = false
+local ok_flag = false
+local PERK, COMP
+
+local HEAD = { [15] = true, [16] = true, [17] = true, [18] = true, [19] = true }
+local UNBREAK_CHANCE = 0.40
+local UNBREAK_CD = 60000
+local TIME_BONUS = 0.50
+local REVIVE_HP_BONUS = 0.25
+
+local ub_cd = {}		-- [id] = time_global when the headshot save is ready again
+local prev_down = {}	-- [id] = true: was downed on the previous tick (Unbreakable owners only)
+
+function available()
+	return ok_flag
+end
+
+function is_downed(id)
+	return ok_flag and tbl[id] ~= nil or false
+end
+
+function downed_ids()
+	local t = {}
+	if ok_flag then
+		for id in pairs(tbl) do
+			t[#t + 1] = id
+		end
+	end
+	return t
+end
+
+local function duration_ms()
+	if fn_update and idx_duration then
+		local n, v = debug.getupvalue(fn_update, idx_duration)
+		if n == "downed_duration" and type(v) == "number" then
+			return v
+		end
+	end
+	return 60000
+end
+
+function set_health(npc, hp)
+	if npc.set_health_ex then
+		npc:set_health_ex(hp)
+	else
+		npc.health = hp
+	end
+end
+
+function add_health(npc, d)
+	if npc.change_health then
+		npc:change_health(d)
+	else
+		npc.health = d
+	end
+end
+
+-- stands a downed companion up (used by the Reanimator)
+function revive(npc, id, hp)
+	if not (ok_flag and npc and tbl[id]) then
+		return false
+	end
+	tbl[id] = nil
+	npc:disable_info_portion("npcx_downed")
+	npc.bleeding = 1
+	set_health(npc, hp or 0.5)
+	cup_core.log("dbno: companion id=%s revived by a medic (hp %s)", id, hp or 0.5)
+	return true
+end
+
+local function pre_hit(npc, shit, bone_id)
+	local id = npc:id()
+	local p = PERK[id]
+	if p and p.unbreak and HEAD[bone_id] and not tbl[id] then
+		local now = time_global()
+		if now >= (ub_cd[id] or 0) and (npc.health - (shit.power or 0)) > health_floor and math.random() < UNBREAK_CHANCE then
+			ub_cd[id] = now + UNBREAK_CD
+			cup_core.dbg("dbno: Unbreakable saved id=%s from a headshot down", id)
+			return 0	-- any non-head bone: DBNO will only run its "lethal" check
+		end
+	end
+	return bone_id
+end
+
+local function post_hit(npc, was_down)
+	local id = npc:id()
+	if was_down or not tbl[id] then
+		return
+	end
+	local p = PERK[id]
+	if p and p.unbreak then
+		tbl[id].start_time = (tbl[id].start_time or time_global()) + duration_ms() * TIME_BONUS
+		prev_down[id] = true
+		cup_core.dbg("dbno: Unbreakable id=%s bleed-out timer +%s%%", id, TIME_BONUS * 100)
+	end
+end
+
+local function wrapped_hit(npc, shit, bone_id, flags)
+	local b = bone_id
+	local was_down = false
+	if npc and ok_flag then
+		was_down = tbl[npc:id()] ~= nil
+		local ok, res = pcall(pre_hit, npc, shit, bone_id)
+		if ok then
+			b = res
+		end
+	end
+	orig_hit(npc, shit, b, flags)
+	if npc and ok_flag then
+		pcall(post_hit, npc, was_down)
+	end
+end
+
+function init()
+	ok_flag = false
+	PERK = cup_core.PERK
+	COMP = cup_core.COMP
+	if not cup_core.CFG.dbno_bridge then
+		cup_core.log("dbno bridge: switched off in MCM")
+		return
+	end
+	if not (companion_dbno and type(companion_dbno.CB_actor_on_update) == "function") then
+		cup_core.log("dbno bridge: Companion DBNO not found, perks 3A (Unbreakable, Reanimator) unavailable")
+		return
+	end
+	if not (debug and debug.getupvalue) then
+		cup_core.log("dbno bridge: debug.getupvalue is not available, perks 3A unavailable")
+		return
+	end
+
+	fn_update = companion_dbno.CB_actor_on_update
+	tbl, idx_duration = nil, nil
+	for i = 1, 80 do
+		local n, v = debug.getupvalue(fn_update, i)
+		if not n then
+			break
+		end
+		if n == "downed_companions" and type(v) == "table" then
+			tbl = v
+		elseif n == "downed_duration" and type(v) == "number" then
+			idx_duration = i
+		end
+	end
+	if not tbl then
+		cup_core.log("dbno bridge: table 'downed_companions' not found (DBNO was updated?), perks 3A unavailable")
+		return
+	end
+
+	local fn_hit = companion_dbno.CB_npc_on_before_hit
+	if type(fn_hit) == "function" then
+		for i = 1, 80 do
+			local n, v = debug.getupvalue(fn_hit, i)
+			if not n then
+				break
+			end
+			if n == "health_floor" and type(v) == "number" then
+				health_floor = v
+			end
+		end
+		if not hooked then
+			-- callbacks are keyed by function: swap DBNO's handler for a wrapper that calls it
+			orig_hit = fn_hit
+			UnregisterScriptCallback("npc_on_before_hit", fn_hit)
+			RegisterScriptCallback("npc_on_before_hit", wrapped_hit)
+			hooked = true
+		end
+	else
+		cup_core.log("dbno bridge: CB_npc_on_before_hit not found, headshot save is off")
+	end
+
+	ok_flag = true
+	cup_core.log("dbno bridge: OK (table found, duration=%s ms, hit hook=%s)", duration_ms(), hooked)
+	cup_core.mark_dirty()
+end
+
+-- +25% HP after getting up for Unbreakable owners
+function tick(now)
+	if not ok_flag then
+		return
+	end
+	for id in pairs(prev_down) do
+		if not tbl[id] then
+			prev_down[id] = nil
+			local npc = COMP[id]
+			local p = PERK[id]
+			if npc and p and p.unbreak and npc:alive() then
+				add_health(npc, REVIVE_HP_BONUS)
+				cup_core.dbg("dbno: Unbreakable id=%s +%s HP after revive", id, REVIVE_HP_BONUS)
+			end
+		end
+	end
+	for id in pairs(tbl) do
+		local p = PERK[id]
+		if p and p.unbreak then
+			prev_down[id] = true
+		end
+	end
+end

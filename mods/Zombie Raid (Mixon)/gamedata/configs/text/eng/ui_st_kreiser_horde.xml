@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="ui_mcm_kreiser_horde_title">
+		<text>Zombie raid (Mixon)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size">
+		<text>Raid size</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_1">
+		<text>1 - Light (~10)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_2">
+		<text>2 - Medium (~20)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_3">
+		<text>3 - Large (~50, up to masters)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_size_4">
+		<text>4 - Huge (~90, many masters)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_distance">
+		<text>Spawn distance, m</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_target">
+		<text>Attack target</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_target_camp">
+		<text>Nearest camp (base)</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_target_actor">
+		<text>Player</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_key">
+		<text>Raid hotkey</text>
+	</string>
+	<string id="st_kreiser_raid_title">
+		<text>Repel the zombified raid</text>
+	</string>
+	<string id="st_kreiser_raid_descr">
+		<text>Repel the zombified horde. Remaining: %d of %d. Killed by your group: %d.</text>
+	</string>
+	<string id="st_kreiser_raid_descr_static">
+		<text>Repel the zombified horde.</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_enable">
+		<text>Random raids</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_chance">
+		<text>Raid chance per game hour, %</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_interval">
+		<text>At most once per N game hours</text>
+	</string>
+	<string id="ui_mcm_kreiser_horde_random_max">
+		<text>Max random raid size</text>
+	</string>
+	<string id="ui_mcm_menu_kreiser_horde">
+		<text>Zombie raid (Mixon)</text>
+	</string>
+	<string id="st_kreiser_raid_result">
+		<text>Raid repelled! Killed by your group: %d of %d (you: %d, companions: %d). Reward: %d RU, stashes: %d.</text>
+	</string>
+	<string id="st_kreiser_raid_result_fail">
+		<text>Raid not fully repelled. Killed: %d of %d (you: %d, companions: %d). Half pay for kills: %d RU (stashes: %d).</text>
+	</string>
+</string_table>

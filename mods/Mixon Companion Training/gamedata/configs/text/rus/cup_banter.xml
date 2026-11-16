@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_cup_dlg_joke_ask">
+		<text>Расскажи анекдот.</text>
+	</string>
+	<string id="st_cup_dlg_joke_answer">
+		<text>Слушай...</text>
+	</string>
+	<string id="st_cup_dlg_joke_busy">
+		<text>Не сейчас.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter">
+		<text>Фразы напарников</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_desc">
+		<text>Напарники комментируют происходящее: лечение, бой, артефакты, погоду, выброс и так далее. Текст приходит сообщением с портретом.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_freq">
+		<text>Частота фраз</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_freq_desc">
+		<text>Как часто напарники говорят сами. Обычно: одна фраза без повода раз в 5-10 минут. Реплики при лечении и подъёме звучат всегда.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_jokes">
+		<text>Анекдоты</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_jokes_desc">
+		<text>Напарники рассказывают анекдоты, когда спокойно: чаще ночью, у костра и когда вы присели. Реплика «Расскажи анекдот» в диалоге работает при включённой опции.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_voice">
+		<text>Озвучка фраз</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_banter_voice_desc">
+		<text>Если в gamedata\sounds\cup\banter лежит файл с именем фразы (см. banter_lines_for_voice.csv), он проигрывается от напарника.</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_off">
+		<text>выключено</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_rare">
+		<text>редко</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_normal">
+		<text>обычно</text>
+	</string>
+	<string id="ui_mcm_lst_cup_freq_often">
+		<text>часто</text>
+	</string>
+	<string id="st_cup_bn_medkit_1">
+		<text>Не дёргайся, сейчас вколю. Будешь как новенький, только б/у.</text>
+	</string>
+	<string id="st_cup_bn_medkit_2">
+		<text>Опять дырявый? Ты у меня аптечки ешь быстрее, чем тушёнку.</text>
+	</string>
+	<string id="st_cup_bn_medkit_3">
+		<text>Держи укольчик. Счёт выставлю в хабаре.</text>
+	</string>
+	<string id="st_cup_bn_medkit_4">
+		<text>Спокойно, я почти врач. Два раза видел, как это делают.</text>
+	</string>
+	<string id="st_cup_bn_medkit_5">
+		<text>Латаю, латаю тебя, а ты всё в решето норовишь.</text>
+	</string>
+	<string id="st_cup_bn_medkit_6">
+		<text>Готово. До свадьбы заживёт, если доживёшь.</text>
+	</string>
+	<string id="st_cup_bn_medkit_7">
+		<text>Вколол. Если вырастет третья рука — это не от аптечки.</text>
+	</string>
+	<string id="st_cup_bn_medkit_8">
+		<text>Живи давай. Мне одному хабар тащить неохота.</text>
+	</string>
+	<string id="st_cup_bn_bandage_1">
+		<text>Стой, течёшь. Сейчас замотаю.</text>
+	</string>
+	<string id="st_cup_bn_bandage_2">
+		<text>Кровь надо носить внутри. Запомни на будущее.</text>
+	</string>
+	<string id="st_cup_bn_bandage_3">
+		<text>Замотал. Красиво не обещал, зато не капает.</text>
+	</string>
+	<string id="st_cup_bn_bandage_4">
+		<text>Ты по следу из крови мутантов собираешь? Дай перевяжу.</text>
+	</string>
+	<string id="st_cup_bn_bandage_5">
+		<text>Бинт не жалко. Жалко, что ты опять подставился.</text>
+	</string>
+	<string id="st_cup_bn_bandage_6">
+		<text>Готово. Бантик завязать или так походишь?</text>
+	</string>
+	<string id="st_cup_bn_antirad_1">
+		<text>Фонишь так, что детектор стесняется. Держи антирад.</text>
+	</string>
+	<string id="st_cup_bn_antirad_2">
+		<text>Ещё немного — и тебя можно вместо фонарика носить. Колю.</text>
+	</string>
+	<string id="st_cup_bn_antirad_3">
+		<text>На тебе счётчик Гейгера рэп читает. Антирад, быстро.</text>
+	</string>
+	<string id="st_cup_bn_antirad_4">
+		<text>Ты где так нахватался? В реактор заглядывал? Держи.</text>
+	</string>
+	<string id="st_cup_bn_antirad_5">
+		<text>Антирад. Невкусно, зато дети будут. Наверное.</text>
+	</string>
+	<string id="st_cup_bn_antirad_6">
+		<text>Светишься, как ёлка в Припяти. Сейчас погасим.</text>
+	</string>
+	<string id="st_cup_bn_antirad_7">
+		<text>Колю антирад. Волосы оставь, они тебе идут.</text>
+	</string>
+	<string id="st_cup_bn_vodka_1">
+		<text>Чё грустный? Выпей водочки.</text>
+	</string>
+	<string id="st_cup_bn_vodka_2">
+		<text>Радиацию выводим народным методом. До дна.</text>
+	</string>
+	<string id="st_cup_bn_vodka_3">
+		<text>Это не пьянство, это дезактивация. Пей.</text>
+	</string>
+	<string id="st_cup_bn_vodka_4">
+		<text>Антирада нет, но есть наука попроще. Держи.</text>
+	</string>
+	<string id="st_cup_bn_vodka_5">
+		<text>Сто грамм — и рентгены обижаются и уходят.</text>
+	</string>
+	<string id="st_cup_bn_vodka_6">
+		<text>Пей. Учёные спорят, а деды проверили.</text>
+	</string>
+	<string id="st_cup_bn_vodka_7">
+		<text>Закусить нечем, так что занюхай рукавом.</text>
+	</string>
+	<string id="st_cup_bn_vodka_8">
+		<text>За то, чтобы хабар был, а нас не было видно. Пей.</text>
+	</string>
+	<string id="st_cup_bn_vodka_9">
+		<text>Лекарство. Сорок оборотов, рецепт не нужен.</text>
+	</string>
+	<string id="st_cup_bn_down_1">
+		<text>Держись! Не смей отключаться!</text>
+	</string>
+	<string id="st_cup_bn_down_2">
+		<text>Лежи, не дёргайся, я уже бегу!</text>
+	</string>
+	<string id="st_cup_bn_down_3">
+		<text>Эй! Рано тебе к Монолиту! Иду!</text>
+	</string>
+	<string id="st_cup_bn_down_4">
+		<text>Только не умирай, ты мне ещё должен!</text>
+	</string>
+	<string id="st_cup_bn_down_5">
+		<text>Держись, командир! Сейчас подниму!</text>
+	</string>
+	<string id="st_cup_bn_down_6">
+		<text>Не закрывай глаза! Смотри на меня, я бегу!</text>
+	</string>
+	<string id="st_cup_bn_down_7">
+		<text>Да что ж ты опять... Держись, иду!</text>
+	</string>
+	<string id="st_cup_bn_revived_1">
+		<text>С возвращением. На том свете хабара нет, я проверял.</text>
+	</string>
+	<string id="st_cup_bn_revived_2">
+		<text>Подъём. Умирать будешь в свободное от работы время.</text>
+	</string>
+	<string id="st_cup_bn_revived_3">
+		<text>Живой? Отлично. В следующий раз пригибайся.</text>
+	</string>
+	<string id="st_cup_bn_revived_4">
+		<text>Встал, отряхнулся, пошёл. Зона ждать не любит.</text>
+	</string>
+	<string id="st_cup_bn_revived_5">
+		<text>Ты мне теперь бутылку должен. Нет, ящик.</text>
+	</string>
+	<string id="st_cup_bn_revived_6">
+		<text>Ну и тяжёлый же ты. Худей или умирай пореже.</text>
+	</string>
+	<string id="st_cup_bn_revived_7">
+		<text>Вытащил. Но запас чудес у меня не резиновый.</text>
+	</string>
+	<string id="st_cup_bn_revived_8">
+		<text>Дыши, дыши. Сколько пальцев? Ладно, неважно, пошли.</text>
+	</string>
+	<string id="st_cup_bn_art_found_1">
+		<text>Пищит! Чую, пахнет деньгами.</text>
+	</string>
+	<string id="st_cup_bn_art_found_2">
+		<text>Детектор заволновался. Или артефакт, или мне его уронили.</text>
+	</string>
+	<string id="st_cup_bn_art_found_3">
+		<text>Там что-то блестит. Надеюсь, не глаза кровососа.</text>
+	</string>
+	<string id="st_cup_bn_art_found_4">
+		<text>Есть сигнал. Сидорович уже потирает руки.</text>
+	</string>
+	<string id="st_cup_bn_art_found_5">
+		<text>Нашёл! Осталось только достать и не поджариться.</text>
+	</string>
+	<string id="st_cup_bn_art_found_6">
+		<text>О, хабар. Зона сегодня добрая. Подозрительно.</text>
+	</string>
+	<string id="st_cup_bn_art_found_7">
+		<text>Пищит, родимый. Кормилец ты мой.</text>
+	</string>
+	<string id="st_cup_bn_art_took_1">
+		<text>Достал. Тёплый ещё. Надеюсь, это нормально.</text>
+	</string>
+	<string id="st_cup_bn_art_took_2">
+		<text>Есть! Руки на месте, брови почти.</text>
+	</string>
+	<string id="st_cup_bn_art_took_3">
+		<text>Забрал. Если начну светиться — считай, ночник.</text>
+	</string>
+	<string id="st_cup_bn_art_took_4">
+		<text>Хабар в рюкзаке. Учёным скажем, что нашли на дороге.</text>
+	</string>
+	<string id="st_cup_bn_art_took_5">
+		<text>Вытащил. Аномалия обиделась, но молчит.</text>
+	</string>
+	<string id="st_cup_bn_art_took_6">
+		<text>Мой. То есть наш. То есть пока у меня полежит.</text>
+	</string>
+	<string id="st_cup_bn_art_took_7">
+		<text>Достал красавца. Теперь главное — донести.</text>
+	</string>
+	<string id="st_cup_bn_art_took_8">
+		<text>Готово. За такое в Баре наливают бесплатно. Один раз.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_1">
+		<text>Вот это размялись. Кто следующий?</text>
+	</string>
+	<string id="st_cup_bn_fight_won_2">
+		<text>Все легли. Патроны жалко, а их — нет.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_3">
+		<text>Чисто. Можно лутать, пока тёплые.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_4">
+		<text>Хорошо постреляли. Плохо, что они тоже стреляли.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_5">
+		<text>И так будет с каждым, кто не поздоровался.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_6">
+		<text>Отбились. Я даже вспотеть не успел. Вру, успел.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_7">
+		<text>Запиши на мой счёт половину. Ладно, треть.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_8">
+		<text>Тихо стало. Не люблю, когда так тихо.</text>
+	</string>
+	<string id="st_cup_bn_fight_won_9">
+		<text>Командир, ты видел? Нет? Жаль, было красиво.</text>
+	</string>
+	<string id="st_cup_bn_overweight_1">
+		<text>Ты рюкзак собирал или склад грабил?</text>
+	</string>
+	<string id="st_cup_bn_overweight_2">
+		<text>Командир, ты скрипишь. Это колени или совесть?</text>
+	</string>
+	<string id="st_cup_bn_overweight_3">
+		<text>Давай половину мне, пока ты не сложился пополам.</text>
+	</string>
+	<string id="st_cup_bn_overweight_4">
+		<text>С таким грузом от слепого пса не убежишь. От хромого тоже.</text>
+	</string>
+	<string id="st_cup_bn_overweight_5">
+		<text>Ты всю Зону решил вынести за один раз?</text>
+	</string>
+	<string id="st_cup_bn_overweight_6">
+		<text>Жадность сталкера сгубила. Я просто напоминаю.</text>
+	</string>
+	<string id="st_cup_bn_overweight_7">
+		<text>Может, выкинешь третью канистру? Ладно, молчу.</text>
+	</string>
+	<string id="st_cup_bn_overweight_8">
+		<text>Идёшь как псевдогигант после обеда.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_1">
+		<text>Ты плохо выглядишь. Хуже, чем обычно.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_2">
+		<text>Командир, из тебя течёт. Сделай что-нибудь.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_3">
+		<text>Полечись, а? На тебя смотреть больно.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_4">
+		<text>Ещё одно попадание — и хабар делю я один.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_5">
+		<text>Аптечку съешь. Она для этого и лежит.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_6">
+		<text>Ты на зомби стал похож. Только зомби бодрее.</text>
+	</string>
+	<string id="st_cup_bn_low_hp_7">
+		<text>Спрячься за меня, герой. Отдышись.</text>
+	</string>
+	<string id="st_cup_bn_rain_1">
+		<text>Дождь. Хоть кто-то в Зоне моется.</text>
+	</string>
+	<string id="st_cup_bn_rain_2">
+		<text>Льёт. Счётчик не трещит — значит, пить можно. Шучу.</text>
+	</string>
+	<string id="st_cup_bn_rain_3">
+		<text>Опять мокнуть. Надо было идти в бармены.</text>
+	</string>
+	<string id="st_cup_bn_rain_4">
+		<text>Люблю дождь. В нём не видно, как я плачу по патронам.</text>
+	</string>
+	<string id="st_cup_bn_rain_5">
+		<text>Погода — как настроение у долговца.</text>
+	</string>
+	<string id="st_cup_bn_rain_6">
+		<text>Мокрый сталкер — злой сталкер. Запомни.</text>
+	</string>
+	<string id="st_cup_bn_rain_7">
+		<text>Зато следы смоет. И наши, и чужие.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_1">
+		<text>Небо краснеет. Мне это не нравится. Ищем крышу!</text>
+	</string>
+	<string id="st_cup_bn_surge_start_2">
+		<text>Выброс идёт! Бегом в укрытие, философию потом!</text>
+	</string>
+	<string id="st_cup_bn_surge_start_3">
+		<text>Зона сердится. Давай не будем стоять у неё на пути.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_4">
+		<text>Командир, пора под землю. Желательно живыми.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_5">
+		<text>Сейчас бахнет. У меня на такое колено ноет.</text>
+	</string>
+	<string id="st_cup_bn_surge_start_6">
+		<text>Выброс! Кто последний в подвал — тот зомби!</text>
+	</string>
+	<string id="st_cup_bn_surge_start_7">
+		<text>Голова гудит. Или вчерашнее, или выброс. Лучше спрячемся.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_1">
+		<text>Пронесло. Проверь, все ли мы — это мы.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_2">
+		<text>Живы. Мозги на месте? У меня вроде да.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_3">
+		<text>Кончилось. Пойдём смотреть, что Зона нам переставила.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_4">
+		<text>После выброса воздух свежий. И артефакты свежие.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_5">
+		<text>Отсиделись. Теперь бегом за хабаром, пока другие не вылезли.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_6">
+		<text>Я не кричал. Это был боевой клич.</text>
+	</string>
+	<string id="st_cup_bn_surge_end_7">
+		<text>Тихо. Можно вылезать. Ты первый.</text>
+	</string>
+	<string id="st_cup_bn_night_1">
+		<text>Темнеет. Нормальные люди спят, а мы сталкеры.</text>
+	</string>
+	<string id="st_cup_bn_night_2">
+		<text>Ночь. Самое время, чтобы что-нибудь завыло.</text>
+	</string>
+	<string id="st_cup_bn_night_3">
+		<text>Фонарь не включай. Или включай. Всё равно сожрут.</text>
+	</string>
+	<string id="st_cup_bn_night_4">
+		<text>В темноте все кошки серые, а кровососы невидимые.</text>
+	</string>
+	<string id="st_cup_bn_night_5">
+		<text>Может, к костру? Там тепло и анекдоты.</text>
+	</string>
+	<string id="st_cup_bn_night_6">
+		<text>Ночью в Зоне красиво. Жаль, что не видно.</text>
+	</string>
+	<string id="st_cup_bn_night_7">
+		<text>Слышишь? Вот и я не слышу. Плохой знак.</text>
+	</string>
+	<string id="st_cup_bn_new_level_1">
+		<text>Новое место — новые способы умереть.</text>
+	</string>
+	<string id="st_cup_bn_new_level_2">
+		<text>Пришли. Здесь я ещё не был. Или был, но не помню.</text>
+	</string>
+	<string id="st_cup_bn_new_level_3">
+		<text>Смотри под ноги. И по сторонам. И наверх тоже.</text>
+	</string>
+	<string id="st_cup_bn_new_level_4">
+		<text>Ну, здравствуй, очередная дыра.</text>
+	</string>
+	<string id="st_cup_bn_new_level_5">
+		<text>Чую, здесь нам не рады. Как и везде.</text>
+	</string>
+	<string id="st_cup_bn_new_level_6">
+		<text>Командир, план есть? Или как обычно?</text>
+	</string>
+	<string id="st_cup_bn_new_level_7">
+		<text>Тут, говорят, хабар хороший. И кладбище большое.</text>
+	</string>
+	<string id="st_cup_bn_new_level_8">
+		<text>Дошли. Ноги гудят, зато все на месте.</text>
+	</string>
+	<string id="st_cup_bn_idle_1">
+		<text>Если заблудимся — я не виноват. Карту держал ты.</text>
+	</string>
+	<string id="st_cup_bn_idle_2">
+		<text>Идём, идём... А платят за это когда?</text>
+	</string>
+	<string id="st_cup_bn_idle_3">
+		<text>Вернёмся — первым делом в Бар. Вторым тоже.</text>
+	</string>
+	<string id="st_cup_bn_idle_4">
+		<text>Командир, а правда, что у Сидоровича ног нет? Никто же не видел.</text>
+	</string>
+	<string id="st_cup_bn_idle_5">
+		<text>Я вот думаю: Монолит желания исполняет, а очередь к нему почему такая злая?</text>
+	</string>
+	<string id="st_cup_bn_idle_6">
+		<text>Если что, я слева. Если совсем что — я уже далеко.</text>
+	</string>
+	<string id="st_cup_bn_idle_7">
+		<text>Тушёнка кончается. Это я так, к слову. Пока к слову.</text>
+	</string>
+	<string id="st_cup_bn_idle_8">
+		<text>Хорошо идём. Давно никто не стрелял. Сглазил, да?</text>
+	</string>
+	<string id="st_cup_bn_idle_9">
+		<text>Вот выйду на пенсию — куплю домик. Подальше от реакторов.</text>
+	</string>
+	<string id="st_cup_bn_idle_10">
+		<text>Ты когда-нибудь спишь? Или тебя тоже Зона держит?</text>
+	</string>
+	<string id="st_cup_bn_idle_11">
+		<text>Ботинки новые хочу. Эти помнят ещё первый выброс.</text>
+	</string>
+	<string id="st_cup_bn_idle_12">
+		<text>Скучно. Хоть бы плоть какая пробежала.</text>
+	</string>
+	<string id="st_cup_bn_wake_1">
+		<text>Подъём! Зона сама себя не обнесёт.</text>
+	</string>
+	<string id="st_cup_bn_wake_2">
+		<text>Выспался? А я караулил. Почти не спал. Почти.</text>
+	</string>
+	<string id="st_cup_bn_wake_3">
+		<text>Доброе утро. Ты храпишь, как псевдогигант.</text>
+	</string>
+	<string id="st_cup_bn_wake_4">
+		<text>Проснулся? Проверь карманы. Шучу. Наверное.</text>
+	</string>
+	<string id="st_cup_bn_wake_5">
+		<text>Пока ты спал, ничего не случилось. Сам удивлён.</text>
+	</string>
+	<string id="st_cup_bn_wake_6">
+		<text>Вставай, командир. Завтрак сам себя не съест, я проверял.</text>
+	</string>
+	<string id="st_cup_bn_wake_7">
+		<text>С добрым утром. Или вечером. В Зоне не разберёшь.</text>
+	</string>
+	<string id="st_cup_bn_drink_1">
+		<text>О, без меня начал? Некрасиво.</text>
+	</string>
+	<string id="st_cup_bn_drink_2">
+		<text>Мне оставь. Хотя бы понюхать.</text>
+	</string>
+	<string id="st_cup_bn_drink_3">
+		<text>За удачу! Она нам понадобится.</text>
+	</string>
+	<string id="st_cup_bn_drink_4">
+		<text>Пьёшь на посту? Уважаю.</text>
+	</string>
+	<string id="st_cup_bn_drink_5">
+		<text>Только не пой потом. Прошлый раз кровосос плакал.</text>
+	</string>
+	<string id="st_cup_bn_drink_6">
+		<text>Командир лечится. Никому не мешать.</text>
+	</string>
+	<string id="st_cup_bn_drink_7">
+		<text>Хорошо пошла? Тогда вторую — мне.</text>
+	</string>
+	<string id="st_cup_bn_drink_8">
+		<text>После третьей аномалии видно без детектора. Но это не точно.</text>
+	</string>
+	<string id="st_cup_bn_rad_1">
+		<text>Командир, ты трещишь, как счётчик. Прими что-нибудь.</text>
+	</string>
+	<string id="st_cup_bn_rad_2">
+		<text>От тебя уже тепло. Это плохое тепло.</text>
+	</string>
+	<string id="st_cup_bn_rad_3">
+		<text>Антирад в рюкзаке есть? Самое время вспомнить.</text>
+	</string>
+	<string id="st_cup_bn_rad_4">
+		<text>Ты светишься. Красиво, но вредно.</text>
+	</string>
+	<string id="st_cup_bn_rad_5">
+		<text>Выпей водки хоть. Я в медицине не силён, но так все делают.</text>
+	</string>
+	<string id="st_cup_bn_rad_6">
+		<text>Отойди на шаг, а? У меня ещё планы на детей.</text>
+	</string>
+	<string id="st_cup_bn_rad_7">
+		<text>Рентгены ты собираешь лучше, чем артефакты.</text>
+	</string>
+	<string id="st_cup_bn_invictus_1">
+		<text>Ну как твой Инвиктус? Справляешься?</text>
+	</string>
+	<string id="st_cup_bn_invictus_2">
+		<text>Одна жизнь, командир. Запасной в рюкзаке нет, я смотрел.</text>
+	</string>
+	<string id="st_cup_bn_invictus_3">
+		<text>Ты только не умирай. Второго дубля не будет.</text>
+	</string>
+	<string id="st_cup_bn_invictus_4">
+		<text>С одной жизнью я бы в ту аномалию не лез. Но ты командир.</text>
+	</string>
+	<string id="st_cup_bn_invictus_5">
+		<text>Живём один раз. Ты — буквально.</text>
+	</string>
+	<string id="st_cup_bn_invictus_6">
+		<text>Каждый день без смерти — рекорд. Держим серию.</text>
+	</string>
+	<string id="st_cup_an_1_1">
+		<text>Приходит новичок к Сидоровичу: «Мне бы работу». — «Принеси артефакт».</text>
+	</string>
+	<string id="st_cup_an_1_2">
+		<text>— «А где его взять?» — «Знал бы — сам бы не сидел в подвале».</text>
+	</string>
+	<string id="st_cup_an_2_1">
+		<text>Встречаются долговец и свободовец. Долговец: «Стой, анархия!»</text>
+	</string>
+	<string id="st_cup_an_2_2">
+		<text>Свободовец: «Иди, порядок». Так и разошлись — оба довольны, оба обижены.</text>
+	</string>
+	<string id="st_cup_an_3_1">
+		<text>Бандит останавливает сталкера: «Хабар или жизнь?»</text>
+	</string>
+	<string id="st_cup_an_3_2">
+		<text>— «Жизнь». — «Э, ты чё, я ж по-хорошему спросил!»</text>
+	</string>
+	<string id="st_cup_an_4_1">
+		<text>Учёный спрашивает сталкера: «Как вы находите аномалии без приборов?»</text>
+	</string>
+	<string id="st_cup_an_4_2">
+		<text>— «Ногой». — «А если не заметите?» — «Тогда другой ногой».</text>
+	</string>
+	<string id="st_cup_an_5_1">
+		<text>Монолитовец молится: «О Монолит, дай мне знак!»</text>
+	</string>
+	<string id="st_cup_an_5_2">
+		<text>Падает кирпич. Монолитовец: «Понял, каску носить».</text>
+	</string>
+	<string id="st_cup_an_6_1">
+		<text>Сидят два кровососа в засаде. Один: «Слушай, а нас видно?»</text>
+	</string>
+	<string id="st_cup_an_6_2">
+		<text>— «Нет». — «А чего тогда в нас стреляют?» — «А это они на звук чавканья».</text>
+	</string>
+	<string id="st_cup_an_7_1">
+		<text>Сталкер жалуется бармену: «Водка у тебя радиоактивная!»</text>
+	</string>
+	<string id="st_cup_an_7_2">
+		<text>— «Зато закусывать не надо. Сама светит, сама греет».</text>
+	</string>
+	<string id="st_cup_an_8_1">
+		<text>Нашёл сталкер артефакт. Несёт Сидоровичу. Тот: «Пятьсот».</text>
+	</string>
+	<string id="st_cup_an_8_2">
+		<text>— «Да он десять тысяч стоит!» — «Стоит. У меня. А у тебя — пятьсот».</text>
+	</string>
+	<string id="st_cup_an_9_1">
+		<text>Долговец на посту: «Пароль!» — «Не знаю». — «Проходи».</text>
+	</string>
+	<string id="st_cup_an_9_2">
+		<text>— «Так я же не знаю!» — «Мутанты вообще не отвечают».</text>
+	</string>
+	<string id="st_cup_an_10_1">
+		<text>Свободовец учёному: «Док, у меня от травы зелёные человечки».</text>
+	</string>
+	<string id="st_cup_an_10_2">
+		<text>— «Это не от травы. Это контролёр. Бегите».</text>
+	</string>
+	<string id="st_cup_an_11_1">
+		<text>Идёт сталкер по Зоне, видит табличку: «Осторожно, аномалия».</text>
+	</string>
+	<string id="st_cup_an_11_2">
+		<text>Обошёл. За ней вторая табличка: «Молодец. А вот тут — не написали».</text>
+	</string>
+	<string id="st_cup_an_12_1">
+		<text>Два бандита делят хабар. «Тебе консерву, мне артефакт».</text>
+	</string>
+	<string id="st_cup_an_12_2">
+		<text>— «А почему так?» — «Потому что у меня обрез, а у тебя консерва».</text>
+	</string>
+	<string id="st_cup_an_13_1">
+		<text>Новичок: «А правда, что в Зоне год за три?»</text>
+	</string>
+	<string id="st_cup_an_13_2">
+		<text>Ветеран: «Правда. Только не год, а день. И не за три, а последний».</text>
+	</string>
+	<string id="st_cup_an_14_1">
+		<text>Поймал контролёр сталкера, смотрит в мозги и вздыхает:</text>
+	</string>
+	<string id="st_cup_an_14_2">
+		<text>«Опять пусто. Одна водка да долг Сидоровичу».</text>
+	</string>
+	<string id="st_cup_an_15_1">
+		<text>Учёные вывели формулу удачи сталкера.</text>
+	</string>
+	<string id="st_cup_an_15_2">
+		<text>Удача равна количеству патронов, делённому на количество любопытства.</text>
+	</string>
+	<string id="st_cup_an_16_1">
+		<text>Сталкер у костра: «Я вчера химеру голыми руками...»</text>
+	</string>
+	<string id="st_cup_an_16_2">
+		<text>— «Убил?» — «Отталкивал. Минут пять. Потом она устала смеяться».</text>
+	</string>
+	<string id="st_cup_an_17_1">
+		<text>Военный на блокпосту: «Проход закрыт!»</text>
+	</string>
+	<string id="st_cup_an_17_2">
+		<text>Сталкер достаёт деньги. Военный: «Проход закрыт. За вами».</text>
+	</string>
+	<string id="st_cup_an_18_1">
+		<text>Спрашивают старого сталкера: «Как ты столько лет прожил в Зоне?»</text>
+	</string>
+	<string id="st_cup_an_18_2">
+		<text>— «Очень просто. Я всегда шёл вторым».</text>
+	</string>
+	<string id="st_cup_an_19_1">
+		<text>Зомби приходит в Бар. Бармен: «Тебе чего?»</text>
+	</string>
+	<string id="st_cup_an_19_2">
+		<text>— «Мо-о-озги». — «Это к учёным. У нас только водка».</text>
+	</string>
+	<string id="st_cup_an_20_1">
+		<text>Свободовец и долговец попали в одну аномалию.</text>
+	</string>
+	<string id="st_cup_an_20_2">
+		<text>Долговец: «Это всё ваш бардак!» Свободовец: «Нет, это ваш порядок: всех в одну кучу».</text>
+	</string>
+	<string id="st_cup_an_21_1">
+		<text>Сидорович говорит новичку: «Запомни три правила Зоны».</text>
+	</string>
+	<string id="st_cup_an_21_2">
+		<text>«Первое — не жадничай. Второе — не геройствуй. Третье стоит двести рублей».</text>
+	</string>
+	<string id="st_cup_an_22_1">
+		<text>Сталкер молится Монолиту: «Хочу много денег!»</text>
+	</string>
+	<string id="st_cup_an_22_2">
+		<text>Голос: «Исполнено». Сталкер смотрит — а он теперь Сидорович. И ног не чувствует.</text>
+	</string>
+	<string id="st_cup_an_23_1">
+		<text>Слепой пёс говорит другому: «Вижу, сталкер идёт».</text>
+	</string>
+	<string id="st_cup_an_23_2">
+		<text>— «Ты же слепой». — «Ну ладно, чую. Придираешься к словам».</text>
+	</string>
+	<string id="st_cup_an_24_1">
+		<text>Бандит наёмнику: «Ты за что воюешь?» — «За деньги».</text>
+	</string>
+	<string id="st_cup_an_24_2">
+		<text>— «А я за идею». — «За какую?» — «Чтоб у меня были твои деньги».</text>
+	</string>
+	<string id="st_cup_an_25_1">
+		<text>Учёный: «Мы открыли новый артефакт! Он делает человека бессмертным!»</text>
+	</string>
+	<string id="st_cup_an_25_2">
+		<text>— «А испытывали?» — «Да. Лаборант теперь бессмертный. Но где он — неизвестно».</text>
+	</string>
+	<string id="st_cup_an_26_1">
+		<text>Сталкер пришёл к Болотному Доктору: «Доктор, я жить буду?»</text>
+	</string>
+	<string id="st_cup_an_26_2">
+		<text>— «Будешь. Но в Зону больше не ходи». — «Так мы же в Зоне». — «Вот я и говорю».</text>
+	</string>
+	<string id="st_cup_an_27_1">
+		<text>Объявление в Баре: «Меняю детектор Отклик на две ноги».</text>
+	</string>
+	<string id="st_cup_an_27_2">
+		<text>Ниже приписка: «Свои уже нашёл. Спасибо, детектор не нужен».</text>
+	</string>
+	<string id="st_cup_an_28_1">
+		<text>Долговец читает устав: «Мутантов уничтожать. Аномалии обходить».</text>
+	</string>
+	<string id="st_cup_an_28_2">
+		<text>«Свободовцев... тут страница вырвана и что-то нарисовано».</text>
+	</string>
+	<string id="st_cup_an_29_1">
+		<text>Сталкер нашёл в тайнике записку: «Хабар в другом тайнике».</text>
+	</string>
+	<string id="st_cup_an_29_2">
+		<text>Нашёл другой. Там записка: «Молодец. А теперь обернись».</text>
+	</string>
+	<string id="st_cup_an_30_1">
+		<text>Плоть жалуется кабану: «Меня все обижают, стреляют, едят».</text>
+	</string>
+	<string id="st_cup_an_30_2">
+		<text>Кабан: «А ты не выходи из аномалии». — «Так я там и родилась!»</text>
+	</string>
+	<string id="st_cup_an_31_1">
+		<text>«Почему сталкеры ходят по двое?»</text>
+	</string>
+	<string id="st_cup_an_31_2">
+		<text>«Чтобы было кому рассказать, как красиво погиб первый».</text>
+	</string>
+	<string id="st_cup_an_32_1">
+		<text>Военные сбросили на Зону листовки: «Сдавайтесь, вам ничего не будет».</text>
+	</string>
+	<string id="st_cup_an_32_2">
+		<text>Сталкеры подумали и согласились: и правда, ничего не будет. Остались.</text>
+	</string>
+	<string id="st_cup_an_33_1">
+		<text>Бюрер устроился грузчиком на Янтарь.</text>
+	</string>
+	<string id="st_cup_an_33_2">
+		<text>Через день уволили: ящики носит хорошо, но вместе с учёными.</text>
+	</string>
+	<string id="st_cup_an_34_1">
+		<text>Сталкер торговцу: «Этот бронежилет точно держит пулю?»</text>
+	</string>
+	<string id="st_cup_an_34_2">
+		<text>— «Точно. Прошлый хозяин не жаловался». — «А где он?» — «Не жалуется».</text>
+	</string>
+	<string id="st_cup_an_35_1">
+		<text>Свобода объявила день без оружия.</text>
+	</string>
+	<string id="st_cup_an_35_2">
+		<text>Долг пришёл поздравить. С оружием. Праздник перенесли.</text>
+	</string>
+	<string id="st_cup_an_36_1">
+		<text>Новичок ветерану: «Что самое страшное в Зоне?»</text>
+	</string>
+	<string id="st_cup_an_36_2">
+		<text>— «Когда водка кончилась, а до Бара два выброса».</text>
+	</string>
+	<string id="st_cup_an_37_1">
+		<text>Экзамен у экологов. «Что делать при встрече с псевдогигантом?»</text>
+	</string>
+	<string id="st_cup_an_37_2">
+		<text>— «Записать наблюдения». — «А потом?» — «Потом уже записывают про вас».</text>
+	</string>
+	<string id="st_cup_an_38_1">
+		<text>Монолитовец поймал сталкера: «Веришь ли ты в Монолит?»</text>
+	</string>
+	<string id="st_cup_an_38_2">
+		<text>— «Верю!» — «Тогда иди первым через Жарку. Монолит защитит». — «Что-то я засомневался».</text>
+	</string>
+	<string id="st_cup_an_39_1">
+		<text>Тушкан говорит тушкану: «Давай нападём на сталкера».</text>
+	</string>
+	<string id="st_cup_an_39_2">
+		<text>— «Нас двое, а он один. Нечестно». — «Ладно, зовём ещё сорок».</text>
+	</string>
+	<string id="st_cup_an_40_1">
+		<text>Сталкер вернулся с ходки, жена спрашивает: «Что принёс?»</text>
+	</string>
+	<string id="st_cup_an_40_2">
+		<text>— «Себя». — «Опять самое дешёвое».</text>
+	</string>
+	<string id="st_cup_an_41_1">
+		<text>Наёмнику заказали сталкера. Он приходит, а сталкер уже в аномалии.</text>
+	</string>
+	<string id="st_cup_an_41_2">
+		<text>Наёмник в отчёте: «Заказ выполнен. Субподрядчик — Зона. Гонорар прошу не делить».</text>
+	</string>
+	<string id="st_cup_an_42_1">
+		<text>«Что общего у артефакта и зарплаты?»</text>
+	</string>
+	<string id="st_cup_an_42_2">
+		<text>«Оба где-то есть, оба светят, и оба достаются Сидоровичу».</text>
+	</string>
+</string_table>

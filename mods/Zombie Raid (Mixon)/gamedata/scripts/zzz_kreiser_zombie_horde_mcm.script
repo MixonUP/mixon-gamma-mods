@@ -1,0 +1,30 @@
+function on_mcm_load()
+	return {
+		id = "kreiser_horde", sh = true,
+		gr = {
+			{ id = "title", type = "slide", link = "ui_options_slider_player", text = "ui_mcm_kreiser_horde_title", size = {512,50}, spacing = 20 },
+			{ id = "size", type = "list", val = 0, def = "3", no_str = true, content = {
+				{"1", "ui_mcm_kreiser_horde_size_1"},
+				{"2", "ui_mcm_kreiser_horde_size_2"},
+				{"3", "ui_mcm_kreiser_horde_size_3"},
+				{"4", "ui_mcm_kreiser_horde_size_4"},
+			}},
+			{ id = "distance", type = "track", val = 2, min = 30, max = 250, step = 5, def = 75 },
+			{ id = "target", type = "list", val = 0, def = "camp", no_str = true, content = {
+				{"camp", "ui_mcm_kreiser_horde_target_camp"},
+				{"actor", "ui_mcm_kreiser_horde_target_actor"},
+			}},
+			{ id = "key", type = "key_bind", val = 2, def = DIK_keys.DIK_F10 },
+			{ id = "line1", type = "line" },
+			{ id = "random_enable", type = "check", val = 1, def = true },
+			{ id = "random_chance", type = "track", val = 2, min = 1, max = 30, step = 1, def = 3 },
+			{ id = "random_interval", type = "track", val = 2, min = 6, max = 168, step = 6, def = 24 },
+			{ id = "random_max", type = "list", val = 0, def = "4", no_str = true, content = {
+				{"1", "ui_mcm_kreiser_horde_size_1"},
+				{"2", "ui_mcm_kreiser_horde_size_2"},
+				{"3", "ui_mcm_kreiser_horde_size_3"},
+				{"4", "ui_mcm_kreiser_horde_size_4"},
+			}},
+		},
+	}
+end

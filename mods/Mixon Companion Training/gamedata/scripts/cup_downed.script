@@ -1,0 +1,1133 @@
+--[[
+	Mixon Companion Training (CUP) - the PLAYER can be knocked down instead of dying.
+
+	Works when a companion with the Reanimator perk (Medic 3A) is alive, on his feet and close.
+	No mod of the pack downs the actor (Companion DBNO handles companions only), so the state
+	is implemented here.
+
+	Entry point: the engine calls bind_stalker_ext.actor_on_before_death(binder, whoID) when the
+	actor is about to die; that function sends the "actor_on_before_death" script callback and
+	then kills the actor. It is WRAPPED (not subscribed to): when the player is saved the
+	original is not called at all, so Soulslike, Body Health System, kill feeds, statistics etc.
+	never see a death that did not happen. When the player is not saved the original runs
+	untouched and every other mod works as before.
+
+	Rules:
+		* a lethal hit with a Reanimator within RESCUE_RANGE -> downed for DOWN_TIME;
+		* the Reanimator runs to the player (his "wait"/"cover"/"patrol" orders are suspended and
+		  he ignores combat for that time) and needs REVIVE_TIME within REVIVE_RANGE;
+		* after a revive the perk is on cooldown for COOLDOWN game seconds (saved);
+		  going down again during the cooldown is a normal death;
+		* no Reanimator left / timer is over -> normal death (the original function is called).
+]]
+
+local DOWN_TIME = 60000			-- real ms on the ground
+local REVIVE_TIME = 8000		-- real ms the Reanimator has to spend next to the player
+local REVIVE_RANGE = 2.3			-- m: v8, he has to kneel right next to the player
+local CROUCH_RANGE = 5			-- m: from here he slows down and goes in a crouch
+local KNEEL_STATE = "help_wounded"	-- state_lib: crouch + the "helping a wounded" animation
+local STEALTH_INFO = "npcx_beh_substate_stealth"	-- beh_companion.ltx: walk = sneak, wait = hide
+-- v7: the Reanimator is led by hand. Every tick he gets the companion "move to point" order
+-- (db.storage[id].beh.rally_lvid, the same field axr_companions uses) on the player's vertex
+-- and on_enemy_eval hides every enemy from him. If he still does not arrive he is teleported
+-- next to the player.
+local TP_NEAR_RANGE = 30		-- m
+local TP_NEAR_MS = 20000		-- within TP_NEAR_RANGE and not there after this long -> teleport
+local TP_FAR_MS = 30000			-- farther than TP_NEAR_RANGE -> teleport after this long
+local TP_STUCK_MS = 6000		-- the distance has not shrunk for this long -> teleport
+local TP_STUCK_STEP = 0.7		-- m, what counts as "came closer"
+local TP_STUCK_STEP_CLOSE = 0.3	-- the same inside CROUCH_RANGE (he sneaks slowly there)
+local TP_BONUS_MS = 15000		-- added to the bleed-out timer by a teleport
+local TP_OFFSET = 1.5			-- m from the player, behind his camera
+local DBG_PERIOD = 2000
+local RESCUE_RANGE = 50			-- m: a Reanimator farther than this cannot save the player
+local NO_RESCUER_GRACE = 5000	-- real ms without any Reanimator before the player dies
+local COOLDOWN = 4 * 3600		-- game seconds
+local FLOOR_HP = 0.08
+local REVIVE_HP = 0.35
+local REVIVE_SAFE = 3000		-- real ms of the engine's own invulnerability after getting up
+local BHS_DOWN, BHS_UP = 2, 5	-- minimal head/torso points of Body Health System (max 11)
+local TICK = 100
+
+-- Screen effects. Only files that scripts of the pack already use are referenced:
+--   actor_death.ppe + camera_effects\surge_02.anm - Perk-Based Artefacts ("cheat death");
+--                                                   the .anm is only the fallback of the v6 camera
+--   snd_shock.ppe, bloody.ppe                      - vanilla actor_effects
+-- The vignette (tunnel vision / blood) is the mod's own texture ui\cup_vignette.dds.
+local PPE_DEATH, PPE_SHOCK, PPE_BLOOD, CAM_FALL = 7741, 7742, 7743, 7744
+local BLOOD_FLASH = 3500		-- real ms between red flashes
+local BLINK_TIME, BLINK_PERIOD_MIN, BLINK_PERIOD_MAX = 450, 2600, 6000
+
+-- v6: the camera falls on its back and looks at the sky. Modded Exes API (the same one
+-- Ledge Grabbing and Third Person Dialog use): level.set_cam_custom_position_direction(pos,
+-- hpb, smoothing, hudDraw, hudAffect), hpb = (head, pitch, roll) in radians with
+-- head = atan2(-dir.x, dir.z), pitch = asin(dir.y); it has to be called every frame.
+-- Without the API the old camera_effects\surge_02.anm is played instead.
+local FALL_MS, RISE_MS = 1100, 1400
+local LIE_PITCH = 1.36			-- almost straight up
+local LIE_HEIGHT = 0.24			-- eyes above the ground, m
+local LIE_BACK = 0.80			-- the head ends up this far behind the feet, m
+local LIE_BACK_SLOPE = 0.25		-- the same when the ground behind is higher (v9)
+local SLOPE_UP = 0.30			-- m: "the ground behind is higher than the feet"
+local CAM_GROUND_GAP = 0.20		-- the camera is never closer to the ground than this
+local CAM_GROUND_PERIOD = 300	-- real ms between ground probes
+local TUNNEL_FROM, TUNNEL_TO = 2.6, 1.0	-- size of the vignette: wide at the start, closed at the end
+
+-- orders of the Reanimator that are suspended while he runs to the player
+local INFO_OFF = { "npcx_beh_wait", "npcx_beh_hide_in_cover", "npcx_beh_patrol_mode", "npcx_beh_distance_far" }
+local INFO_ON = { "npcx_beh_ignore_combat", "npcx_beh_ignore_actor_enemies" }
+
+local S = nil			-- downed state: { t_end, prog, who, rid, infos, t_none, t_msg, t_last }
+local cd_until = 0		-- game second when the perk is ready again
+local pending = nil		-- state read from the save, applied on the first update
+local orig = nil		-- original bind_stalker_ext.actor_on_before_death
+local dying = false
+local t_next = 0
+
+function hooked()
+	return orig ~= nil
+end
+
+function is_down()
+	return S ~= nil
+end
+
+-- game seconds until the perk is ready (0 = ready)
+function cooldown_left()
+	local left = cd_until - cup_core.game_sec()
+	return left > 0 and left or 0
+end
+
+---------------------------------------------------------------------
+-- helpers
+---------------------------------------------------------------------
+local function set_hp(actor, hp)
+	if actor.set_health_ex then
+		actor:set_health_ex(hp)
+	else
+		-- the "health" setter is ChangeHealth (a delta)
+		actor.health = hp - actor.health
+	end
+end
+
+-- Body Health System kills the actor while head or torso is at 0
+local function bhs_floor(n)
+	local inj = zzz_player_injuries
+	local h = inj and inj.health
+	if type(h) ~= "table" then
+		return
+	end
+	if type(h.head) == "number" and h.head < n then h.head = n end
+	if type(h.torso) == "number" and h.torso < n then h.torso = n end
+end
+
+local function stop_bleeding(actor)
+	local b = actor.bleeding
+	if b and b > 0 then
+		actor.bleeding = 1
+	end
+end
+
+local function is_reanimator(id, npc)
+	local p = cup_core.PERK[id]
+	if not (p and p.reanim) then
+		return false
+	end
+	if not (npc and npc:alive()) or npc:has_info("npcx_downed") then
+		return false
+	end
+	return true
+end
+
+-- nearest Reanimator within RESCUE_RANGE
+local function find_rescuer()
+	local actor = db.actor
+	local apos = actor:position()
+	local best, best_d = nil, RESCUE_RANGE * RESCUE_RANGE
+	for id, npc in pairs(cup_core.COMP) do
+		if is_reanimator(id, npc) then
+			local d = npc:position():distance_to_sqr(apos)
+			if d <= best_d then
+				best, best_d = id, d
+			end
+		end
+	end
+	return best
+end
+
+local function suspend_orders(npc)
+	local infos = { off = {}, on = {} }
+	for i = 1, #INFO_OFF do
+		local n = INFO_OFF[i]
+		if npc:has_info(n) then
+			npc:disable_info_portion(n)
+			infos.off[#infos.off + 1] = n
+		end
+	end
+	for i = 1, #INFO_ON do
+		local n = INFO_ON[i]
+		if not npc:has_info(n) then
+			npc:give_info_portion(n)
+			infos.on[#infos.on + 1] = n
+		end
+	end
+	return infos
+end
+
+local function beh_of(rid)
+	local st = rid and db.storage[rid]
+	local beh = st and st.beh
+	return type(beh) == "table" and beh or nil
+end
+
+-- [id] = original "wait" animation condlist of the beh scheme while he kneels.
+-- Not kept in S (S goes to the save); after loading the scheme reads its ini again anyway.
+local kneel_orig = {}
+
+local function restore_orders(rid, infos)
+	if rid then
+		-- drop our "move to point" order and the kneeling
+		local beh = beh_of(rid)
+		if beh then
+			beh.rally_lvid = nil
+			if kneel_orig[rid] then
+				beh.wait_cond = kneel_orig[rid]
+			end
+		end
+		if kneel_orig[rid] then
+			-- gets up at once instead of waiting for the next state change of the scheme
+			pcall(function()
+				local who = cup_core.COMP[rid]
+				if who and who:alive() then
+					state_mgr.set_state(who, "guard")
+				end
+			end)
+		end
+		kneel_orig[rid] = nil
+	end
+	if not (rid and type(infos) == "table") then
+		return
+	end
+	local npc = cup_core.COMP[rid] or level.object_by_id(rid)
+	if not npc then
+		return
+	end
+	pcall(function()
+		for _, n in ipairs(infos.off or {}) do
+			npc:give_info_portion(n)
+		end
+		for _, n in ipairs(infos.on or {}) do
+			npc:disable_info_portion(n)
+		end
+	end)
+end
+
+local function set_rescuer(rid)
+	if S.rid == rid then
+		return
+	end
+	restore_orders(S.rid, S.infos)
+	S.rid, S.infos = rid, nil
+	S.t_resc, S.best, S.t_best, S.tp, S.crouch = time_global(), nil, nil, nil, nil
+	local npc = rid and cup_core.COMP[rid]
+	if npc then
+		local ok, res = pcall(suspend_orders, npc)
+		S.infos = ok and res or nil
+		cup_core.log("downed: Reanimator id=%s (%s) goes to the player", rid, cup_core.fmtname(npc))
+	end
+end
+
+---------------------------------------------------------------------
+-- HUD: tunnel vision, blood, the bleed-out bar
+---------------------------------------------------------------------
+local HUD = nil
+
+class "UICupDown" (CUIScriptWnd)
+
+function UICupDown:__init() super()
+	self:SetWndRect(Frect():set(0, 0, 1024, 768))
+	self:SetAutoDelete(true)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("cup_down_hud.xml")
+	self.tunnel = xml:InitStatic("tunnel", self)
+	self.tunnel:SetTextureColor(GetARGB(255, 0, 0, 0))
+	self.blood = xml:InitStatic("blood", self)
+	-- v6: eyelids (the node is absent until the game is restarted with the new xml)
+	if xml:NodeExist("blink") then
+		self.blink = xml:InitStatic("blink", self)
+		self.blink:SetTextureColor(GetARGB(0, 0, 0, 0))
+	end
+	self.title = xml:InitTextWnd("title", self)
+	self.title:SetText(game.translate_string("st_cup_down_title"))
+	self.bar_back = xml:InitStatic("bar_back", self)
+	self.bar_back:SetTextureColor(GetARGB(200, 20, 20, 20))
+	self.bar_fill = xml:InitStatic("bar_fill", self)
+	self.bar_w = self.bar_fill:GetWidth()
+	self.bar_h = self.bar_fill:GetHeight()
+	self.sub = xml:InitTextWnd("sub", self)
+	-- v8: the revive progress bar (absent in the xml of older versions)
+	if xml:NodeExist("help_back") and xml:NodeExist("help_fill") and xml:NodeExist("help_title") then
+		self.help_title = xml:InitTextWnd("help_title", self)
+		self.help_title:SetText(game.translate_string("st_cup_down_help"))
+		self.help_back = xml:InitStatic("help_back", self)
+		self.help_back:SetTextureColor(GetARGB(200, 20, 20, 20))
+		self.help_fill = xml:InitStatic("help_fill", self)
+		self.help_fill:SetTextureColor(GetARGB(255, 110, 205, 85))
+		self.help_w = self.help_fill:GetWidth()
+		self.help_h = self.help_fill:GetHeight()
+		self.help_title:Show(false)
+		self.help_back:Show(false)
+		self.help_fill:Show(false)
+		self.help_on = false
+	end
+	self.v2 = vector2()
+end
+
+function UICupDown:__finalize()
+end
+
+local function place(wnd, v2, scale)
+	local w, h = 1024 * scale, 768 * scale
+	wnd:SetWndPos(v2:set((1024 - w) / 2, (768 - h) / 2))
+	wnd:SetWndSize(v2:set(w, h))
+end
+
+-- frac: part of the bleed-out time that is left (1 -> 0); working: the Reanimator is busy
+-- prog: 0..1 while the Reanimator works, nil otherwise
+function UICupDown:SetHelp(prog)
+	if not self.help_fill then
+		return false
+	end
+	local on = prog ~= nil
+	if on ~= self.help_on then
+		self.help_on = on
+		self.help_title:Show(on)
+		self.help_back:Show(on)
+		self.help_fill:Show(on)
+	end
+	if on then
+		if prog < 0 then prog = 0 elseif prog > 1 then prog = 1 end
+		self.help_fill:SetWndSize(self.v2:set(self.help_w * prog, self.help_h))
+	end
+	return true
+end
+
+function UICupDown:Set(frac, working, text)
+	if frac < 0 then frac = 0 elseif frac > 1 then frac = 1 end
+	local now = time_global()
+	-- tunnel vision closes as the time runs out
+	place(self.tunnel, self.v2, TUNNEL_TO + (TUNNEL_FROM - TUNNEL_TO) * frac)
+	-- blood: a red rim that pulses, stronger and faster near the end
+	local pulse = 0.5 + 0.5 * math.sin(now / (260 + 500 * frac))
+	local alpha = 70 + (1 - frac) * 90 + pulse * 60
+	self.blood:SetTextureColor(GetARGB(math.floor(alpha), 150, 0, 0))
+	place(self.blood, self.v2, 1.35 + 0.10 * pulse)
+	-- slow blinking, more often when the time is running out
+	if self.blink then
+		local period = BLINK_PERIOD_MIN + (BLINK_PERIOD_MAX - BLINK_PERIOD_MIN) * frac
+		local ph = now % period
+		local a = 0
+		if ph < BLINK_TIME then
+			a = math.sin(ph / BLINK_TIME * math.pi) * 240
+		end
+		self.blink:SetTextureColor(GetARGB(math.floor(a), 0, 0, 0))
+	end
+	-- the bar
+	self.bar_fill:SetWndSize(self.v2:set(self.bar_w * frac, self.bar_h))
+	if working then
+		self.bar_fill:SetTextureColor(GetARGB(255, 90, 200, 90))
+	else
+		self.bar_fill:SetTextureColor(GetARGB(255, 200, 40, 30))
+	end
+	if text and text ~= self.text then
+		self.text = text
+		self.sub:SetText(text)
+	end
+end
+
+local function hud_off()
+	local h = HUD
+	HUD = nil
+	if h then
+		pcall(function() get_hud():RemoveDialogToRender(h) end)
+	end
+end
+
+local function hud_on()
+	if HUD then
+		return
+	end
+	local ok, err = pcall(function()
+		HUD = UICupDown()
+		get_hud():AddDialogToRender(HUD)
+		HUD:Set(1, false, "")
+	end)
+	if not ok then
+		HUD = nil
+		cup_core.warn_once("down_hud", "downed: HUD was not created (%s), the state works without it", err)
+	end
+end
+
+---------------------------------------------------------------------
+-- camera
+---------------------------------------------------------------------
+local CAM = nil			-- { mode = "fall" | "lie" | "rise", t0, h, p, bx, bz, ex, ey, ez }
+local cam_pos, cam_rot = vector(), vector()
+
+local function cam_supported()
+	return level.set_cam_custom_position_direction ~= nil and level.remove_cam_custom_position_direction ~= nil
+end
+
+local function cam_stop()
+	local had = CAM ~= nil
+	CAM = nil
+	if had or cam_supported() then
+		pcall(function() level.remove_cam_custom_position_direction() end)
+	end
+end
+
+-- fall: true = animate the fall, false = already lying (state restored from a save)
+local function cam_start(fall)
+	if not cam_supported() then
+		return false
+	end
+	local ok, err = pcall(function()
+		local actor = db.actor
+		local dev = device()
+		local dir, eye, ap = dev.cam_dir, dev.cam_pos, actor:position()
+		local len = math.sqrt(dir.x * dir.x + dir.z * dir.z)
+		local dx, dz = 0, 1
+		if len > 0.05 then
+			dx, dz = dir.x / len, dir.z / len
+		else
+			local ad = actor:direction()
+			local al = math.sqrt(ad.x * ad.x + ad.z * ad.z)
+			if al > 0.05 then
+				dx, dz = ad.x / al, ad.z / al
+			end
+		end
+		local y = dir.y
+		if y > 1 then y = 1 elseif y < -1 then y = -1 end
+		local ey = eye.y - ap.y
+		if ey < 0.4 or ey > 2.2 then
+			ey = 1.6
+		end
+		CAM = {
+			mode = fall and "fall" or "lie", t0 = time_global(),
+			h = math.atan2(-dx, dz), p = math.asin(y),
+			bx = -dx, bz = -dz,
+			ex = eye.x - ap.x, ey = ey, ez = eye.z - ap.z,
+		}
+	end)
+	if not ok then
+		CAM = nil
+		cup_core.warn_once("down_cam", "downed: camera was not started: %s", err)
+		return false
+	end
+	return true
+end
+
+local function smooth(k)
+	return k * k * (3 - 2 * k)
+end
+
+local probe = vector()
+
+local function valid_vertex(v)
+	return type(v) == "number" and v >= 0 and v < 4294967295
+end
+
+-- height of the AI-map ground under a point; feet = fallback (the actor's own height)
+local function ground_y(x, z, feet)
+	local vid = level.vertex_id(probe:set(x, feet + 0.5, z))
+	if not valid_vertex(vid) then
+		return feet
+	end
+	local vp = level.vertex_position(vid)
+	local dx, dz = vp.x - x, vp.z - z
+	-- the nearest vertex may be far away (no AI map here) or on another floor
+	if dx * dx + dz * dz > 1.5 * 1.5 or math.abs(vp.y - feet) > 1.5 then
+		return feet
+	end
+	return vp.y
+end
+
+-- v9: where the head lies. On a slope it is not pushed back into the hill, and the camera
+-- never goes below the ground of the AI map.
+local function cam_ground(c, ap, now)
+	if c.t_gr and now < c.t_gr then
+		return
+	end
+	c.t_gr = now + CAM_GROUND_PERIOD
+	local ok = pcall(function()
+		local feet = ap.y
+		local back = LIE_BACK
+		local gy = ground_y(ap.x + c.bx * back, ap.z + c.bz * back, feet)
+		if gy - feet > SLOPE_UP then
+			back = LIE_BACK_SLOPE
+			gy = ground_y(ap.x + c.bx * back, ap.z + c.bz * back, feet)
+		end
+		c.back, c.gy = back, gy
+	end)
+	if not ok then
+		c.back, c.gy = LIE_BACK_SLOPE, nil
+	end
+end
+
+-- called every frame; returns true when the get-up is finished
+local function cam_update(now)
+	local c = CAM
+	local ap = db.actor:position()
+	cam_ground(c, ap, now)
+	local back = c.back or LIE_BACK
+	local lx, ly, lz = ap.x + c.bx * back, ap.y + LIE_HEIGHT, ap.z + c.bz * back
+	if c.gy and ly < c.gy + CAM_GROUND_GAP then
+		ly = c.gy + CAM_GROUND_GAP
+	end
+	local sx, sy, sz = ap.x + c.ex, ap.y + c.ey, ap.z + c.ez
+	local x, y, z, h, pitch, roll
+	local done = false
+	if c.mode == "fall" then
+		local k = (now - c.t0) / FALL_MS
+		if k >= 1 then
+			k = 1
+			c.mode, c.t0 = "lie", now
+			c.hit = now
+		end
+		local kp = k * k		-- falls faster and faster
+		local kb = smooth(k)	-- the feet slide forward evenly
+		x, y, z = sx + (lx - sx) * kb, sy + (ly - sy) * kp, sz + (lz - sz) * kb
+		h, pitch, roll = c.h, c.p + (LIE_PITCH - c.p) * kp, math.sin(k * math.pi) * 0.14
+	elseif c.mode == "rise" then
+		local k = (now - c.t0) / RISE_MS
+		if k >= 1 then
+			k = 1
+			done = true
+		end
+		local ks = smooth(k)
+		x, y, z = lx + (sx - lx) * ks, ly + (sy - ly) * ks, lz + (sz - lz) * ks
+		h, pitch, roll = c.h, LIE_PITCH + (c.p - LIE_PITCH) * ks, math.sin(k * math.pi) * -0.10
+	else
+		local t = (now - c.t0) / 1000
+		-- breathing and a slow sway of the head
+		x, z = lx, lz
+		y = ly + math.sin(t * 1.9) * 0.012
+		if c.hit then
+			-- the head bounces once after the impact
+			local ti = (now - c.hit) / 1000
+			if ti < 1.2 then
+				y = y + math.exp(-ti * 5) * math.sin(ti * 18) * 0.05
+			else
+				c.hit = nil
+			end
+		end
+		h = c.h + math.sin(t * 0.37) * 0.05
+		pitch = LIE_PITCH + math.sin(t * 1.9 + 1) * 0.015
+		roll = math.sin(t * 0.6) * 0.035
+	end
+	-- whatever the animation does, never under the ground
+	local floor = (c.gy and math.max(c.gy, ap.y) or ap.y) + CAM_GROUND_GAP
+	if y < floor then
+		y = floor
+	end
+	level.set_cam_custom_position_direction(cam_pos:set(x, y, z), cam_rot:set(h, pitch, roll), 1, false, false)
+	return done
+end
+
+---------------------------------------------------------------------
+-- leading the Reanimator to the player
+---------------------------------------------------------------------
+local function valid_lvid(v)
+	return type(v) == "number" and v >= 0 and v < 4294967295
+end
+
+-- "move to point" on the player's vertex; the beh scheme drops it on its own state
+-- changes, so it is given again on every tick
+local function order_move(rid)
+	local beh = beh_of(rid)
+	if not beh then
+		return false
+	end
+	local lvid = db.actor:level_vertex_id()
+	if not valid_lvid(lvid) then
+		return false
+	end
+	beh.rally_lvid = lvid
+	return true
+end
+
+-- v9: a vertex of the AI map around the player that is safe to stand on:
+-- 1.2-1.8 m away (not inside the player), on the player's height (not another floor, not
+-- under the terrain), not the player's own vertex. Directions behind the player's view first.
+local TP_RINGS = { 1.5, 1.8, 1.2 }
+local TP_ANGLES = { 180, 150, 210, 120, 240, 90, 270, 45, 315, 0 }
+local TP_MAX_DY = 1.0
+
+local function find_tp_vertex()
+	local actor = db.actor
+	local ap = actor:position()
+	local base = actor:level_vertex_id()
+	-- forward direction of the player BEFORE he fell (the camera now looks at the sky)
+	local fx, fz
+	if CAM then
+		fx, fz = -CAM.bx, -CAM.bz
+	else
+		local ad = actor:direction()
+		local len = math.sqrt(ad.x * ad.x + ad.z * ad.z)
+		if len > 0.05 then
+			fx, fz = ad.x / len, ad.z / len
+		else
+			fx, fz = 0, 1
+		end
+	end
+	local pt = vector()
+	for _, r in ipairs(TP_RINGS) do
+		for _, deg in ipairs(TP_ANGLES) do
+			local a = math.rad(deg)
+			local cs, sn = math.cos(a), math.sin(a)
+			local dx, dz = fx * cs - fz * sn, fx * sn + fz * cs
+			local vid = level.vertex_id(pt:set(ap.x + dx * r, ap.y + 0.5, ap.z + dz * r))
+			if valid_lvid(vid) and vid ~= base then
+				local vp = level.vertex_position(vid)
+				local hx, hz = vp.x - ap.x, vp.z - ap.z
+				local hd = math.sqrt(hx * hx + hz * hz)
+				if math.abs(vp.y - ap.y) <= TP_MAX_DY and hd >= 1.0 and hd <= 2.2 then
+					return vid, vp
+				end
+			end
+		end
+	end
+	return nil
+end
+
+-- puts the Reanimator next to the player. The position is the vertex position itself
+-- (height from the AI map). set_npc_position is what Quick Companion Teleport of this pack
+-- uses for online companions; alife():teleport_object is NOT called on purpose: it sends
+-- the NPC through offline/online and he would lose the kneeling in the middle of the revive.
+local function teleport(npc, why)
+	local vid, pos = find_tp_vertex()
+	if not vid then
+		cup_core.log("downed: no safe vertex next to the player, Reanimator id=%s is not teleported (%s)", npc:id(), why)
+		return false
+	end
+	local ap = db.actor:position()
+	npc:set_npc_position(pos)
+	cup_core.log("downed: Reanimator id=%s teleported to the player (%s): vertex %s, %s m from him, dy=%s", npc:id(), why, vid,
+		math.floor(pos:distance_to(ap) * 10) / 10, math.floor((pos.y - ap.y) * 100) / 100)
+	return true
+end
+
+-- what he is busy with, for the log
+local function describe(rid, npc)
+	local parts = {}
+	pcall(function()
+		local st = db.storage[rid]
+		local beh = st and st.beh
+		parts[#parts + 1] = "scheme=" .. tostring(st and st.active_scheme)
+		parts[#parts + 1] = "beh=" .. tostring(beh and beh.behavior)
+		parts[#parts + 1] = "rally=" .. tostring(beh and beh.rally_lvid)
+		parts[#parts + 1] = "state=" .. tostring(state_mgr and state_mgr.get_state and state_mgr.get_state(npc))
+		local be = npc:best_enemy()
+		parts[#parts + 1] = "enemy=" .. tostring(be and be:name())
+		local bd = npc:best_danger()
+		parts[#parts + 1] = "danger=" .. tostring(bd ~= nil)
+		parts[#parts + 1] = "wounded=" .. tostring(npc:wounded())
+	end)
+	pcall(function()
+		parts[#parts + 1] = "action=" .. tostring(npc:motivation_action_manager():current_action_id())
+	end)
+	return table.concat(parts, " ")
+end
+
+-- the last metres: in a crouch (the stealth sub-state of the companion logic)
+local function crouch_on(npc)
+	if S.crouch then
+		return
+	end
+	S.crouch = true
+	if not npc:has_info(STEALTH_INFO) then
+		npc:give_info_portion(STEALTH_INFO)
+		-- goes to the same list as the suspended orders: taken back by restore_orders
+		S.infos = type(S.infos) == "table" and S.infos or { off = {}, on = {} }
+		S.infos.on = S.infos.on or {}
+		S.infos.on[#S.infos.on + 1] = STEALTH_INFO
+	end
+end
+
+-- next to the player: kneels, faces him and stays like that until the work is done.
+-- The beh scheme sets its "wait" state itself every few seconds, so the kneeling state is
+-- put into its wait condlist (restored by restore_orders); set_state gives the look target.
+local function kneel(rid, npc)
+	local beh = beh_of(rid)
+	if beh and not kneel_orig[rid] and beh.wait_cond then
+		local cond = xr_logic.parse_condlist(nil, "cup_downed", "wait_anim", KNEEL_STATE)
+		if cond then
+			kneel_orig[rid] = beh.wait_cond
+			beh.wait_cond = cond
+		end
+	end
+	state_mgr.set_state(npc, KNEEL_STATE, nil, nil, { look_object = db.actor })
+end
+
+-- one step of leading; dist = current distance to the player
+local function lead(rid, npc, dist, now)
+	local ordered = order_move(rid)
+	S.t_resc = S.t_resc or now
+	if dist <= CROUCH_RANGE then
+		crouch_on(npc)
+	end
+	if dist <= REVIVE_RANGE then
+		kneel(rid, npc)
+	end
+	local step = dist <= CROUCH_RANGE and TP_STUCK_STEP_CLOSE or TP_STUCK_STEP
+	if not S.best or dist < S.best - step then
+		S.best, S.t_best = dist, now
+	end
+	local waited = now - S.t_resc
+	local why = nil
+	if dist > REVIVE_RANGE and now >= (S.tp or 0) then
+		if dist > TP_NEAR_RANGE then
+			if waited >= TP_FAR_MS then why = "too far" end
+		elseif waited >= TP_NEAR_MS then
+			why = "too slow"
+		elseif S.t_best and now - S.t_best >= TP_STUCK_MS then
+			why = "stuck"
+		end
+	end
+	if why then
+		local ok, res = pcall(teleport, npc, why)
+		if ok and res then
+			S.t_end = S.t_end + TP_BONUS_MS
+			S.best, S.t_best = nil, nil
+		elseif not ok then
+			cup_core.warn_once("down_tp", "downed: teleport failed: %s", res)
+		end
+		-- the next attempt not sooner than in TP_STUCK_MS
+		S.tp = now + TP_STUCK_MS
+	end
+	if cup_core.CFG.debug and now >= (S.t_dbg or 0) then
+		S.t_dbg = now + DBG_PERIOD
+		cup_core.dbg("downed: rescuer id=%s dist=%s best=%s waited=%s ms order=%s prog=%s %s", rid,
+			math.floor(dist * 10) / 10, S.best and math.floor(S.best * 10) / 10, waited, ordered, math.floor(S.prog), describe(rid, npc))
+	end
+end
+
+-- everything that is not stored in the save: input, weapon, screen effects, HUD
+-- first: the knockdown itself (false when the state is restored from a save)
+local function effects_on(first)
+	local actor = db.actor
+	pcall(function()
+		if actor:is_talking() then
+			actor:stop_talk()
+		end
+		hide_hud_inventory()
+	end)
+	level.disable_input()
+	pcall(function() actor:hide_weapon() end)
+	-- the "death": the camera falls on its back (v6), a red flash
+	local own_cam = cam_start(first)
+	if first then
+		if not own_cam then
+			pcall(function() level.add_cam_effector("camera_effects\\surge_02.anm", CAM_FALL, false, "") end)
+		end
+		pcall(function() level.add_pp_effector("bloody.ppe", PPE_BLOOD, false) end)
+	end
+	pcall(function() level.add_pp_effector("actor_death.ppe", PPE_DEATH, true) end)
+	pcall(function() level.add_pp_effector("snd_shock.ppe", PPE_SHOCK, true) end)
+	hud_on()
+end
+
+-- the last step of leaving the state: the camera and the controls go back to the player
+local function release_controls()
+	cam_stop()
+	level.enable_input()
+	pcall(function() db.actor:restore_weapon() end)
+end
+
+-- get_up: true after a revive - the camera gets up first (RISE_MS), the controls come back
+-- when it is done (see actor_on_update); in every other case everything is dropped at once,
+-- so that the vanilla death camera works
+local function effects_off(get_up)
+	pcall(function() level.remove_pp_effector(PPE_DEATH) end)
+	pcall(function() level.remove_pp_effector(PPE_SHOCK) end)
+	pcall(function() level.remove_pp_effector(PPE_BLOOD) end)
+	pcall(function() level.remove_cam_effector(CAM_FALL) end)
+	hud_off()
+	if get_up and CAM and db.actor and db.actor:alive() then
+		CAM.mode, CAM.t0, CAM.hit = "rise", time_global(), nil
+		return
+	end
+	release_controls()
+end
+
+local function news(npc, str_id, ...)
+	-- v4: "Hold on!" comes from the banter pool when it is on
+	if str_id == "st_cup_down_start" and npc and cup_banter and cup_banter.event and cup_banter.event("down", npc, true) then
+		return
+	end
+	local text = cup_core.tr(str_id, ...)
+	local ok = npc and pcall(function()
+		dynamic_news_helper.send_tip(text, cup_core.fmtname(npc), nil, 8, npc:character_icon(), "beep_1", "npc")
+	end)
+	if not ok then
+		actor_menu.set_msg(1, text, 8)
+	end
+end
+
+---------------------------------------------------------------------
+-- state changes
+---------------------------------------------------------------------
+local function enter(who_id, rid)
+	local now = time_global()
+	local actor = db.actor
+	S = { t_end = now + DOWN_TIME, prog = 0, who = who_id, rid = nil, infos = nil, t_last = now, t_msg = 0 }
+	set_hp(actor, FLOOR_HP)
+	stop_bleeding(actor)
+	bhs_floor(BHS_DOWN)
+	effects_on(true)
+	set_rescuer(rid)
+	cup_core.log("downed: the player is knocked down (killer id=%s), Reanimator id=%s, %s s to live", who_id, rid, DOWN_TIME / 1000)
+	news(cup_core.COMP[rid], "st_cup_down_start")
+end
+
+local function leave(get_up)
+	local st = S
+	S = nil
+	if st then
+		restore_orders(st.rid, st.infos)
+	end
+	effects_off(get_up)
+	return st
+end
+
+local function revive()
+	local st = leave(true)
+	local actor = db.actor
+	set_hp(actor, REVIVE_HP)
+	stop_bleeding(actor)
+	bhs_floor(BHS_UP)
+	pcall(function() actor.power = 1 end)
+	if bind_stalker_ext then
+		bind_stalker_ext.invulnerable_time = time_global() + REVIVE_SAFE
+	end
+	cd_until = cup_core.game_sec() + COOLDOWN
+	local rid = st and st.rid
+	local npc = rid and cup_core.COMP[rid]
+	cup_core.log("downed: the player was revived by id=%s, next save in %s game hours", rid, COOLDOWN / 3600)
+	if npc then
+		local rec = cup_core.get_rec(rid, true)
+		if rec then
+			rec.st.rev = (rec.st.rev or 0) + 1
+		end
+		cup_core.add_xp(rid, cup_perks.XP_MEDIC_REVIVE, "revive_actor")
+	end
+	news(npc, "st_cup_down_revived", COOLDOWN / 3600)
+	if npc and cup_banter and cup_banter.event then
+		cup_banter.event("revived", npc, true)
+	end
+end
+
+-- the real death: the original engine callback runs with the remembered killer
+local function die(reason)
+	local st = leave()
+	cup_core.log("downed: the player dies (%s)", reason)
+	if not orig then
+		db.actor:kill(db.actor)
+		return
+	end
+	dying = true
+	local ok, err = pcall(orig, nil, st and st.who or 0)
+	dying = false
+	if not ok then
+		cup_core.warn_once("down_die", "downed: original death handler failed: %s", err)
+		db.actor:kill(db.actor, true)
+	end
+end
+
+---------------------------------------------------------------------
+-- the wrapper of bind_stalker_ext.actor_on_before_death
+---------------------------------------------------------------------
+local function try_save(who_id)
+	local actor = db.actor
+	if not (actor and cup_core.is_started()) then
+		return false
+	end
+	if S then
+		-- still on the ground: something pushed the health to zero again
+		set_hp(actor, FLOOR_HP)
+		bhs_floor(BHS_DOWN)
+		return true
+	end
+	local CFG = cup_core.CFG
+	if not (CFG.enable and CFG.en.medic and CFG.actor_down) then
+		return false
+	end
+	if has_alife_info("bar_arena_fight") or has_alife_info("bar_arena_start") then
+		return false
+	end
+	-- the emission / psi-storm kills with kill(actor): who is the actor himself
+	if who_id == actor:id() and GetEvent and (GetEvent("surge", "state") or GetEvent("psi_storm", "state")) then
+		return false
+	end
+	local left = cooldown_left()
+	if left > 0 then
+		cup_core.log("downed: lethal hit during the cooldown (%s game s left) - no second chance", left)
+		return false
+	end
+	local rid = find_rescuer()
+	if not rid then
+		return false
+	end
+	enter(who_id, rid)
+	return true
+end
+
+local function before_death(binder, who_id)
+	if not dying then
+		local ok, saved = pcall(try_save, who_id)
+		if not ok then
+			cup_core.warn_once("down_hook", "downed: error in the death hook: %s", saved)
+			if S then
+				pcall(leave)
+			end
+		elseif saved then
+			return
+		end
+	end
+	return orig(binder, who_id)
+end
+
+---------------------------------------------------------------------
+-- update
+---------------------------------------------------------------------
+local function update_down(now)
+	local actor = db.actor
+	if not actor:alive() then
+		-- killed past the hook (kill(actor, true) of another script)
+		leave()
+		return
+	end
+	local dt = now - (S.t_last or now)
+	S.t_last = now
+	if dt < 0 then dt = 0 elseif dt > 1000 then dt = 1000 end
+
+	if actor.health < FLOOR_HP then
+		set_hp(actor, FLOOR_HP)
+	end
+	stop_bleeding(actor)
+	bhs_floor(BHS_DOWN)
+
+	local CFG = cup_core.CFG
+	if not (CFG.enable and CFG.en.medic and CFG.actor_down) then
+		die("switched off in MCM")
+		return
+	end
+
+	-- the Reanimator
+	local rid = S.rid
+	local npc = rid and cup_core.COMP[rid]
+	if not (npc and is_reanimator(rid, npc)) then
+		rid = find_rescuer()
+		set_rescuer(rid)
+		npc = rid and cup_core.COMP[rid]
+	end
+	local dist = nil
+	if npc then
+		S.t_none = nil
+		dist = npc:position():distance_to(actor:position())
+		local ok, err = pcall(lead, rid, npc, dist, now)
+		if not ok then
+			cup_core.warn_once("down_lead", "downed: leading the Reanimator failed: %s", err)
+		end
+		dist = npc:position():distance_to(actor:position())
+		if dist <= REVIVE_RANGE then
+			S.prog = S.prog + dt
+			S.t_end = S.t_end + dt		-- the clock stops while he works
+			if S.prog >= REVIVE_TIME then
+				revive()
+				return
+			end
+		end
+	else
+		S.t_none = S.t_none or now
+		if now - S.t_none >= NO_RESCUER_GRACE then
+			die("no Reanimator left")
+			return
+		end
+	end
+
+	local left = S.t_end - now
+	if left <= 0 then
+		die("nobody came in time")
+		return
+	end
+
+	local working = npc ~= nil and dist <= REVIVE_RANGE
+	if now >= (S.t_msg or 0) then
+		S.t_msg = now + 500
+		local secs = math.ceil(left / 1000)
+		if not npc then
+			S.text = cup_core.tr("st_cup_down_hud_none", secs)
+		elseif working then
+			-- v8: no percentage, the progress is a bar (the text stays for a HUD without the bar)
+			S.text = (HUD and HUD.help_fill) and "" or game.translate_string("st_cup_down_help")
+		else
+			S.text = cup_core.tr("st_cup_down_hud_run", cup_core.fmtname(npc), math.floor(dist), secs)
+		end
+		if not HUD then
+			-- no HUD (it failed to build): fall back to the plain message
+			actor_menu.set_msg(1, S.text, 2)
+		end
+	end
+	if now >= (S.t_flash or 0) then
+		S.t_flash = now + BLOOD_FLASH
+		pcall(function() level.add_pp_effector("bloody.ppe", PPE_BLOOD, false) end)
+	end
+	if HUD then
+		local ok = pcall(HUD.Set, HUD, left / DOWN_TIME, working, S.text)
+		ok = ok and pcall(HUD.SetHelp, HUD, working and (S.prog / REVIVE_TIME) or nil)
+		if not ok then
+			hud_off()
+		end
+	end
+end
+
+local function actor_on_update()
+	local now = time_global()
+	-- the camera needs every frame
+	if CAM then
+		local actor = db.actor
+		if not (actor and actor:alive()) then
+			-- dead: nothing of ours may stay between the player and the death camera
+			pcall(release_controls)
+		else
+			local ok, done = pcall(cam_update, now)
+			if not ok then
+				cup_core.warn_once("down_cam_upd", "downed: camera error, back to the normal view: %s", done)
+				CAM = nil
+				pcall(function() level.remove_cam_custom_position_direction() end)
+				if not S then
+					pcall(release_controls)
+				end
+			elseif done then
+				release_controls()
+			end
+		end
+	end
+	if not (S or pending) then
+		if HUD then
+			hud_off()
+		end
+		return
+	end
+	if now < t_next then
+		return
+	end
+	t_next = now + TICK
+	if not (db.actor and cup_core.is_started()) then
+		return
+	end
+	if pending then
+		-- the game was saved while the player was on the ground
+		local d = pending
+		pending = nil
+		local ok, err = pcall(function()
+			S = { t_end = now + (tonumber(d.left) or DOWN_TIME), prog = tonumber(d.prog) or 0, who = tonumber(d.who) or 0,
+				rid = tonumber(d.rid), infos = type(d.infos) == "table" and d.infos or nil, t_last = now, t_msg = 0 }
+			effects_on(false)
+			cup_core.log("downed: state restored from the save (%s ms left)", S.t_end - now)
+		end)
+		if not ok then
+			S = nil
+			pcall(effects_off)
+			cup_core.warn_once("down_restore", "downed: state was not restored: %s", err)
+		end
+		return
+	end
+	local ok, err = pcall(update_down, now)
+	if not ok then
+		-- never leave the player lying with the input switched off
+		cup_core.warn_once("down_update", "downed: update error, the player is released: %s", err)
+		pcall(leave)
+	end
+end
+
+-- hits do nothing to a downed player
+local function actor_on_before_hit(shit, bone_id, flags)
+	if S and flags then
+		flags.ret_value = false
+	end
+end
+
+-- stalkers do not finish off a downed player
+local function on_enemy_eval(obj, enemy, flags)
+	if not (S and flags) then
+		return
+	end
+	if enemy and enemy:id() == 0 then
+		flags.override = true
+		flags.result = false
+	elseif obj and S.rid and obj:id() == S.rid then
+		-- v7: the Reanimator on his way sees no enemies at all
+		flags.override = true
+		flags.result = false
+	end
+end
+
+---------------------------------------------------------------------
+-- persistence (called by cup_core)
+---------------------------------------------------------------------
+-- v9: the Reanimator on his way reacts to no danger either (grenades, shots, corpses):
+-- xr_danger asks this callback first, ret_value = false means "no danger"
+local function npc_on_eval_danger(npc, flags)
+	if S and S.rid and npc and flags and npc:id() == S.rid then
+		flags.ret_value = false
+	end
+end
+
+function save()
+	local d = { cd = cd_until }
+	if S then
+		-- only plain values go to the save; effects and the HUD are rebuilt after loading
+		d.st = { left = math.max(1000, S.t_end - time_global()), prog = S.prog, who = S.who, rid = S.rid, infos = S.infos }
+	end
+	return d
+end
+
+function load(d)
+	hud_off()
+	-- load() runs while the level is being built: touching the engine camera here crashes the
+	-- game natively (pcall cannot catch it), so only forget our own state. The engine creates
+	-- a fresh camera for the new level anyway.
+	CAM = nil
+	S = nil
+	pending = nil
+	cd_until = 0
+	if type(d) ~= "table" then
+		return
+	end
+	cd_until = tonumber(d.cd) or 0
+	if type(d.st) == "table" then
+		pending = d.st
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		local ext = bind_stalker_ext
+		if ext and type(ext.actor_on_before_death) == "function" then
+			-- the actor binder reads this field when the actor spawns, i.e. after on_game_start
+			orig = ext.actor_on_before_death
+			ext.actor_on_before_death = before_death
+		else
+			printf("%s", "![CUP] bind_stalker_ext.actor_on_before_death not found, the player cannot be knocked down")
+		end
+		RegisterScriptCallback("actor_on_update", actor_on_update)
+		RegisterScriptCallback("actor_on_before_hit", actor_on_before_hit)
+		RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
+		RegisterScriptCallback("npc_on_eval_danger", npc_on_eval_danger)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_downed.on_game_start failed: " .. tostring(err))
+	end
+end

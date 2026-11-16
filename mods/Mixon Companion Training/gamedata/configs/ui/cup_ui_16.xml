@@ -1,0 +1,543 @@
+<w>
+	<background x="43" y="104" width="938" height="560" stretch="1">
+		<texture>cup_bg</texture>
+	</background>
+	<head_back x="4" y="6" width="928" height="92" stretch="1">
+		<texture>cup_panel</texture>
+	</head_back>
+	<pframe x="15" y="12" width="81" height="76" stretch="1">
+		<texture>cup_frame</texture>
+	</pframe>
+	<portrait x="20" y="18" width="72" height="64" stretch="1"></portrait>
+	<name x="105" y="9" width="330" height="26">
+		<text font="graffiti22" align="l" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</name>
+	<sub x="105" y="36" width="330" height="18">
+		<text font="letterica16" align="l" vert_align="c" r="175" g="170" b="140" complex_mode="0"/>
+	</sub>
+	<money x="675" y="12" width="226" height="22">
+		<text font="letterica16" align="r" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</money>
+	<money_icon x="906" y="14" width="14" height="18" stretch="1">
+		<texture>cup_ico_ru</texture>
+	</money_icon>
+	<level x="105" y="58" width="82" height="18">
+		<text font="letterica16" align="l" vert_align="c" r="225" g="215" b="180" complex_mode="0"/>
+	</level>
+	<xp_back x="188" y="60" width="248" height="14" stretch="1">
+		<texture>cup_bar_back</texture>
+	</xp_back>
+	<xp_fill x="190" y="63" width="243" height="8" stretch="1">
+		<texture>cup_bar_fill</texture>
+	</xp_fill>
+	<xp_text x="442" y="58" width="128" height="18">
+		<text font="letterica16" align="l" vert_align="c" r="175" g="170" b="140" complex_mode="0"/>
+	</xp_text>
+	<points x="728" y="58" width="174" height="18">
+		<text font="letterica16" align="r" vert_align="c" r="130" g="225" b="110" complex_mode="0"/>
+	</points>
+	<pts_icon x="906" y="58" width="14" height="18" stretch="1">
+		<texture>cup_ico_point</texture>
+	</pts_icon>
+	<stats x="105" y="78" width="818" height="18">
+		<text font="letterica16" align="l" vert_align="c" r="150" g="148" b="128" complex_mode="0"/>
+	</stats>
+	<line_1 x="4" y="99" width="928" height="2" stretch="1">
+		<texture>cup_tex_white</texture>
+	</line_1>
+	<line_1b x="4" y="101" width="928" height="1" stretch="1">
+		<texture>cup_tex_white</texture>
+	</line_1b>
+	<plate_1 x="15" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_1>
+	<bicon_1 x="19" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_shooter</texture>
+	</bicon_1>
+	<title_1 x="33" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_1>
+	<cell_1_1 x="15" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_1_1>
+	<mark_1_1 x="17" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_1_1>
+	<node_1_1 x="15" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_1_1>
+	<conn_1_1 x="76" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_1_1>
+	<cell_1_2 x="15" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_1_2>
+	<mark_1_2 x="17" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_1_2>
+	<node_1_2 x="15" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_1_2>
+	<conn_1_2 x="76" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_1_2>
+	<cell_1_3 x="15" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_1_3>
+	<mark_1_3 x="17" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_1_3>
+	<node_1_3 x="15" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_1_3>
+	<cell_1_4 x="15" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_1_4>
+	<mark_1_4 x="17" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_1_4>
+	<node_1_4 x="15" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_1_4>
+	<plate_2 x="145" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_2>
+	<bicon_2 x="148" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_tough</texture>
+	</bicon_2>
+	<title_2 x="163" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_2>
+	<cell_2_1 x="145" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_2_1>
+	<mark_2_1 x="147" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_2_1>
+	<node_2_1 x="145" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_2_1>
+	<conn_2_1 x="206" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_2_1>
+	<cell_2_2 x="145" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_2_2>
+	<mark_2_2 x="147" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_2_2>
+	<node_2_2 x="145" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_2_2>
+	<conn_2_2 x="206" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_2_2>
+	<cell_2_3 x="145" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_2_3>
+	<mark_2_3 x="147" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_2_3>
+	<node_2_3 x="145" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_2_3>
+	<cell_2_4 x="145" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_2_4>
+	<mark_2_4 x="147" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_2_4>
+	<node_2_4 x="145" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_2_4>
+	<plate_3 x="274" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_3>
+	<bicon_3 x="278" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_medic</texture>
+	</bicon_3>
+	<title_3 x="292" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_3>
+	<cell_3_1 x="274" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_3_1>
+	<mark_3_1 x="277" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_3_1>
+	<node_3_1 x="274" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_3_1>
+	<conn_3_1 x="336" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_3_1>
+	<cell_3_2 x="274" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_3_2>
+	<mark_3_2 x="277" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_3_2>
+	<node_3_2 x="274" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_3_2>
+	<conn_3_2 x="336" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_3_2>
+	<cell_3_3 x="274" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_3_3>
+	<mark_3_3 x="277" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_3_3>
+	<node_3_3 x="274" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_3_3>
+	<cell_3_4 x="274" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_3_4>
+	<mark_3_4 x="277" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_3_4>
+	<node_3_4 x="274" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_3_4>
+	<plate_4 x="404" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_4>
+	<bicon_4 x="408" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_scout</texture>
+	</bicon_4>
+	<title_4 x="422" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_4>
+	<cell_4_1 x="404" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_4_1>
+	<mark_4_1 x="406" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_4_1>
+	<node_4_1 x="404" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_4_1>
+	<conn_4_1 x="465" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_4_1>
+	<cell_4_2 x="404" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_4_2>
+	<mark_4_2 x="406" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_4_2>
+	<node_4_2 x="404" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_4_2>
+	<conn_4_2 x="465" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_4_2>
+	<cell_4_3 x="404" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_4_3>
+	<mark_4_3 x="406" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_4_3>
+	<node_4_3 x="404" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_4_3>
+	<cell_4_4 x="404" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_4_4>
+	<mark_4_4 x="406" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_4_4>
+	<node_4_4 x="404" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_4_4>
+	<plate_5 x="534" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_5>
+	<bicon_5 x="538" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_carrier</texture>
+	</bicon_5>
+	<title_5 x="552" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_5>
+	<cell_5_1 x="534" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_5_1>
+	<mark_5_1 x="536" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_5_1>
+	<node_5_1 x="534" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_5_1>
+	<conn_5_1 x="595" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_5_1>
+	<cell_5_2 x="534" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_5_2>
+	<mark_5_2 x="536" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_5_2>
+	<node_5_2 x="534" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_5_2>
+	<conn_5_2 x="595" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_5_2>
+	<cell_5_3 x="534" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_5_3>
+	<mark_5_3 x="536" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_5_3>
+	<node_5_3 x="534" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_5_3>
+	<cell_5_4 x="534" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_5_4>
+	<mark_5_4 x="536" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_5_4>
+	<node_5_4 x="534" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_5_4>
+	<plate_6 x="664" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_6>
+	<bicon_6 x="668" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_leader</texture>
+	</bicon_6>
+	<title_6 x="682" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_6>
+	<cell_6_1 x="664" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_6_1>
+	<mark_6_1 x="666" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_6_1>
+	<node_6_1 x="664" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_6_1>
+	<conn_6_1 x="725" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_6_1>
+	<cell_6_2 x="664" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_6_2>
+	<mark_6_2 x="666" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_6_2>
+	<node_6_2 x="664" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_6_2>
+	<conn_6_2 x="725" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_6_2>
+	<cell_6_3 x="664" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_6_3>
+	<mark_6_3 x="666" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_6_3>
+	<node_6_3 x="664" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_6_3>
+	<cell_6_4 x="664" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_6_4>
+	<mark_6_4 x="666" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_6_4>
+	<node_6_4 x="664" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_6_4>
+	<plate_7 x="794" y="110" width="124" height="26" stretch="1">
+		<texture>cup_plate</texture>
+	</plate_7>
+	<bicon_7 x="797" y="114" width="14" height="18" stretch="1">
+		<texture>cup_ico_artefact</texture>
+	</bicon_7>
+	<title_7 x="812" y="110" width="104" height="26">
+		<text font="letterica16" align="c" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</title_7>
+	<cell_7_1 x="794" y="144" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_7_1>
+	<mark_7_1 x="796" y="148" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_7_1>
+	<node_7_1 x="794" y="144" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_7_1>
+	<conn_7_1 x="855" y="172" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_7_1>
+	<cell_7_2 x="794" y="178" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_7_2>
+	<mark_7_2 x="796" y="182" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_7_2>
+	<node_7_2 x="794" y="178" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_7_2>
+	<conn_7_2 x="855" y="206" width="2" height="6" stretch="1">
+		<texture>cup_tex_white</texture>
+	</conn_7_2>
+	<cell_7_3 x="794" y="212" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_7_3>
+	<mark_7_3 x="796" y="216" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_7_3>
+	<node_7_3 x="794" y="212" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_7_3>
+	<cell_7_4 x="794" y="246" width="124" height="28" stretch="1">
+		<texture>cup_cell</texture>
+	</cell_7_4>
+	<mark_7_4 x="796" y="250" width="4" height="20" stretch="1">
+		<texture>cup_tex_white</texture>
+	</mark_7_4>
+	<node_7_4 x="794" y="246" width="124" height="28" stretch="1">
+		<texture>cup_node</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</node_7_4>
+	<line_2 x="4" y="281" width="928" height="1" stretch="1">
+		<texture>cup_tex_white</texture>
+	</line_2>
+	<desc_back x="15" y="288" width="908" height="186" stretch="1">
+		<texture>cup_panel</texture>
+	</desc_back>
+	<desc_bt x="15" y="288" width="908" height="1" stretch="1">
+		<texture>cup_tex_white</texture>
+	</desc_bt>
+	<desc_bb x="15" y="473" width="908" height="1" stretch="1">
+		<texture>cup_tex_white</texture>
+	</desc_bb>
+	<desc_bl x="15" y="288" width="1" height="186" stretch="1">
+		<texture>cup_tex_white</texture>
+	</desc_bl>
+	<desc_br x="922" y="288" width="1" height="186" stretch="1">
+		<texture>cup_tex_white</texture>
+	</desc_br>
+	<desc_title x="22" y="293" width="420" height="24">
+		<text font="letterica18" align="l" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</desc_title>
+	<cost_pts x="698" y="293" width="68" height="24">
+		<text font="letterica18" align="r" vert_align="c" r="130" g="225" b="110" complex_mode="0"/>
+	</cost_pts>
+	<cost_pts_icon x="768" y="296" width="14" height="18" stretch="1">
+		<texture>cup_ico_point</texture>
+	</cost_pts_icon>
+	<cost_ru x="788" y="293" width="105" height="24">
+		<text font="letterica18" align="r" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</cost_ru>
+	<cost_ru_icon x="897" y="296" width="14" height="18" stretch="1">
+		<texture>cup_ico_ru</texture>
+	</cost_ru_icon>
+	<desc_sep x="22" y="320" width="892" height="1" stretch="1">
+		<texture>cup_tex_white</texture>
+	</desc_sep>
+	<desc_text x="22" y="326" width="892" height="142">
+		<text font="letterica16" align="l" vert_align="t" r="205" g="198" b="165" complex_mode="1"/>
+	</desc_text>
+	<hint x="15" y="478" width="908" height="22">
+		<text font="letterica16" align="l" vert_align="c" r="255" g="150" b="80" complex_mode="0"/>
+	</hint>
+	<list_title x="15" y="110" width="338" height="26">
+		<text font="letterica16" align="l" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</list_title>
+	<row_1 x="15" y="144" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_1>
+	<row_2 x="15" y="174" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_2>
+	<row_3 x="15" y="204" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_3>
+	<row_4 x="15" y="234" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_4>
+	<row_5 x="15" y="264" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_5>
+	<row_6 x="15" y="294" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_6>
+	<row_7 x="15" y="324" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_7>
+	<row_8 x="15" y="354" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_8>
+	<row_9 x="15" y="384" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_9>
+	<row_10 x="15" y="414" width="338" height="26" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</row_10>
+	<mem_title x="375" y="110" width="548" height="26">
+		<text font="letterica16" align="l" vert_align="c" r="235" g="195" b="95" complex_mode="0"/>
+	</mem_title>
+	<mem_text x="375" y="144" width="548" height="320">
+		<text font="letterica16" align="l" vert_align="t" r="185" g="180" b="150" complex_mode="1"/>
+	</mem_text>
+	<btn_squad x="15" y="512" width="112" height="30" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</btn_squad>
+	<btn_learn x="502" y="512" width="128" height="30" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</btn_learn>
+	<btn_reset x="638" y="512" width="188" height="30" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</btn_reset>
+	<btn_close x="832" y="512" width="90" height="30" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text font="letterica16" align="c" vert_align="c" r="225" g="215" b="180"/>
+	</btn_close>
+</w>

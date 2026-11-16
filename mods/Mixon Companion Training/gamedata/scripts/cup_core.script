@@ -1,0 +1,798 @@
+--[[
+	Mixon Companion Training (CUP) - core: records, XP, levels, perk cache, persistence.
+
+	Storage:
+		alife_storage_manager.get_se_obj_state(se_npc, true).cup   - per companion (dropped by the engine on unregister)
+		m_data.cup = { v = 2, memorial = {...}, down = {...} }     - global (down: player-downed cooldown/state)
+
+	PERK / AURA / COMP are shared with the other cup_* scripts and are never reassigned
+	(hot callbacks keep direct references to them).
+]]
+
+PERK = {}	-- [id] = resolved perk table (current, online, alive companions only)
+AURA = {}	-- [id] = { disp, inc, xp, share } from a nearby Commander
+COMP = {}	-- [id] = game_object
+
+CFG = {
+	enable = true, xp_mult = 1, cost_mult = 1, power = 1,
+	en = { shooter = true, tough = true, medic = true, scout = true, carrier = true, leader = true, artefact = true },
+	medic_free = true, medic_vodka = true, booze = false, booze_min = 60, notify = true, scout_news = true, dbno_bridge = true,
+	actor_down = true, art_news = true,
+	key_open = -1, debug = false,
+}
+
+local MEM = {}			-- memorial
+local MEM_MAX = 30
+local dirty = true
+local started = false
+local disabled = {}		-- sub-modules switched off after an error
+local warned = {}
+local t_main, t_scout, t_slow = 0, 0, 0
+local last_gs = nil
+local monster_xp_by_cls = nil
+
+---------------------------------------------------------------------
+-- logging
+---------------------------------------------------------------------
+local function fmtsafe(fmt, ...)
+	local n = select("#", ...)
+	if n == 0 then
+		return tostring(fmt)
+	end
+	local a = { ... }
+	for i = 1, n do
+		a[i] = tostring(a[i])
+	end
+	local ok, s = pcall(string.format, tostring(fmt), unpack(a, 1, n))
+	return ok and s or tostring(fmt)
+end
+
+function log(fmt, ...)
+	printf("%s", "[CUP] " .. fmtsafe(fmt, ...))
+end
+
+function dbg(fmt, ...)
+	if CFG.debug then
+		printf("%s", "[CUP][dbg] " .. fmtsafe(fmt, ...))
+	end
+end
+
+function warn_once(key, fmt, ...)
+	if warned[key] then
+		return
+	end
+	warned[key] = true
+	printf("%s", "![CUP] " .. fmtsafe(fmt, ...))
+end
+
+-- runs a sub-module function; on error the sub-module is switched off for the session
+function safe(name, f, ...)
+	if disabled[name] or not f then
+		return
+	end
+	local ok, err = pcall(f, ...)
+	if not ok then
+		disabled[name] = true
+		warn_once("mod_" .. name, "module '%s' disabled after error: %s", name, err)
+	end
+	return ok
+end
+
+function fmtname(npc)
+	local ok, s = pcall(function() return npc:character_name() end)
+	return ok and tostring(s) or "?"
+end
+
+function tr(str_id, ...)
+	return fmtsafe(game.translate_string(str_id), ...)
+end
+
+---------------------------------------------------------------------
+-- time
+---------------------------------------------------------------------
+function game_sec()
+	local ok, v = pcall(function()
+		return game.get_game_time():diffSec(level.get_start_time())
+	end)
+	return ok and math.floor(tonumber(v) or 0) or 0
+end
+
+---------------------------------------------------------------------
+-- records
+---------------------------------------------------------------------
+-- v1 -> v2: tiers cost 1 / 2 / 3 points and levels 4, 7, 10 give 2 points.
+-- v2 -> v3: Medic: Field Surgeon = tier 3, Reanimator = separate perk (4 points).
+-- Free points are recomputed; if the bought perks no longer fit, everything is refunded.
+function migrate_rec(id, r)
+	local old_v, old_pts = r.v, r.pts
+	cup_perks.migrate_structure(r)
+	local earned = cup_perks.earned_points(r.lvl)
+	local spent = cup_perks.spent_points(r)
+	if spent > earned then
+		r.br = {}
+		r.ch = {}
+		r.ex = {}
+		r.pts = earned
+		log("migration v%s -> v%s: id=%s lvl=%s perks cost %s points, only %s earned: ALL PERKS REFUNDED, free points %s",
+			old_v, cup_perks.REC_VERSION, id, r.lvl, spent, earned, r.pts)
+	else
+		r.pts = earned - spent
+		log("migration v%s -> v%s: id=%s lvl=%s earned %s, spent %s, free points %s -> %s",
+			old_v, cup_perks.REC_VERSION, id, r.lvl, earned, spent, old_pts, r.pts)
+	end
+	r.v = cup_perks.REC_VERSION
+	PERK[id] = nil
+end
+
+function get_rec(id, create)
+	if not id then
+		return nil
+	end
+	local se = alife_object(id)
+	if not se then
+		return nil
+	end
+	local st = alife_storage_manager.get_se_obj_state(se, create and true or false)
+	if not st then
+		return nil
+	end
+	local r = st.cup
+	if type(r) ~= "table" then
+		if not create then
+			return nil
+		end
+		r = { v = cup_perks.REC_VERSION, xp = 0, lvl = 1, pts = 0, br = {}, ch = {}, ex = {}, st = { ks = 0, km = 0, rev = 0, heal = 0, gs = 0 }, cd = {} }
+		r.st.join = game_sec()
+		st.cup = r
+		dbg("record created for id=%s", id)
+	end
+	r.xp = tonumber(r.xp) or 0
+	r.lvl = tonumber(r.lvl) or 1
+	r.pts = tonumber(r.pts) or 0
+	r.br = type(r.br) == "table" and r.br or {}
+	r.ch = type(r.ch) == "table" and r.ch or {}
+	r.ex = type(r.ex) == "table" and r.ex or {}
+	r.st = type(r.st) == "table" and r.st or {}
+	r.cd = type(r.cd) == "table" and r.cd or {}
+	if (tonumber(r.v) or 1) < cup_perks.REC_VERSION then
+		migrate_rec(id, r)
+	end
+	return r
+end
+
+function get_memorial()
+	return MEM
+end
+
+function bridge_ok()
+	return cup_dbno_bridge and cup_dbno_bridge.available and cup_dbno_bridge.available() or false
+end
+
+function mark_dirty()
+	dirty = true
+	t_main = 0
+end
+
+local function drop(id)
+	COMP[id] = nil
+	PERK[id] = nil
+	AURA[id] = nil
+end
+
+local function clear_all()
+	for id in pairs(COMP) do COMP[id] = nil end
+	for id in pairs(PERK) do PERK[id] = nil end
+	for id in pairs(AURA) do AURA[id] = nil end
+end
+
+function rebuild_perk(id)
+	local rec = get_rec(id, true)
+	if not rec then
+		PERK[id] = nil
+		return
+	end
+	PERK[id] = cup_perks.resolve(rec, CFG.power, CFG.en, bridge_ok())
+end
+
+function refresh_companions()
+	local seen = {}
+	local ntc = axr_companions and axr_companions.non_task_companions
+	local hostages = axr_task_manager and axr_task_manager.hostages_by_id
+	if type(ntc) == "table" then
+		for id in pairs(ntc) do
+			local st = db.storage[id]
+			local obj = st and st.object or level.object_by_id(id)
+			if obj and IsStalker(obj) and obj:alive() and obj:has_info("npcx_is_companion") and not (hostages and hostages[id]) then
+				seen[id] = obj
+			end
+		end
+	end
+	for id in pairs(COMP) do
+		if not seen[id] then
+			drop(id)
+		end
+	end
+	for id, obj in pairs(seen) do
+		if COMP[id] ~= obj then
+			COMP[id] = obj
+			PERK[id] = nil
+		end
+	end
+end
+
+function is_started()
+	return started
+end
+
+function is_companion(id)
+	return id and COMP[id] ~= nil or false
+end
+
+-- sorted list of current companion ids
+function list_ids()
+	local t = {}
+	for id in pairs(COMP) do
+		t[#t + 1] = id
+	end
+	table.sort(t)
+	return t
+end
+
+---------------------------------------------------------------------
+-- XP and levels
+---------------------------------------------------------------------
+local function notify_levelup(id, rec)
+	if not CFG.notify then
+		return
+	end
+	local npc = COMP[id]
+	if not npc then
+		return
+	end
+	pcall(function()
+		local header = fmtsafe("%s, %s", npc:character_name(), game.translate_string(npc:character_community()))
+		local text = tr("st_cup_news_levelup", rec.lvl, rec.pts)
+		dynamic_news_helper.send_tip(text, header, nil, 8, npc:character_icon(), "beep_1", "npc")
+	end)
+end
+
+function add_xp(id, base, reason)
+	if not CFG.enable or not base or base <= 0 or not COMP[id] then
+		return
+	end
+	local rec = get_rec(id, true)
+	if not rec then
+		return
+	end
+	local mult = CFG.xp_mult
+	local a = AURA[id]
+	if a and a.xp then
+		mult = mult * (1 + a.xp)
+	end
+	local gain = base * mult
+	local XP = cup_perks.XP
+	local MAX = cup_perks.MAX_LEVEL
+	if rec.lvl >= MAX then
+		rec.xp = math.min(rec.xp + gain, XP[MAX])
+		return
+	end
+	rec.xp = rec.xp + gain
+	local ups = 0
+	while rec.lvl < MAX and rec.xp >= XP[rec.lvl + 1] do
+		rec.lvl = rec.lvl + 1
+		rec.pts = rec.pts + cup_perks.level_points(rec.lvl)
+		ups = ups + 1
+	end
+	dbg("xp id=%s +%s (%s, x%s) -> %s, lvl %s", id, gain, reason, mult, rec.xp, rec.lvl)
+	if ups > 0 then
+		PERK[id] = nil
+		mark_dirty()
+		log("level up: id=%s lvl=%s pts=%s", id, rec.lvl, rec.pts)
+		notify_levelup(id, rec)
+	end
+end
+
+function add_xp_all(base, reason)
+	for id in pairs(COMP) do
+		add_xp(id, base, reason)
+	end
+end
+
+local function build_monster_xp()
+	monster_xp_by_cls = {}
+	for size, names in pairs(cup_perks.MONSTER_CLASS) do
+		local xp = cup_perks.KILL_XP_MONSTER[size]
+		for i = 1, #names do
+			local c = clsid[names[i]]
+			if c ~= nil and xp then
+				monster_xp_by_cls[c] = xp
+			end
+		end
+	end
+end
+
+local function kill_xp_for(victim)
+	local cls = victim:clsid()
+	if IsStalker(nil, cls) then
+		local rn = ranks.get_obj_rank_name(victim)
+		return cup_perks.KILL_XP_RANK[rn] or cup_perks.KILL_XP_RANK.novice, true
+	elseif IsMonster(nil, cls) then
+		if not monster_xp_by_cls then
+			build_monster_xp()
+		end
+		local sec = victim:section() or ""
+		if string.find(sec, "lurker", 1, true) or string.find(sec, "psysucker", 1, true) then
+			return cup_perks.KILL_XP_MONSTER.medium, false
+		end
+		return monster_xp_by_cls[cls] or cup_perks.KILL_XP_MONSTER.medium, false
+	end
+	return nil
+end
+
+local function on_companion_death(victim, vid)
+	local rec = get_rec(vid, false)
+	local st = rec and rec.st or {}
+	MEM[#MEM + 1] = {
+		name = victim:character_name(),
+		comm = victim:character_community(),
+		lvl = rec and rec.lvl or 1,
+		ks = st.ks or 0,
+		km = st.km or 0,
+		level = level.name(),
+		day = math.floor(game_sec() / 86400) + 1,
+	}
+	while #MEM > MEM_MAX do
+		table.remove(MEM, 1)
+	end
+	log("companion died: id=%s name=%s lvl=%s (memorial size %s)", vid, victim:character_name(), rec and rec.lvl or 1, #MEM)
+	drop(vid)
+end
+
+local function on_death(victim, who)
+	if not CFG.enable or not victim then
+		return
+	end
+	local vid = victim:id()
+	if COMP[vid] then
+		on_companion_death(victim, vid)
+		return
+	end
+	if not who then
+		return
+	end
+	local kid = who:id()
+	if kid == vid then
+		return
+	end
+	local killer_is_comp = COMP[kid] ~= nil
+	if not killer_is_comp and kid ~= 0 then
+		return
+	end
+	if not next(COMP) then
+		return
+	end
+	local xp, is_stalker = kill_xp_for(victim)
+	if not xp then
+		return
+	end
+	if killer_is_comp then
+		local rec = get_rec(kid, true)
+		if rec then
+			if is_stalker then
+				rec.st.ks = (rec.st.ks or 0) + 1
+			else
+				rec.st.km = (rec.st.km or 0) + 1
+			end
+		end
+		add_xp(kid, xp, "kill")
+	end
+	local vpos = victim:position()
+	local r2 = cup_perks.XP_SHARE_RADIUS * cup_perks.XP_SHARE_RADIUS
+	for id, obj in pairs(COMP) do
+		if id ~= kid and obj:position():distance_to_sqr(vpos) <= r2 then
+			local share = (AURA[id] and AURA[id].share) or cup_perks.XP_SHARE
+			add_xp(id, xp * share, "assist")
+		end
+	end
+end
+
+local function npc_on_death_callback(victim, who)
+	local ok, err = pcall(on_death, victim, who)
+	if not ok then warn_once("death", "death handler error: %s", err) end
+end
+
+---------------------------------------------------------------------
+-- purchases (used by cup_ui)
+---------------------------------------------------------------------
+function costs(branch, tier, extra)
+	if extra then
+		local def = cup_perks.EXTRA[extra]
+		return def.pts, math.floor(def.ru * CFG.cost_mult + 0.5)
+	end
+	local ru = math.floor(cup_perks.tier_money(tier) * CFG.cost_mult + 0.5)
+	return cup_perks.tier_points(branch, tier), ru
+end
+
+function reset_cost(rec)
+	return math.floor(cup_perks.RESET_RU_PER_LEVEL * (rec.lvl or 1) * CFG.cost_mult + 0.5)
+end
+
+-- "learned" | "excluded" | "disabled" | "locked" | "nobridge" | "available"
+function perk_state(rec, branch, tier, choice, extra)
+	if extra then
+		local def = cup_perks.EXTRA[extra]
+		if cup_perks.has_extra(rec, extra) then
+			return "learned"
+		end
+		if not CFG.en[def.branch] then
+			return "disabled"
+		end
+		if (tonumber(rec.br[def.branch]) or 0) < def.req then
+			return "locked"
+		end
+		return "available"
+	end
+	local cur = tonumber(rec.br[branch]) or 0
+	if tier <= cur then
+		if tier == 3 and cup_perks.has_choice(branch) and rec.ch[branch] ~= choice then
+			return "excluded"
+		end
+		return "learned"
+	end
+	if not CFG.en[branch] then
+		return "disabled"
+	end
+	if tier > cur + 1 then
+		return "locked"
+	end
+	if cup_perks.needs_bridge(branch, tier, choice) and not bridge_ok() then
+		return "nobridge"
+	end
+	return "available"
+end
+
+function buy(id, branch, tier, choice, extra)
+	local rec = get_rec(id, false)
+	if not (rec and COMP[id]) then
+		return false, "st_cup_err_gone"
+	end
+	local state = perk_state(rec, branch, tier, choice, extra)
+	if state ~= "available" then
+		return false, "st_cup_err_" .. state
+	end
+	local pts, ru = costs(branch, tier, extra)
+	if rec.pts < pts then
+		return false, "st_cup_err_points"
+	end
+	if db.actor:money() < ru then
+		return false, "st_cup_err_money"
+	end
+	rec.pts = rec.pts - pts
+	if ru > 0 then
+		db.actor:give_money(-ru)
+	end
+	if extra then
+		rec.ex[extra] = true
+	else
+		rec.br[branch] = tier
+		if tier == 3 and cup_perks.has_choice(branch) then
+			rec.ch[branch] = choice
+		end
+	end
+	rebuild_perk(id)
+	mark_dirty()
+	log("perk bought: id=%s %s tier=%s choice=%s extra=%s (pts left %s, cost %s RU)", id, branch, tier, choice, extra, rec.pts, ru)
+	return true
+end
+
+function reset(id)
+	local rec = get_rec(id, false)
+	if not (rec and COMP[id]) then
+		return false, "st_cup_err_gone"
+	end
+	if cup_perks.spent_points(rec) <= 0 then
+		return false, "st_cup_err_nothing"
+	end
+	local ru = reset_cost(rec)
+	if db.actor:money() < ru then
+		return false, "st_cup_err_money"
+	end
+	if ru > 0 then
+		db.actor:give_money(-ru)
+	end
+	rec.br = {}
+	rec.ch = {}
+	rec.ex = {}
+	rec.pts = cup_perks.earned_points(rec.lvl)
+	rebuild_perk(id)
+	mark_dirty()
+	log("perks reset: id=%s pts=%s cost=%s RU", id, rec.pts, ru)
+	return true
+end
+
+-- dialog precondition
+function dlg_is_trainable(a, b)
+	local ok, res = pcall(function()
+		local npc = dialogs.who_is_npc(a, b)
+		if not (CFG.enable and npc and npc:has_info("npcx_is_companion")) then
+			return false
+		end
+		local ntc = axr_companions and axr_companions.non_task_companions
+		return ntc and ntc[npc:id()] == true or false
+	end)
+	return ok and res or false
+end
+
+---------------------------------------------------------------------
+-- wrappers of foreign functions (each one calls the original first)
+---------------------------------------------------------------------
+local wrapped = false
+
+local function on_actor_stat(value)
+	if not CFG.enable then
+		return
+	end
+	if value == "emissions" or value == "psi_storms" then
+		add_xp_all(cup_perks.XP_SURGE, value)
+	elseif value == "tasks_completed" then
+		add_xp_all(cup_perks.XP_TASK, value)
+	end
+end
+
+local function on_npc_stat(npc, value)
+	if not (CFG.enable and npc and value) then
+		return
+	end
+	local xp = cup_perks.XP_NPC_STAT[value]
+	if not xp then
+		return
+	end
+	local id = npc:id()
+	if COMP[id] then
+		add_xp(id, xp, value)
+	end
+end
+
+local function install_wrappers()
+	if wrapped then
+		return
+	end
+	wrapped = true
+
+	if game_statistics and game_statistics.increment_statistic then
+		local orig = game_statistics.increment_statistic
+		game_statistics.increment_statistic = function(value, ...)
+			orig(value, ...)
+			local ok, err = pcall(on_actor_stat, value)
+			if not ok then warn_once("stat", "increment_statistic hook error: %s", err) end
+		end
+	else
+		warn_once("no_stat", "game_statistics.increment_statistic not found, surge/task XP is off")
+	end
+
+	if game_statistics and game_statistics.increment_npc_statistic then
+		local orig = game_statistics.increment_npc_statistic
+		game_statistics.increment_npc_statistic = function(npc, value, ...)
+			orig(npc, value, ...)
+			local ok, err = pcall(on_npc_stat, npc, value)
+			if not ok then warn_once("nstat", "increment_npc_statistic hook error: %s", err) end
+		end
+	end
+
+	if axr_companions and axr_companions.remove_from_actor_squad then
+		local orig = axr_companions.remove_from_actor_squad
+		axr_companions.remove_from_actor_squad = function(npc, ...)
+			local id = npc and npc:id()
+			orig(npc, ...)
+			if id then
+				drop(id)
+				dbg("dismissed id=%s, progress kept, perks asleep", id)
+			end
+		end
+	end
+
+	-- G_FLAT's Individually Recruitable Companions: the hired NPC is a clone with a new id
+	if stalker_cloning_utility and stalker_cloning_utility.copy_statistics then
+		local orig = stalker_cloning_utility.copy_statistics
+		stalker_cloning_utility.copy_statistics = function(se_npc, se_clone, ...)
+			orig(se_npc, se_clone, ...)
+			local ok, err = pcall(function()
+				local a = alife_storage_manager.get_se_obj_state(se_npc)
+				if a and type(a.cup) == "table" then
+					local b = alife_storage_manager.get_se_obj_state(se_clone, true)
+					if b then
+						b.cup = dup_table(a.cup)
+						log("progress carried over to clone: %s -> %s (lvl %s)", se_npc.id, se_clone.id, a.cup.lvl)
+					end
+				end
+			end)
+			if not ok then warn_once("clone", "clone carry-over error: %s", err) end
+		end
+		log("G_FLAT clone carry-over hooked")
+	end
+end
+
+---------------------------------------------------------------------
+-- settings
+---------------------------------------------------------------------
+function load_cfg()
+	local g = cup_mcm.get
+	CFG.enable = g("enable") and true or false
+	CFG.xp_mult = tonumber(g("xp_mult")) or 1
+	CFG.cost_mult = tonumber(g("cost_mult")) or 1
+	CFG.power = tonumber(g("power")) or 1
+	for i = 1, #cup_perks.BRANCHES do
+		local b = cup_perks.BRANCHES[i]
+		CFG.en[b] = g("en_" .. b) and true or false
+	end
+	CFG.medic_free = g("medic_free") and true or false
+	CFG.medic_vodka = g("medic_vodka") and true or false
+	CFG.booze = g("booze") and true or false
+	CFG.booze_min = tonumber(g("booze_min")) or 60
+	CFG.notify = g("notify") and true or false
+	CFG.scout_news = g("scout_news") and true or false
+	CFG.dbno_bridge = g("dbno_bridge") and true or false
+	CFG.actor_down = g("actor_down") and true or false
+	CFG.art_news = g("art_news") and true or false
+	CFG.key_open = tonumber(g("key_open")) or -1
+	CFG.debug = g("debug") and true or false
+	mark_dirty()
+end
+
+---------------------------------------------------------------------
+-- ticks
+---------------------------------------------------------------------
+local function slow_tick()
+	-- squad time and hourly XP
+	local gs = game_sec()
+	local delta = last_gs and (gs - last_gs) or 0
+	last_gs = gs
+	if delta < 0 then delta = 0 end
+	if delta > 259200 then delta = 259200 end
+	local day = math.floor(gs / 86400)
+	for id, obj in pairs(COMP) do
+		local rec = get_rec(id, true)
+		local p = PERK[id]
+		if rec then
+			rec.st.gs = (rec.st.gs or 0) + delta
+			rec.cd.hacc = (rec.cd.hacc or 0) + delta
+			while rec.cd.hacc >= 3600 do
+				rec.cd.hacc = rec.cd.hacc - 3600
+				if rec.cd.hday ~= day then
+					rec.cd.hday = day
+					rec.cd.hxp = 0
+				end
+				if (rec.cd.hxp or 0) < cup_perks.XP_HOUR_DAY_CAP then
+					rec.cd.hxp = (rec.cd.hxp or 0) + cup_perks.XP_HOUR
+					add_xp(id, cup_perks.XP_HOUR, "hour")
+				end
+			end
+		end
+		-- Tough 2+: wounds close faster (setter = ChangeBleeding, heals wounds by the given amount)
+		if p and p.bleed and obj.bleeding and obj.bleeding > 0 then
+			obj.bleeding = 0.25 * CFG.power
+		end
+	end
+end
+
+local function main_tick(now)
+	if not CFG.enable then
+		if next(COMP) or next(PERK) then
+			clear_all()
+		end
+		return
+	end
+	refresh_companions()
+	for id in pairs(COMP) do
+		if dirty or not PERK[id] then
+			rebuild_perk(id)
+		end
+	end
+	dirty = false
+	safe("auras", cup_combat and cup_combat.rebuild_auras)
+	safe("medic", cup_medic and cup_medic.tick, now)
+	safe("booze", cup_medic and cup_medic.tick_booze, now)
+	safe("dbno", cup_dbno_bridge and cup_dbno_bridge.tick, now)
+	safe("artefact", cup_artefact and cup_artefact.tick, now)
+	if now >= t_slow then
+		t_slow = now + 10000
+		safe("slow", slow_tick)
+	end
+end
+
+local function actor_on_update()
+	if not started then
+		return
+	end
+	local now = time_global()
+	if now >= t_scout then
+		t_scout = now + 1000
+		safe("scout", cup_scout and cup_scout.tick, now)
+	end
+	if now >= t_main then
+		t_main = now + 2000
+		safe("core", main_tick, now)
+	end
+end
+
+local function actor_on_first_update()
+	local ok, err = pcall(function()
+		load_cfg()
+		if cup_dbno_bridge and cup_dbno_bridge.init then
+			safe("dbno", cup_dbno_bridge.init)
+		end
+		refresh_companions()
+		local n = 0
+		for _ in pairs(COMP) do n = n + 1 end
+		log("started: enable=%s companions=%s memorial=%s dbno_bridge=%s idiots=%s gflat=%s ef=%s tougher=%s",
+			CFG.enable, n, #MEM, bridge_ok(),
+			idiots_ui ~= nil, stalker_cloning_utility ~= nil, experience_npcs ~= nil, hxf_tough_important_npcs ~= nil)
+		log("v2: actor_down=%s (hook=%s) bhs=%s artefact=%s soulslike=%s",
+			CFG.actor_down, cup_downed ~= nil and cup_downed.hooked() or false,
+			zzz_player_injuries ~= nil, cup_artefact ~= nil, soulslike ~= nil)
+	end)
+	if not ok then
+		warn_once("first", "first update error: %s", err)
+	end
+	started = true
+end
+
+local function on_option_change()
+	local ok, err = pcall(load_cfg)
+	if not ok then warn_once("cfg", "settings error: %s", err) end
+end
+
+local function npc_on_net_destroy(npc)
+	if npc then
+		local id = npc:id()
+		if COMP[id] then
+			drop(id)
+		end
+	end
+end
+
+local function on_key_press(key)
+	if key and CFG.key_open and CFG.key_open > 0 and key == CFG.key_open and started then
+		safe("ui", cup_ui and cup_ui.open_for_target)
+	end
+end
+
+local function save_state(m_data)
+	local down = nil
+	if cup_downed and cup_downed.save then
+		local ok, res = pcall(cup_downed.save)
+		if ok then
+			down = res
+		else
+			warn_once("down_save", "player-downed state was not saved: %s", res)
+		end
+	end
+	m_data.cup = { v = 2, memorial = MEM, down = down }
+end
+
+local function load_state(m_data)
+	local d = m_data.cup
+	MEM = type(d) == "table" and type(d.memorial) == "table" and d.memorial or {}
+	if cup_downed and cup_downed.load then
+		local ok, err = pcall(cup_downed.load, type(d) == "table" and d.down or nil)
+		if not ok then warn_once("down_load", "player-downed state was not loaded: %s", err) end
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		install_wrappers()
+		RegisterScriptCallback("actor_on_first_update", actor_on_first_update)
+		RegisterScriptCallback("actor_on_update", actor_on_update)
+		RegisterScriptCallback("npc_on_death_callback", npc_on_death_callback)
+		RegisterScriptCallback("monster_on_death_callback", npc_on_death_callback)
+		RegisterScriptCallback("npc_on_net_destroy", npc_on_net_destroy)
+		RegisterScriptCallback("on_option_change", on_option_change)
+		RegisterScriptCallback("on_key_press", on_key_press)
+		RegisterScriptCallback("save_state", save_state)
+		RegisterScriptCallback("load_state", load_state)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_core.on_game_start failed: " .. tostring(err))
+	end
+end

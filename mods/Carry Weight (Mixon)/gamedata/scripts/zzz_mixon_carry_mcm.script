@@ -1,0 +1,11 @@
+-- Mixon: MCM page for extra carry weight.
+function on_mcm_load()
+	return {
+		id = "mixon_carry", sh = true,
+		gr = {
+			{ id = "title", type = "slide", link = "ui_options_slider_player", text = "ui_mcm_menu_mixon_carry", size = {512,50}, spacing = 20 },
+			{ id = "bonus", type = "track", val = 2, min = 10, max = 150, step = 10, def = 50 },
+		},
+	}
+end
+

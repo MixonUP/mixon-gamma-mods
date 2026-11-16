@@ -1,0 +1,79 @@
+--[[
+	Mixon Companion Training (CUP) - MCM page.
+	Strings: ui_mcm_menu_kreiser_cup, ui_mcm_kreiser_cup_<id>, ui_mcm_kreiser_cup_<id>_desc
+]]
+
+local defaults = {
+	enable        = true,
+	xp_mult       = 1.0,
+	cost_mult     = 1.0,
+	power         = 1.0,
+	en_shooter    = true,
+	en_tough      = true,
+	en_medic      = true,
+	en_scout      = true,
+	en_carrier    = true,
+	en_leader     = true,
+	en_artefact   = true,
+	medic_free    = true,
+	medic_vodka   = true,
+	booze         = false,
+	booze_min     = 60,
+	banter        = true,
+	banter_freq   = 2,
+	banter_jokes  = true,
+	banter_voice  = true,
+	actor_down    = true,
+	art_news      = true,
+	notify        = true,
+	scout_news    = true,
+	idiots_button = true,
+	dbno_bridge   = true,
+	key_open      = -1,
+	debug         = false,
+}
+
+function get(key)
+	if ui_mcm and ui_mcm.get then
+		local ok, v = pcall(ui_mcm.get, "kreiser_cup/" .. key)
+		if ok and v ~= nil then
+			return v
+		end
+	end
+	return defaults[key]
+end
+
+function on_mcm_load()
+	local op = { id = "kreiser_cup", sh = true, gr = {
+		{ id = "title", type = "slide", link = "ui_options_slider_gameplay_diff", text = "ui_mcm_kreiser_cup_title", size = {512, 50}, spacing = 20 },
+		{ id = "desc", type = "desc", text = "ui_mcm_kreiser_cup_desc" },
+		{ id = "enable",        type = "check", val = 1, def = defaults.enable },
+		{ id = "xp_mult",       type = "track", val = 2, min = 0.25, max = 4, step = 0.05, def = defaults.xp_mult },
+		{ id = "cost_mult",     type = "track", val = 2, min = 0, max = 3, step = 0.1, def = defaults.cost_mult },
+		{ id = "power",         type = "track", val = 2, min = 0.5, max = 1.5, step = 0.05, def = defaults.power },
+		{ id = "en_shooter",    type = "check", val = 1, def = defaults.en_shooter },
+		{ id = "en_tough",      type = "check", val = 1, def = defaults.en_tough },
+		{ id = "en_medic",      type = "check", val = 1, def = defaults.en_medic },
+		{ id = "en_scout",      type = "check", val = 1, def = defaults.en_scout },
+		{ id = "en_carrier",    type = "check", val = 1, def = defaults.en_carrier },
+		{ id = "en_leader",     type = "check", val = 1, def = defaults.en_leader },
+		{ id = "en_artefact",   type = "check", val = 1, def = defaults.en_artefact },
+		{ id = "medic_free",    type = "check", val = 1, def = defaults.medic_free },
+		{ id = "medic_vodka",   type = "check", val = 1, def = defaults.medic_vodka },
+		{ id = "booze",         type = "check", val = 1, def = defaults.booze },
+		{ id = "booze_min",     type = "track", val = 2, min = 15, max = 120, step = 5, def = defaults.booze_min },
+		{ id = "banter",        type = "check", val = 1, def = defaults.banter },
+		{ id = "banter_freq",   type = "list", val = 2, def = defaults.banter_freq, content = { { 0, "cup_freq_off" }, { 1, "cup_freq_rare" }, { 2, "cup_freq_normal" }, { 3, "cup_freq_often" } } },
+		{ id = "banter_jokes",  type = "check", val = 1, def = defaults.banter_jokes },
+		{ id = "banter_voice",  type = "check", val = 1, def = defaults.banter_voice },
+		{ id = "actor_down",    type = "check", val = 1, def = defaults.actor_down },
+		{ id = "art_news",      type = "check", val = 1, def = defaults.art_news },
+		{ id = "notify",        type = "check", val = 1, def = defaults.notify },
+		{ id = "scout_news",    type = "check", val = 1, def = defaults.scout_news },
+		{ id = "idiots_button", type = "check", val = 1, def = defaults.idiots_button },
+		{ id = "dbno_bridge",   type = "check", val = 1, def = defaults.dbno_bridge },
+		{ id = "key_open",      type = "key_bind", val = 2, def = defaults.key_open },
+		{ id = "debug",         type = "check", val = 1, def = defaults.debug },
+	}}
+	return op
+end

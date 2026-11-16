@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="ui_mcm_menu_mixon_carry">
+		<text>Carry weight (Mixon)</text>
+	</string>
+	<string id="ui_mcm_mixon_carry_bonus">
+		<text>Extra carry weight, kg</text>
+	</string>
+	<string id="ui_mcm_mixon_carry_bonus_desc">
+		<text>How many kg to add to carry weight (10-150). Applies immediately.</text>
+	</string>
+</string_table>

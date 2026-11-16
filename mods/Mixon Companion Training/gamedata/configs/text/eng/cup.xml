@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_cup_br_shooter">
+		<text>MARKSMAN</text>
+	</string>
+	<string id="st_cup_br_tough">
+		<text>TOUGHNESS</text>
+	</string>
+	<string id="st_cup_br_medic">
+		<text>MEDIC</text>
+	</string>
+	<string id="st_cup_br_scout">
+		<text>SCOUT</text>
+	</string>
+	<string id="st_cup_br_carrier">
+		<text>CARRIER</text>
+	</string>
+	<string id="st_cup_br_leader">
+		<text>COMMANDER</text>
+	</string>
+	<string id="st_cup_p_shooter_1">
+		<text>Steady hand</text>
+	</string>
+	<string id="st_cup_p_shooter_1_d">
+		<text>Shot dispersion x0.90.</text>
+	</string>
+	<string id="st_cup_p_shooter_2">
+		<text>Recoil control</text>
+	</string>
+	<string id="st_cup_p_shooter_2_d">
+		<text>Dispersion x0.80 (instead of x0.90).\nDamage to stalkers +5%.</text>
+	</string>
+	<string id="st_cup_p_shooter_A">
+		<text>Sniper</text>
+	</string>
+	<string id="st_cup_p_shooter_A_d">
+		<text>Dispersion x0.60 while standing or crouching still, x0.80 on the move.\nDamage to stalkers +10%.\nExcludes the Hunter perk.</text>
+	</string>
+	<string id="st_cup_p_shooter_B">
+		<text>Hunter</text>
+	</string>
+	<string id="st_cup_p_shooter_B_d">
+		<text>Dispersion x0.80.\nDamage to mutants +25%.\nExcludes the Sniper perk.</text>
+	</string>
+	<string id="st_cup_p_tough_1">
+		<text>Hardening</text>
+	</string>
+	<string id="st_cup_p_tough_1_d">
+		<text>Incoming damage x0.92.</text>
+	</string>
+	<string id="st_cup_p_tough_2">
+		<text>Thick skin</text>
+	</string>
+	<string id="st_cup_p_tough_2_d">
+		<text>Incoming damage x0.85 (instead of x0.92).\nWounds close faster.</text>
+	</string>
+	<string id="st_cup_p_tough_A">
+		<text>Unbreakable</text>
+	</string>
+	<string id="st_cup_p_tough_A_d">
+		<text>Keeps the Thick skin effects.\nWhen downed: bleed-out time +50%, +25% health after being revived.\n40% chance that a non-lethal headshot does not down him (60 s cooldown).\nRequires Companion Downed But Not Out. Excludes the Ironclad perk.</text>
+	</string>
+	<string id="st_cup_p_tough_B">
+		<text>Ironclad</text>
+	</string>
+	<string id="st_cup_p_tough_B_d">
+		<text>Incoming damage x0.75.\nAn extra x0.85 against mutants and explosions.\nWounds close faster.\nExcludes the Unbreakable perk.</text>
+	</string>
+	<string id="st_cup_p_medic_1">
+		<text>Orderly</text>
+	</string>
+	<string id="st_cup_p_medic_1_d">
+		<text>If you are bleeding and the companion is within 6 m, he bandages you. Uses a bandage from his backpack if he has one. Cooldown 180 s.\n&quot;A hundred grams&quot;: if radiation is hitting you (second step of the icon or more) and there is no fight, he pours you vodka from his backpack; with none left he finds a bottle in his personal stock once per 6 game hours. Vodka works as usual: removes radiation and makes you drunk. Cooldown 180 s.</text>
+	</string>
+	<string id="st_cup_p_medic_2">
+		<text>Paramedic</text>
+	</string>
+	<string id="st_cup_p_medic_2_d">
+		<text>If your health is below 40% and the companion is within 6 m, he applies a medkit from his backpack to you himself (he takes back what is left of a multi-use kit). With no medkits he uses a basic one from his personal stock once per 12 game hours. Cooldown 90 s.\nAt heavy radiation (35% or more), out of combat, he gives you an antirad from his backpack or, with none left, from his personal stock once per 12 game hours. Cooldown 120 s. Vodka is poured only when there is no antirad.\nThe drugs work as usual.</text>
+	</string>
+	<string id="st_cup_p_medic_A">
+		<text>Reanimator</text>
+	</string>
+	<string id="st_cup_p_medic_A_d">
+		<text>You can be knocked down instead of dying: if the Reanimator is alive, on his feet and within 50 m, a lethal hit puts you down for 60 s. He runs to you and comes right up to you, kneels and in 8 s gets you up with 35% health.\nAfter that the perk is on cooldown for 4 game hours: go down again in that time and you die. Nobody came in time - you die as well.\nHe revives companions the same way: 8 s within 15 m, 50% health, cooldown 120 s (needs the Companion Downed But Not Out mod).\nExcludes the Field Surgeon perk.</text>
+	</string>
+	<string id="st_cup_p_medic_B">
+		<text>Field surgeon</text>
+	</string>
+	<string id="st_cup_p_medic_B_d">
+		<text>The personal stock refills every 6 hours and gives an army medkit.\nBandage cooldown 90 s.\nCompanions within 20 m get +5% health every 10 s.\nExcludes the Reanimator perk.</text>
+	</string>
+	<string id="st_cup_p_scout_1">
+		<text>Keen eye</text>
+	</string>
+	<string id="st_cup_p_scout_1_d">
+		<text>Enemies the companion sees (up to 80 m) are marked on the minimap and in the PDA for 20 s.</text>
+	</string>
+	<string id="st_cup_p_scout_2">
+		<text>Sentry</text>
+	</string>
+	<string id="st_cup_p_scout_2_d">
+		<text>Marks last 45 s.\nReports the first contact with a dangerous mutant or a group of three or more enemies (at most once a minute).</text>
+	</string>
+	<string id="st_cup_p_scout_A">
+		<text>Tracker</text>
+	</string>
+	<string id="st_cup_p_scout_A_d">
+		<text>Detection range 150 m.\nThe mark hint shows the faction and rank of the enemy.\nExcludes the Listener perk.</text>
+	</string>
+	<string id="st_cup_p_scout_B">
+		<text>Listener</text>
+	</string>
+	<string id="st_cup_p_scout_B_d">
+		<text>In the Wait and Cover modes he marks every enemy within 50 m, even without line of sight.\nExcludes the Tracker perk.</text>
+	</string>
+	<string id="st_cup_p_carrier_1">
+		<text>Load 45 kg</text>
+	</string>
+	<string id="st_cup_p_carrier_1_d">
+		<text>The companion carries up to 45 kg of your items (instead of 30 kg).</text>
+	</string>
+	<string id="st_cup_p_carrier_2">
+		<text>Load 60 kg</text>
+	</string>
+	<string id="st_cup_p_carrier_2_d">
+		<text>The companion carries up to 60 kg.</text>
+	</string>
+	<string id="st_cup_p_carrier_3">
+		<text>Load 90 kg</text>
+	</string>
+	<string id="st_cup_p_carrier_3_d">
+		<text>The companion carries up to 90 kg.</text>
+	</string>
+	<string id="st_cup_p_leader_1">
+		<text>Teamwork</text>
+	</string>
+	<string id="st_cup_p_leader_1_d">
+		<text>Aura for other companions within 25 m (does not affect himself):\ndispersion x0.95, experience gain +10%.</text>
+	</string>
+	<string id="st_cup_p_leader_2">
+		<text>Covering fire</text>
+	</string>
+	<string id="st_cup_p_leader_2_d">
+		<text>Aura 25 m: dispersion x0.95, incoming damage x0.95, experience +20%.</text>
+	</string>
+	<string id="st_cup_p_leader_A">
+		<text>Tactician</text>
+	</string>
+	<string id="st_cup_p_leader_A_d">
+		<text>Aura 35 m: dispersion x0.90, incoming damage x0.90, experience +20%.\nExcludes the Mentor perk.</text>
+	</string>
+	<string id="st_cup_p_leader_B">
+		<text>Mentor</text>
+	</string>
+	<string id="st_cup_p_leader_B_d">
+		<text>Aura 25 m: dispersion x0.95, incoming damage x0.95, experience +20%.\nCompanions below his level get another +50% experience.\nThe share of experience for a nearby kill grows from 30% to 60%.\nExcludes the Tactician perk.</text>
+	</string>
+	<string id="st_cup_money">
+		<text>Money: %s RU</text>
+	</string>
+	<string id="st_cup_level">
+		<text>Level %s</text>
+	</string>
+	<string id="st_cup_xp">
+		<text>%s / %s XP</text>
+	</string>
+	<string id="st_cup_xp_max">
+		<text>maximum level</text>
+	</string>
+	<string id="st_cup_points">
+		<text>Free points: %s</text>
+	</string>
+	<string id="st_cup_stats">
+		<text>Kills: stalkers %s, mutants %s.  In the squad: %s d.  Helped you: %s.  Revived: %s.</text>
+	</string>
+	<string id="st_cup_stats_ef">
+		<text>(Experience Framework level: %s)</text>
+	</string>
+	<string id="st_cup_cost">
+		<text>points: %s, price: %s RU</text>
+	</string>
+	<string id="st_cup_desc_none_title">
+		<text>Select a perk</text>
+	</string>
+	<string id="st_cup_desc_none">
+		<text>Levels 4, 7 and 10 give the companion two points, the others one (12 in total). A tier costs as many points as its number: 1, 2 and 3. Tier three is a choice between two perks; the Carrier and the Medic have no choice, and the Medic's Reanimator is a separate perk for 4 points.\nExperience comes from kills, kills made near the companion, survived emissions, tasks you complete and time in the squad.</text>
+	</string>
+	<string id="st_cup_state_learned">
+		<text>Learned.</text>
+	</string>
+	<string id="st_cup_state_available">
+		<text>Available.</text>
+	</string>
+	<string id="st_cup_state_locked">
+		<text>Locked: learn the previous tier first.</text>
+	</string>
+	<string id="st_cup_state_excluded">
+		<text>Unavailable: the other third-tier perk of this branch was chosen.</text>
+	</string>
+	<string id="st_cup_state_disabled">
+		<text>The branch is switched off in MCM.</text>
+	</string>
+	<string id="st_cup_state_nobridge">
+		<text>Unavailable: the link to Companion Downed But Not Out does not work (see the log).</text>
+	</string>
+	<string id="st_cup_note_tougher">
+		<text>Tougher NPCs already reduces damage to companions (x0.35 from stalkers, x0.45 from mutants); the multipliers stack multiplicatively.</text>
+	</string>
+	<string id="st_cup_note_power">
+		<text>Perk strength in MCM: x%s (the numbers above are for x1).</text>
+	</string>
+	<string id="st_cup_btn_learn">
+		<text>Learn</text>
+	</string>
+	<string id="st_cup_btn_reset">
+		<text>Reset (%s RU)</text>
+	</string>
+	<string id="st_cup_btn_reset_confirm">
+		<text>Really reset? (%s RU)</text>
+	</string>
+	<string id="st_cup_btn_squad">
+		<text>Squad</text>
+	</string>
+	<string id="st_cup_btn_close">
+		<text>Close</text>
+	</string>
+	<string id="st_cup_learned">
+		<text>Learned: %s</text>
+	</string>
+	<string id="st_cup_reset_done">
+		<text>Perks reset, points returned.</text>
+	</string>
+	<string id="st_cup_err_points">
+		<text>Not enough points.</text>
+	</string>
+	<string id="st_cup_err_money">
+		<text>Not enough money.</text>
+	</string>
+	<string id="st_cup_err_gone">
+		<text>The companion is not around.</text>
+	</string>
+	<string id="st_cup_err_nothing">
+		<text>Nothing to reset.</text>
+	</string>
+	<string id="st_cup_err_learned">
+		<text>Already learned.</text>
+	</string>
+	<string id="st_cup_err_locked">
+		<text>Learn the previous tier first.</text>
+	</string>
+	<string id="st_cup_err_excluded">
+		<text>The other perk of this branch was already chosen.</text>
+	</string>
+	<string id="st_cup_err_disabled">
+		<text>The branch is switched off in MCM.</text>
+	</string>
+	<string id="st_cup_err_nobridge">
+		<text>No link to Companion Downed But Not Out.</text>
+	</string>
+	<string id="st_cup_list_header">
+		<text>Companion training</text>
+	</string>
+	<string id="st_cup_list_title">
+		<text>Squad</text>
+	</string>
+	<string id="st_cup_list_empty">
+		<text>Nobody is in the squad right now</text>
+	</string>
+	<string id="st_cup_list_row">
+		<text>%s: level %s, points: %s</text>
+	</string>
+	<string id="st_cup_mem_title">
+		<text>In memory</text>
+	</string>
+	<string id="st_cup_mem_empty">
+		<text>No companion has died.</text>
+	</string>
+	<string id="st_cup_mem_row">
+		<text>%s (%s), level %s. Kills: %s / %s. %s, day %s.</text>
+	</string>
+	<string id="st_cup_disabled">
+		<text>Companion training is switched off in MCM.</text>
+	</string>
+	<string id="st_cup_no_companions">
+		<text>There are no companions in the squad.</text>
+	</string>
+	<string id="st_cup_news_levelup">
+		<text>I have learned a thing or two. Level %s, free points: %s.</text>
+	</string>
+	<string id="st_cup_medic_bandaged">
+		<text>bandaged you</text>
+	</string>
+	<string id="st_cup_medic_kit">
+		<text>Hold on, I gave you a medkit shot.</text>
+	</string>
+	<string id="st_cup_medic_kit_stock">
+		<text>Hold on, I gave you a medkit from my own stock.</text>
+	</string>
+	<string id="st_cup_medic_revived">
+		<text>Got back on his feet: %s.</text>
+	</string>
+	<string id="st_cup_scout_big">
+		<text>I see a dangerous mutant, marked it on the map.</text>
+	</string>
+	<string id="st_cup_scout_group">
+		<text>I see a group of enemies: %s. Marked them on the map.</text>
+	</string>
+	<string id="st_cup_spot_enemy">
+		<text>Enemy (spotted by a companion)</text>
+	</string>
+	<string id="st_cup_spot_mutant">
+		<text>Mutant</text>
+	</string>
+	<string id="st_cup_mrank_weak">
+		<text>weak</text>
+	</string>
+	<string id="st_cup_mrank_normal">
+		<text>normal</text>
+	</string>
+	<string id="st_cup_mrank_strong">
+		<text>strong</text>
+	</string>
+	<string id="st_cup_dlg_ask">
+		<text>Let's talk about your training.</text>
+	</string>
+	<string id="st_cup_dlg_answer">
+		<text>Let's see what I have learned.</text>
+	</string>
+	<string id="st_idiots_cup_training">
+		<text>Companion training</text>
+	</string>
+	<string id="ui_mcm_menu_kreiser_cup">
+		<text>Companion Training</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_title">
+		<text>Companion Training (Mixon)</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_desc">
+		<text>Companions gain experience and levels, points are spent on perks in seven branches. The window opens with the button in the Useful Idiots panel, a dialog line or the key below.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_enable">
+		<text>Enable the mod</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_enable_desc">
+		<text>When off, no experience is gained and perks do nothing. Progress stays in the save.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_xp_mult">
+		<text>Experience multiplier</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_xp_mult_desc">
+		<text>Multiplies all companion experience.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_cost_mult">
+		<text>Price multiplier</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_cost_mult_desc">
+		<text>Price of perks (50000 / 120000 / 240000 RU, Reanimator 320000 RU) and of the reset (80000 RU per level) is multiplied by this. 0 - free.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_power">
+		<text>Perk strength</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_power_desc">
+		<text>How strong the numeric perk effects are. 1 means as described.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_shooter">
+		<text>Marksman branch</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_shooter_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_tough">
+		<text>Toughness branch</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_tough_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_medic">
+		<text>Medic branch</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_medic_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_scout">
+		<text>Scout branch</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_scout_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_carrier">
+		<text>Carrier branch</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_carrier_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_leader">
+		<text>Commander branch</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_leader_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_free">
+		<text>Medic's personal stock</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_free_desc">
+		<text>The medic can bandage without a bandage and once in a few hours apply a medkit, an antirad or vodka from his stock. If disabled he only spends what is in his backpack.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_notify">
+		<text>Level-up message</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_notify_desc">
+		<text>Show a message when a companion gains a level.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_scout_news">
+		<text>Scout messages</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_scout_news_desc">
+		<text>Messages about dangerous mutants and enemy groups. Map marks stay either way.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_idiots_button">
+		<text>Button in the Useful Idiots panel</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_idiots_button_desc">
+		<text>The change applies after restarting the game.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_dbno_bridge">
+		<text>Link to Companion DBNO</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_dbno_bridge_desc">
+		<text>Needed by the Unbreakable perk and by the Reanimator reviving companions. Takes effect after loading a save.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_key_open">
+		<text>Training window key</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_key_open_desc">
+		<text>Opens the window of the companion under the crosshair, or the squad list.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_debug">
+		<text>Debug logging</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_debug_desc">
+		<text>Writes [CUP][dbg] lines to the log: experience, dispersion, medic actions.</text>
+	</string>
+	<string id="st_cup_br_artefact">
+		<text>ARTEFACTS</text>
+	</string>
+	<string id="st_cup_p_artefact_1">
+		<text>Dowser</text>
+	</string>
+	<string id="st_cup_p_artefact_1_d">
+		<text>Needs an artefact detector in the companion's backpack (Echo, Bear, Grizzly, Veles or Svarog).\nArtefacts around the companion get a yellow dot on the minimap and in the PDA, and he reports distance and direction.\nRadius by detector: Echo 15 m, Bear and Grizzly 25 m, Veles 35 m, Svarog 50 m.</text>
+	</string>
+	<string id="st_cup_p_artefact_2">
+		<text>Gatherer</text>
+	</string>
+	<string id="st_cup_p_artefact_2_d">
+		<text>Search radius x1.5, the message and the mark name the artefact.\nIf an artefact is within 15 m of the companion and there is no fight, he gets it out in 20 s and puts it into his own backpack. Condition of the extracted artefact +5%.\nCooldown 30 game minutes.</text>
+	</string>
+	<string id="st_cup_p_artefact_A">
+		<text>Prospector</text>
+	</string>
+	<string id="st_cup_p_artefact_A_d">
+		<text>Search radius x2, extracts artefacts from 25 m, cooldown 15 game minutes.\nCondition of the extracted artefact +5%. 15% chance to find a second artefact of the same kind.\nExcludes the Connoisseur perk.</text>
+	</string>
+	<string id="st_cup_p_artefact_B">
+		<text>Connoisseur</text>
+	</string>
+	<string id="st_cup_p_artefact_B_d">
+		<text>Search radius x1.5. Careful extraction: condition of the extracted artefact +15%.\nArtefacts and artefact containers in his backpack regain 1% condition per game hour, up to 60%.\nExcludes the Prospector perk.</text>
+	</string>
+	<string id="st_cup_down_title">
+		<text>UNCONSCIOUS</text>
+	</string>
+	<string id="st_cup_down_start">
+		<text>Hold on, I am coming! Stay with me.</text>
+	</string>
+	<string id="st_cup_down_revived">
+		<text>You are up. I cannot do that again for the next %s h, take care.</text>
+	</string>
+	<string id="st_cup_down_hud_none">
+		<text>Nobody can help. %s s left</text>
+	</string>
+	<string id="st_cup_down_hud_run">
+		<text>Wait for help: %s is running to you, %s m. %s s left</text>
+	</string>
+	<string id="st_cup_down_hud_work">
+		<text>%s is bringing you round: %s%%</text>
+	</string>
+	<string id="st_cup_note_down_off">
+		<text>Knocking the player down is switched off in MCM.</text>
+	</string>
+	<string id="st_cup_note_down_cd">
+		<text>Reviving the player is on cooldown: %s game minutes left. A lethal hit will kill you now.</text>
+	</string>
+	<string id="st_cup_note_down_ready">
+		<text>Reviving the player is ready.</text>
+	</string>
+	<string id="st_cup_spot_artefact">
+		<text>Artefact (found by a companion)</text>
+	</string>
+	<string id="st_cup_dir_n">
+		<text>north</text>
+	</string>
+	<string id="st_cup_dir_ne">
+		<text>north-east</text>
+	</string>
+	<string id="st_cup_dir_e">
+		<text>east</text>
+	</string>
+	<string id="st_cup_dir_se">
+		<text>south-east</text>
+	</string>
+	<string id="st_cup_dir_s">
+		<text>south</text>
+	</string>
+	<string id="st_cup_dir_sw">
+		<text>south-west</text>
+	</string>
+	<string id="st_cup_dir_w">
+		<text>west</text>
+	</string>
+	<string id="st_cup_dir_nw">
+		<text>north-west</text>
+	</string>
+	<string id="st_cup_art_found">
+		<text>The detector is beeping. An artefact %s m from you, to the %s. Marked on the map.</text>
+	</string>
+	<string id="st_cup_art_found_named">
+		<text>Spotted the artefact %s: %s m from you, to the %s. Marked on the map.</text>
+	</string>
+	<string id="st_cup_art_took">
+		<text>Got the %s, condition %s%%. It is in my backpack.</text>
+	</string>
+	<string id="st_cup_art_took_raw">
+		<text>Got the %s. It is in my backpack.</text>
+	</string>
+	<string id="st_cup_art_bonus">
+		<text>Lucky: there was one more %s nearby. I have it too.</text>
+	</string>
+	<string id="st_cup_art_no_detector">
+		<text>I cannot look for artefacts without a detector. Put one into my backpack.</text>
+	</string>
+	<string id="st_cup_art_working">
+		<text>getting the artefact %s out, cover me</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_artefact">
+		<text>Branch: Artefacts</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_en_artefact_desc">
+		<text>A disabled branch has no effect and cannot be learned.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_actor_down">
+		<text>The player can be knocked down</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_actor_down_desc">
+		<text>Reanimator perk: a lethal hit knocks you down and the companion revives you. Cooldown 4 game hours. If disabled you die as usual.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_art_news">
+		<text>Artefact hunter messages</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_art_news_desc">
+		<text>Messages about found and extracted artefacts. Map marks stay either way.</text>
+	</string>
+	<string id="st_cup_medic_antirad">
+		<text>You are glowing. Take this antirad.</text>
+	</string>
+	<string id="st_cup_medic_antirad_stock">
+		<text>You are glowing. Take an antirad from my stock.</text>
+	</string>
+	<string id="st_cup_medic_vodka">
+		<text>You caught some radiation. Here, drink, it will help.</text>
+	</string>
+	<string id="st_cup_medic_vodka_stock">
+		<text>You caught some radiation. I had a bottle stashed, drink.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_vodka">
+		<text>Medic treats radiation with vodka</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_medic_vodka_desc">
+		<text>If disabled the medic treats radiation only with antirads (from tier two) and does not get you drunk.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze">
+		<text>Booze the stalker</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze_desc">
+		<text>Companions regularly make you drink vodka, radiation or not: any companion within 6 m, out of combat, with vodka in his backpack; if nobody has any, a medic uses his personal stock. Vodka works as usual. Never sooner than 15 game minutes after any vodka you drank.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze_min">
+		<text>Booze: interval, game minutes</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_booze_min_desc">
+		<text>How often companions pour when &quot;Booze the stalker&quot; is on.</text>
+	</string>
+	<string id="st_cup_p_medic_3">
+		<text>Field Surgeon</text>
+	</string>
+	<string id="st_cup_p_medic_3_d">
+		<text>The personal stock refills once per 6 game hours and gives an army medkit; the stock antirad also comes once per 6 hours.\nBandage cooldown 90 s.\nCompanions within 20 m of him get +5% health every 10 s.\nCompatible with the Reanimator: both perks can be learned.</text>
+	</string>
+	<string id="st_cup_p_medic_R">
+		<text>Reanimator</text>
+	</string>
+	<string id="st_cup_p_medic_R_d">
+		<text>A separate perk: needs Medic tier two, costs 4 points. Compatible with the Field Surgeon.\nYou can be knocked down instead of dying: if the Reanimator is alive, on his feet and within 50 m, a lethal hit puts you down for 60 s. He runs to you and comes right up to you, kneels and in 8 s gets you up with 35% health.\nAfter that the perk is on cooldown for 4 game hours: go down again in that time and you die. Nobody came in time - you die as well.\nHe revives companions the same way: 8 s within 15 m, 50% health, cooldown 120 s (needs the Companion Downed But Not Out mod).</text>
+	</string>
+	<string id="st_cup_down_help">
+		<text>Your companion is helping you</text>
+	</string>
+</string_table>

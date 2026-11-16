@@ -1,0 +1,161 @@
+--[[
+	Mixon Companion Training (CUP) - accuracy, Commander auras, carry weight.
+]]
+
+local PERK, AURA, COMP
+local MOVE_STAND = 2
+local dbg_next = {}
+
+-- engine: CAI_Stalker__GetWeaponAccuracy -> npc_shot_dispersion(npc, wpn, body_state, move_type, t)
+local function npc_shot_dispersion(npc, wpn, body_state, move_type, t)
+	if not (npc and t) then
+		return
+	end
+	local id = npc:id()
+	local p = PERK[id]
+	if not p then
+		return
+	end
+	local m = (move_type == MOVE_STAND) and p.disp or p.disp_move
+	local a = AURA[id]
+	if a then
+		m = m * a.disp
+	end
+	if cup_core.CFG.debug then
+		local now = time_global()
+		if now >= (dbg_next[id] or 0) then
+			dbg_next[id] = now + 5000
+			cup_core.dbg("dispersion id=%s body=%s move=%s disp=%s x%s", id, body_state, move_type, t.dispersion, m)
+		end
+	end
+	if m ~= 1 and t.dispersion then
+		t.dispersion = t.dispersion * m
+	end
+end
+
+-- strongest aura of another Commander in range; called by the core tick
+function rebuild_auras()
+	for id in pairs(AURA) do
+		AURA[id] = nil
+	end
+	local leaders = nil
+	for id, obj in pairs(COMP) do
+		local p = PERK[id]
+		if p and p.aura then
+			leaders = leaders or {}
+			leaders[#leaders + 1] = { id = id, pos = obj:position(), a = p.aura, lvl = p.lvl }
+		end
+	end
+	if not leaders then
+		return
+	end
+	for id, obj in pairs(COMP) do
+		local pos = obj:position()
+		local p = PERK[id]
+		local res = nil
+		for i = 1, #leaders do
+			local L = leaders[i]
+			if L.id ~= id and pos:distance_to_sqr(L.pos) <= L.a.r * L.a.r then
+				res = res or { disp = 1, inc = 1, xp = 0, share = cup_perks.XP_SHARE }
+				if L.a.disp < res.disp then res.disp = L.a.disp end
+				if L.a.inc < res.inc then res.inc = L.a.inc end
+				local xp = L.a.xp
+				if L.a.mentor then
+					if p and p.lvl < L.lvl then
+						xp = xp + 0.5
+					end
+					res.share = 0.60
+				end
+				if xp > res.xp then res.xp = xp end
+			end
+		end
+		if res then
+			AURA[id] = res
+		end
+	end
+end
+
+local function wrap_weight()
+	local BASE = cup_perks.BASE_WEIGHT
+
+	if axr_companions and axr_companions.is_overweight then
+		local orig = axr_companions.is_overweight
+		axr_companions.is_overweight = function(npc, npc_id, comp_weight)
+			local id = npc_id or (npc and npc:id())
+			local p = id and PERK[id]
+			if not (p and p.weight and p.weight > BASE) then
+				return orig(npc, npc_id, comp_weight)
+			end
+			local over, cur, max = orig(npc, npc_id)
+			if type(cur) ~= "number" then
+				return orig(npc, npc_id, comp_weight)
+			end
+			-- keep whatever another mod added above the vanilla 30 kg
+			local limit = p.weight + ((tonumber(max) or BASE) - BASE)
+			if comp_weight then
+				return comp_weight > (limit - cur)
+			end
+			return cur > limit, cur, limit
+		end
+	else
+		cup_core.warn_once("no_weight", "axr_companions.is_overweight not found, Carrier perk is off")
+	end
+
+	-- used by NPC looting and by "move all" in the trade window
+	if utils_item and utils_item.is_overweight then
+		local orig = utils_item.is_overweight
+		utils_item.is_overweight = function(npc, npc_id, comp_weight)
+			local id = npc_id or (npc and npc:id())
+			local p = id and PERK[id]
+			if not (p and p.weight and p.weight > BASE) then
+				return orig(npc, npc_id, comp_weight)
+			end
+			local over, cur, max = orig(npc, npc_id)
+			if type(cur) ~= "number" then
+				return orig(npc, npc_id, comp_weight)
+			end
+			local limit = p.weight + ((tonumber(max) or BASE) - BASE)
+			if comp_weight then
+				return comp_weight > (limit - cur)
+			end
+			return cur > limit, cur, limit
+		end
+	end
+end
+
+-- inventory screen shows a hardcoded "(max 30 kg)" for companions; show the real limit
+local function wrap_inv_label()
+	local cls = ui_inventory and ui_inventory.UIInventory
+	if not (cls and cls.UpdateWeight) or cls.__cup_weight then return end
+	local orig = cls.UpdateWeight
+	cls.UpdateWeight = function(self, ...)
+		orig(self, ...)
+		pcall(function()
+			if not (self.npc_is_companion and self.npc_weight_max) then return end
+			local npc = self.GetPartner and self:GetPartner()
+			if not (npc and npc.id and axr_companions and axr_companions.is_overweight) then return end
+			local _, _, limit = axr_companions.is_overweight(npc)
+			if type(limit) == "number" then
+				self.npc_weight_max:SetText(string.format("(max %s %s)", round_idp(limit, 1), game.translate_string("st_kg")))
+			end
+		end)
+	end
+	cls.__cup_weight = true
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		PERK = cup_core.PERK
+		AURA = cup_core.AURA
+		COMP = cup_core.COMP
+		if move and move.stand ~= nil then
+			MOVE_STAND = move.stand
+		end
+		wrap_weight()
+		wrap_inv_label()
+		RegisterScriptCallback("npc_shot_dispersion", npc_shot_dispersion)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_combat.on_game_start failed: " .. tostring(err))
+	end
+end

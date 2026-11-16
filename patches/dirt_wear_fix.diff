@@ -1,0 +1,69 @@
+diff --git "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/dirt_wear.script.orig.txt" "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_wear.script"
+index 3e12199..59c4fbb 100644
+--- "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/dirt_wear.script.orig.txt"	
++++ "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_wear.script"	
+@@ -80,10 +80,23 @@ local function save_state()
+ 	end)
+ end
+ 
++-- [patch] keep SSS flora SSS settings (.x/.y) instead of hardcoded 2,1
++local function flora_get(var, def)
++	local v
++	pcall(function()
++		if ssfx_001_mcm and ssfx_001_mcm.ssfx_get_setting and ssfx_florafixes_settings then
++			v = ssfx_001_mcm.ssfx_get_setting("florafixes", var, ssfx_florafixes_settings)
++		end
++	end)
++	return tonumber(v) or def
++end
++function flora_x() return flora_get("sss_int", 2.0) end
++function flora_y() return flora_get("sss_color", 1.0) end
++
+ local function write_channel()
+ 	pcall(function()
+ 		get_console():execute(string.format(
+-			"ssfx_florafixes_2 2, 1, %.5f, %.5f", npc_amount, cur_amount))
++			"ssfx_florafixes_2 %.3f, %.3f, %.5f, %.5f", flora_x(), flora_y(), npc_amount, cur_amount))
+ 	end)
+ 	last_written = cur_amount
+ 	last_npc     = npc_amount
+@@ -127,7 +140,7 @@ local function update_repair(wpn)
+ 	prev_cond = cond
+ end
+ 
+-local function updater()
++local function updater_body()
+ 	if not (db.actor and db.actor:alive()) then return false end
+ 
+ 	if dirt_wear_mcm and dirt_wear_mcm.is_enabled and not dirt_wear_mcm.is_enabled() then
+@@ -187,12 +200,26 @@ local function updater()
+ 	return false
+ end
+ 
+-function on_game_start()
++-- [patch] re-arm timer so tick really is 0.2s (was firing every frame)
++local function updater()
++	pcall(updater_body)
++	ResetTimeEvent("dirt_wear", "dirt_tick", 0.2)
++	return false
++end
++
++function dirtwear_restore()
+ 	pcall(function()
+-		cur_amount = db.actor:pstor_retrieve("dirtwear_cur", 0.0) or 0.0
+-		npc_amount = db.actor:pstor_retrieve("dirtwear_npc", 0.0) or 0.0
+-		rain_peak  = db.actor:pstor_retrieve("dirtwear_peak", 0.0) or 0.0
++		cur_amount = tonumber(xr_logic.pstor_retrieve(db.actor, "dirtwear_cur", 0)) or 0.0
++		npc_amount = tonumber(xr_logic.pstor_retrieve(db.actor, "dirtwear_npc", 0)) or 0.0
++		rain_peak  = tonumber(xr_logic.pstor_retrieve(db.actor, "dirtwear_peak", 0)) or 0.0
+ 	end)
++	last_written = cur_amount
++	last_npc     = npc_amount
++end
++
++function on_game_start()
++	-- [patch] state is restored in actor_on_first_update (db.actor is nil here)
++	RegisterScriptCallback("actor_on_first_update", dirtwear_restore)
+ 	prev_pos     = nil
+ 	prev_ammo    = nil
+ 	prev_sect    = nil

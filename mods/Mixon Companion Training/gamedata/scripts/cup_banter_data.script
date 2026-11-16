@@ -1,0 +1,32 @@
+--[[
+	Mixon Companion Training (CUP) - banter data. GENERATED, do not edit by hand.
+	Line ids: st_cup_bn_<category>_<n>, anekdots: st_cup_an_<n>_<part> (configs\text\*\cup_banter.xml).
+	Voice files: sounds\cup\banter\bn_<category>_<n>.ogg, an_<n>_<part>.ogg
+]]
+
+LINES = {
+	medkit = 8,
+	bandage = 6,
+	antirad = 7,
+	vodka = 9,
+	down = 7,
+	revived = 8,
+	art_found = 7,
+	art_took = 8,
+	fight_won = 9,
+	overweight = 8,
+	low_hp = 7,
+	rain = 7,
+	surge_start = 7,
+	surge_end = 7,
+	night = 7,
+	new_level = 8,
+	idle = 12,
+	wake = 7,
+	drink = 8,
+	rad = 7,
+	invictus = 6,
+}
+
+-- number of parts of every anekdot
+JOKES = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }

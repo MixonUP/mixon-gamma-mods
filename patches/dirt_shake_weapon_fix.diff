@@ -1,0 +1,35 @@
+diff --git "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/dirt_shake_weapon.script.orig.txt" "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_shake_weapon.script"
+index 8909d12..4fd8185 100644
+--- "a/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/dirt_shake_weapon.script.orig.txt"	
++++ "b/Dirt & Wear (\320\277\320\260\321\202\321\207 \320\277\320\276\320\264 SSS23 \320\270 Atmospherics)/gamedata/scripts/dirt_shake_weapon.script"	
+@@ -41,6 +41,8 @@ local function anim_length()
+ 	return strokes_total * STROKE_DELAY -- фолбэк
+ end
+ 
++stroke_delay_cur = 0.25
++
+ local function stroke_updater()
+ 	strokes_done = strokes_done + 1
+ 
+@@ -62,7 +64,10 @@ local function stroke_updater()
+ 		end
+ 	end)
+ 
+-	if strokes_done < strokes_total then return false end
++	if strokes_done < strokes_total then
++		ResetTimeEvent("dirt_shake_weapon", "shake_stroke", stroke_delay_cur) -- [patch] real delay between strokes
++		return false
++	end
+ 	running = false
+ 	return true
+ end
+@@ -85,7 +90,8 @@ function start_shake()
+ 
+ 	running      = true
+ 	strokes_done = 0
+-	CreateTimeEvent("dirt_shake_weapon", "shake_stroke", anim_length() / strokes_total, stroke_updater)
++	stroke_delay_cur = anim_length() / strokes_total
++	CreateTimeEvent("dirt_shake_weapon", "shake_stroke", stroke_delay_cur, stroke_updater)
+ end
+ 
+ -- Принудительный вызов из консоли:  lua debug_shake()

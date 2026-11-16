@@ -1,0 +1,22 @@
+-- Mixon: extra carry weight via Experience Framework weight API (weight.script).
+-- Amount is chosen in MCM (10..150 kg, step 10). Max walk weight follows automatically.
+local DEFAULT = 50
+
+local function get_bonus()
+	if ui_mcm and ui_mcm.get then
+		local v = tonumber(ui_mcm.get("mixon_carry/bonus"))
+		if v then return v end
+	end
+	return DEFAULT
+end
+
+local function apply()
+	if weight and weight.add_weight then
+		weight.add_weight("kreiser_carry_plus50", get_bonus(), true)
+	end
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_first_update", apply)
+	RegisterScriptCallback("on_option_change", apply)
+end

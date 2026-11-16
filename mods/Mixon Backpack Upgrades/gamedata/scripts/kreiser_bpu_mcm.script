@@ -1,0 +1,39 @@
+--[[
+	Mixon Backpack Upgrades - MCM page.
+	Only scripted effects are configurable here; carry weight comes from the upgrade configs.
+]]
+
+local defaults = {
+	strength    = 1.0,
+	en_hits     = true,
+	en_stamina  = true,
+	en_mobility = true,
+	en_reload   = true,
+	en_slots    = true,
+	debug       = false,
+}
+
+function get(key)
+	if ui_mcm and ui_mcm.get then
+		local ok, v = pcall(ui_mcm.get, "kreiser_bpu/" .. key)
+		if ok and v ~= nil then
+			return v
+		end
+	end
+	return defaults[key]
+end
+
+function on_mcm_load()
+	local op = { id = "kreiser_bpu", sh = true, gr = {
+		{ id = "title", type = "slide", link = "ui_options_slider_gameplay_diff", text = "ui_mcm_kreiser_bpu_title", size = {512, 50}, spacing = 20 },
+		{ id = "desc", type = "desc", text = "ui_mcm_kreiser_bpu_desc" },
+		{ id = "strength",    type = "track", val = 2, min = 0.5, max = 1.5, step = 0.05, def = defaults.strength },
+		{ id = "en_hits",     type = "check", val = 1, def = defaults.en_hits },
+		{ id = "en_stamina",  type = "check", val = 1, def = defaults.en_stamina },
+		{ id = "en_mobility", type = "check", val = 1, def = defaults.en_mobility },
+		{ id = "en_reload",   type = "check", val = 1, def = defaults.en_reload },
+		{ id = "en_slots",    type = "check", val = 1, def = defaults.en_slots },
+		{ id = "debug",       type = "check", val = 1, def = defaults.debug },
+	}}
+	return op
+end

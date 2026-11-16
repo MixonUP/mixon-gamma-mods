@@ -1,0 +1,312 @@
+-- Mixon zombie horde: hotkey spawns a zombified raid N metres in front of the camera.
+-- Size, distance, target and hotkey are configurable in MCM (zzz_kreiser_zombie_horde_mcm.script).
+local COOLDOWN = 30000
+
+local SIZES = {
+	-- 1: light ~10
+	{ {"zombied_sim_squad_novice",3}, {"zombied_sim_squad_advanced",2} },
+	-- 2: medium ~20 (up to experts)
+	{ {"zombied_sim_squad_novice",3}, {"zombied_sim_squad_advanced",3}, {"zombied_sim_squad_veteran",2}, {"gt_stalker_heavy_3_zombied",1} },
+	-- 3: large ~50 (up to masters)
+	{ {"zombied_sim_squad_novice",4}, {"zombied_sim_squad_advanced",4}, {"zombied_sim_squad_veteran",4},
+	  {"zombied_sim_squad_mix",3}, {"gt_stalker_heavy_3_zombied",3} },
+	-- 4: huge ~90 (many masters)
+	{ {"zombied_sim_squad_novice",6}, {"zombied_sim_squad_advanced",7}, {"zombied_sim_squad_veteran",8},
+	  {"zombied_sim_squad_mix",6}, {"gt_stalker_heavy_3_zombied",6} },
+}
+local SIZE_NAMES = { "лёгкий", "средний", "большой", "огромный" }
+local DEF = { size = "3", distance = 75, target = "camp", key = DIK_keys and DIK_keys.DIK_F10 or 68,
+	random_enable = true, random_chance = 3, random_interval = 24, random_max = "4" }
+local last = 0
+local TASK = "kreiser_raid_task"
+local REWARD = { {3000,6000}, {7000,12000}, {15000,25000}, {30000,50000} }   -- rubles, scaled by GAMMA eco factor
+local raid = { ids = {}, size = 0, total = 0 }   -- saved in m_data
+
+local function tm() return task_manager and task_manager.get_task_manager() end
+local function task_active() local t = tm(); return t and t.task_info and t.task_info[TASK] ~= nil end
+
+local function alive_count()
+	local sim, n = alife(), 0
+	for id in pairs(raid.ids) do
+		local se = sim:object(id)
+		if se and se.alive and se:alive() then n = n + 1 else raid.ids[id] = nil end
+	end
+	return n
+end
+
+-- reward depends on kills: pay per zombie by rank (actor 100%, companions 50%),
+-- stashes and goodwill scale with the share of the horde killed by the actor's group
+local PAY = { novice = 150, trainee = 200, experienced = 300, professional = 400,
+	veteran = 550, expert = 700, master = 900, legend = 1200 }
+local COMP_SHARE = 0.5
+
+local function give_rewards(failed)
+	local pay = (raid.pay_actor or 0) + (raid.pay_comp or 0) * COMP_SHARE
+	local kills = (raid.kills or 0) + (raid.kills_comp or 0)
+	local total = math.max(1, raid.total or 1)
+	local share = math.min(1, kills / total)
+	local money, stashes = 0, 0
+	if kills > 0 then
+		money = math.floor(pay * (1 + 0.5 * share) * (failed and 0.5 or 1))
+		if not failed then
+			if share >= 0.9 and (raid.size or 0) >= 3 then stashes = 3
+			elseif share >= 0.6 then stashes = 2
+			elseif share >= 0.25 then stashes = 1 end
+		end
+	end
+	if money > 0 then pcall(xr_effects.reward_money, db.actor, nil, { money }) end
+	for i = 1, stashes do pcall(xr_effects.reward_stash, db.actor, nil, { "true" }) end
+	local comm = db.actor:character_community():gsub("^actor_", "")
+	local gw = math.min(200, kills * 2)
+	if gw > 0 and not failed and comm and comm ~= "" then
+		pcall(xr_effects.complete_task_inc_goodwill, db.actor, nil, { tostring(gw), comm })
+	end
+	news_manager.send_tip(db.actor, string.format(game.translate_string(failed and "st_kreiser_raid_result_fail" or "st_kreiser_raid_result"),
+		kills, raid.total or 0, raid.kills or 0, raid.kills_comp or 0, money, stashes), nil, nil, 12000)
+	printf("[Mixon horde] result: kills=%s/%s actor=%s comp=%s money=%s stashes=%s failed=%s",
+		kills, raid.total or 0, raid.kills or 0, raid.kills_comp or 0, money, stashes, tostring(failed))
+end
+
+local function is_actor_group(who)
+	if not who then return false, false end
+	if who:id() == AC_ID then return true, false end
+	local sq = axr_companions and axr_companions.companion_squads
+	local gid = who.group_id and who:group_id()
+	if sq and gid and gid ~= 65535 and sq[gid] then return false, true end
+	return false, false
+end
+
+local function npc_on_death_callback(victim, who)
+	if not (victim and raid.ids and raid.ids[victim:id()]) or raid.done then return end
+	local is_a, is_c = is_actor_group(who)
+	if not (is_a or is_c) then return end
+	local rank = ranks and ranks.get_obj_rank_name and ranks.get_obj_rank_name(victim) or "experienced"
+	local v = PAY[rank] or 300
+	if is_a then
+		raid.kills = (raid.kills or 0) + 1; raid.pay_actor = (raid.pay_actor or 0) + v
+	else
+		raid.kills_comp = (raid.kills_comp or 0) + 1; raid.pay_comp = (raid.pay_comp or 0) + v
+	end
+end
+
+local RAID_TIMEOUT = 24 * 3600   -- game seconds; stuck raids (zombies offline elsewhere) are closed quietly
+local function game_sec_now()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((((d + m*31 + y*372) * 24 + h) * 60 + mi) * 60 + s)
+end
+
+local function check_raid()
+	if not task_active() or raid.done then return end
+	if alive_count() == 0 then
+		raid.done = true
+		pcall(function() tm():set_task_completed(TASK) end)
+		if (raid.total or 0) > 0 then give_rewards(false) end
+	elseif raid.start and game_sec_now() - raid.start > RAID_TIMEOUT then
+		raid.done = true
+		pcall(function() tm():set_task_failed(TASK) end)
+		if (raid.kills or 0) + (raid.kills_comp or 0) > 0 then give_rewards(true) end
+	end
+end
+
+local function target_impl()
+	local sim, best, bd = alife(), nil, nil
+	local p = db.actor and db.actor:position()
+	for id in pairs(raid.ids) do
+		local se = sim:object(id)
+		if se and se.alive and se:alive() and p then
+			local d = se.position:distance_to(p)
+			if not bd or d < bd then bd, best = d, id end
+		end
+	end
+	return best
+end
+
+local function descr_impl()
+	return string.format(game.translate_string("st_kreiser_raid_descr"), alive_count(), raid.total or 0, (raid.kills or 0) + (raid.kills_comp or 0))
+end
+
+local function cfg(k)
+	if ui_mcm and ui_mcm.get then
+		local v = ui_mcm.get("kreiser_horde/" .. k)
+		if v ~= nil then return v end
+	end
+	return DEF[k]
+end
+
+local function nearest_smart_name(pos, gvid)
+	local gg = game_graph()
+	local lid = gg:vertex(gvid):level_id()
+	local best, bd
+	for _, smart in pairs(SIMBOARD.smarts or {}) do
+		local se = smart.smrt
+		if se and se.m_game_vertex_id and gg:vertex(se.m_game_vertex_id):level_id() == lid then
+			local d = se.position:distance_to(pos)
+			if not bd or d < bd then bd, best = d, se:name() end
+		end
+	end
+	return best
+end
+
+local function smart_title(name)
+	local ok, s = pcall(function() return smart_terrain.get_smart_terrain_name(SIMBOARD.smarts_by_names[name]) end)
+	if ok and type(s) == "string" and s ~= "" then return s end
+	return tostring(name)
+end
+
+local function spawn_horde(o_size, o_dist, o_flat, o_prefix)
+	local a = db.actor
+	if not a then return end
+	local size = o_size or tonumber(cfg("size")) or 3
+	if size < 1 or size > 4 then size = 3 end
+	local dist = o_dist or tonumber(cfg("distance")) or 75
+	local flat = o_flat
+	if not flat then
+		local dir = device().cam_dir
+		flat = vector():set(dir.x, 0, dir.z)
+		if flat:magnitude() < 0.01 then local d = a:direction(); flat:set(d.x, 0, d.z) end
+		flat:normalize()
+	end
+	local side = vector():set(-flat.z, 0, flat.x)
+	local center = a:position():add(vector():set(flat.x*dist, 0, flat.z*dist))
+	local gvid = a:game_vertex_id()
+	local target = (cfg("target") == "actor") and "actor" or (nearest_smart_name(a:position(), gvid) or "actor")
+	if raid.done or not task_active() then raid = { ids = {}, size = 0, total = 0 } end
+	local sim = alife()
+	local squads, npcs, n = 0, 0, 0
+	for _, p in ipairs(SIZES[size]) do
+		if ini_sys:section_exist(p[1]) then
+			for i = 1, p[2] do
+				n = n + 1
+				local s = math.ceil(n / 2) * 3 * (n % 2 == 0 and 1 or -1)    -- line across the view, 3 m apart
+				local depth = (n % 3) * 4                                    -- a bit of depth
+				local want = vector():set(center.x + side.x*s + flat.x*depth, center.y, center.z + side.z*s + flat.z*depth)
+				local lvid = level.vertex_id(want)
+				if not lvid or lvid >= 4294967295 then lvid = level.vertex_id(center) end
+				if lvid and lvid < 4294967295 then
+					local pos = level.vertex_position(lvid)
+					local se = alife_create(p[1], pos, lvid, gvid)
+					if se then
+						se:create_npc(nil, pos, lvid, gvid)
+						for k in se:squad_members() do
+							local se_npc = k.object or (k.id and sim:object(k.id))
+							if se_npc then
+								SIMBOARD:setup_squad_and_group(se_npc)
+								SendScriptCallback("squad_on_npc_creation", se, se_npc, nil)
+								npcs = npcs + 1
+								raid.ids[se_npc.id] = true
+							end
+						end
+						se.scripted_target = target
+						se.rush = true
+						squads = squads + 1
+					end
+				end
+			end
+		end
+	end
+	if npcs == 0 then
+		if not o_size then last = 0 end   -- hotkey: don't burn the cooldown
+		return false
+	end
+	if not raid.start then raid.start = game_sec_now() end
+	raid.size = math.max(raid.size or 0, size)
+	raid.total = (raid.total or 0) + npcs
+	if npcs > 0 and not task_active() then pcall(function() tm():give_task(TASK) end) end
+	local tgt = (target == "actor") and "на тебя" or ("на " .. smart_title(target))
+	news_manager.send_tip(a, string.format("%sРейд зомбированных (%s): %d отрядов, %d бойцов, %d м, идут %s",
+		o_prefix or "", SIZE_NAMES[size], squads, npcs, dist, tgt), nil, nil, 10000)
+	printf("[Mixon horde] size=%s squads=%s npcs=%s dist=%s target=%s", size, squads, npcs, dist, tostring(target))
+	return true
+end
+
+local function on_key_press(key)
+	if key ~= (tonumber(cfg("key")) or DEF.key) then return end
+	if not (db.actor and db.actor:alive()) then return end
+	local t = time_global()
+	if t - last < COOLDOWN then return end
+	last = t
+	spawn_horde()
+end
+
+-- ---------------------------------------------------------------- random raids
+local BAD_LEVELS = { l03u_agr_underground=1, l04u_labx18=1, l08u_brainlab=1, l10u_bunker=1, l12u_control_monolith=1,
+	l12u_sarcofag=1, l13u_warlab=1, labx8=1, jupiter_underground=1, l12_stancia=1, l12_stancia_2=1, l13_generators=1, fake_start=1 }
+local WEIGHTS = { 50, 30, 15, 5 }   -- light / medium / large / huge
+local next_check = nil              -- game time (seconds since start) of the next roll
+local last_random = -1e9            -- game time of the last random raid
+
+local function game_sec()
+	local gt = game.get_game_time()
+	local y, m, d, h, mi, s = gt:get()
+	return ((((d + m*31 + y*372) * 24 + h) * 60 + mi) * 60 + s)
+end
+
+local function pick_size(maxs)
+	local total = 0
+	for i = 1, maxs do total = total + WEIGHTS[i] end
+	local r = math.random(1, total)
+	for i = 1, maxs do
+		r = r - WEIGHTS[i]
+		if r <= 0 then return i end
+	end
+	return 1
+end
+
+local function surge_or_psi()
+	local sm = surge_manager and surge_manager.get_surge_manager and surge_manager.get_surge_manager()
+	if sm and sm.started then return true end
+	local pm = psi_storm_manager and psi_storm_manager.get_psi_storm_manager and psi_storm_manager.get_psi_storm_manager()
+	if pm and pm.started then return true end
+	return false
+end
+
+local function random_raid_roll()
+	if cfg("random_enable") == false then return end
+	local a = db.actor
+	if not (a and a:alive()) then return end
+	local now = game_sec()
+	if not next_check then next_check = now + 3600 return end
+	if now < next_check then return end
+	next_check = now + 3600                                         -- one roll per game hour
+	if task_active() then return end
+	if BAD_LEVELS[level.name()] then return end
+	if surge_or_psi() then return end
+	if has_alife_info and has_alife_info("sleep_active") then return end
+	local interval = (tonumber(cfg("random_interval")) or 24) * 3600
+	if now - last_random < interval then return end
+	if math.random(1, 100) > (tonumber(cfg("random_chance")) or 3) then return end
+	local maxs = math.max(1, math.min(4, tonumber(cfg("random_max")) or 4))
+	local size = pick_size(maxs)
+	for _ = 1, 8 do
+		local ang = math.random() * 2 * math.pi
+		local flat = vector():set(math.cos(ang), 0, math.sin(ang))
+		if spawn_horde(size, math.random(90, 160), flat, "ВНИМАНИЕ! ") then last_random = now break end
+	end
+end
+
+local tick = 0
+local function actor_on_update()
+	local t = time_global()
+	if t < tick then return end
+	tick = t + 2000
+	check_raid()
+	random_raid_roll()
+end
+
+local function save_state(m) m.kreiser_raid = raid; m.kreiser_raid_last = last_random end
+local function load_state(m)
+	if m.kreiser_raid then raid = m.kreiser_raid; raid.ids = raid.ids or {} end
+	if m.kreiser_raid_last then last_random = m.kreiser_raid_last end
+end
+
+function on_game_start()
+	RegisterScriptCallback("on_key_press", on_key_press)
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("npc_on_death_callback", npc_on_death_callback)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("load_state", load_state)
+	if task_functor then
+		task_functor.kreiser_raid_target = target_impl
+		task_functor.kreiser_raid_descr = descr_impl
+	end
+end

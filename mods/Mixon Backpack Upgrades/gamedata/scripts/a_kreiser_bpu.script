@@ -1,0 +1,524 @@
+--[[
+	Mixon Backpack Upgrades - scripted effects of backpack upgrades.
+
+	Engine side (CBackpack::install_upgrade_impl) only knows: cost, inv_weight,
+	additional_inventory_weight(2), power_loss, power_restore_speed. Backpack power_loss is
+	almost irrelevant in the current stamina formula and backpack power_restore_speed is not
+	read by the actor at all, so everything except carry weight is done here.
+
+	Upgrade sections (configs\items\outfits\upgrades\up_kreiser_backpack.ltx) carry kbu_* keys:
+		kbu_drain   - part of the stamina spent while moving that is given back
+		kbu_regen   - extra stamina per second
+		kbu_rad / kbu_chem / kbu_burn / kbu_shock / kbu_psy - incoming hit power reduction
+		kbu_back    - fire_wound / wound / explosion reduction for hits coming from behind
+		kbu_slots   - extra artefact belt slots (engine hook _G.CCustomOutfit_get_artefact_count)
+		kbu_sprint / kbu_run / kbu_jump - movement multipliers (speed.script / jump.script)
+		kbu_reload  - weapon reload animation speed
+		kbu_magload - Mags Redux magazine load / unload speed
+	Values of all installed upgrades of the EQUIPPED backpack (slot 13) are summed.
+
+	Ordering: axr_main keeps callbacks in a hash set, so the order of actor_on_before_hit /
+	actor_on_hud_animation_play handlers is undefined. Hit power has to be scaled BEFORE
+	grok_actor_damage_balancer (and the other GAMMA damage scripts) read SHit.power, and the
+	reload speed has to be applied AFTER the RPG "rapid reload" handler rewrites anm_speed.
+	Both are therefore done by wrapping the engine entry points _G.CActor__BeforeHitCallback
+	and _G.CHudItem__PlayHUDMotion (same technique as Experience Framework / 3DSS).
+]]
+
+local BACKPACK_SLOT = 13
+local TICK_MS       = 1000
+local MAX_REDUCTION = 0.5    -- hard cap for any summed damage reduction
+local MAX_BELT      = 5      -- the inventory UI draws 5 belt cells (system.ltx max_belt)
+local BACK_DOT      = 0.5    -- cos(60 deg): hit direction vs. view direction
+
+local KEYS = {
+	"kbu_drain", "kbu_regen", "kbu_rad", "kbu_chem", "kbu_burn", "kbu_shock", "kbu_psy",
+	"kbu_back", "kbu_slots", "kbu_sprint", "kbu_run", "kbu_jump", "kbu_reload", "kbu_magload",
+}
+
+-- current summed effects (all zero when no upgraded backpack is worn)
+local eff = {}
+for i = 1, #KEYS do eff[KEYS[i]] = 0 end
+
+local active     = false   -- any scripted effect present
+local signature  = nil     -- backpack id + installed upgrades + settings
+local next_tick  = 0
+local last_tick  = nil
+local last_power = nil
+
+local hit_key    = {}      -- hit type -> eff key
+local back_types = {}      -- hit types affected by the kevlar insert
+local reload_anm = {}      -- anm name -> bool (cache)
+local last_slots = 0
+
+local function opt(key)
+	if kreiser_bpu_mcm and kreiser_bpu_mcm.get then
+		return kreiser_bpu_mcm.get(key)
+	end
+	return nil
+end
+
+local function dbg(fmt, ...)
+	if opt("debug") then
+		printf("[KBU] " .. fmt, ...)
+	end
+end
+
+------------------------------------------------------------------------------------------
+-- Upgrade property text for the technician / workbench upgrade info box
+-- (called as functor(sect_section, prop_name); also accepts the engine style "s1, s2" list)
+------------------------------------------------------------------------------------------
+local PROPS = {
+	prop_kbu_weight  = { key = "additional_inventory_weight", kind = "kg" },
+	prop_kbu_drain   = { key = "kbu_drain",   kind = "pct", sign = "-" },
+	prop_kbu_regen   = { key = "kbu_regen",   kind = "persec" },
+	prop_kbu_rad     = { key = "kbu_rad",     kind = "pct", sign = "-" },
+	prop_kbu_chem    = { key = "kbu_chem",    kind = "pct", sign = "-" },
+	prop_kbu_burn    = { key = "kbu_burn",    kind = "pct", sign = "-" },
+	prop_kbu_shock   = { key = "kbu_shock",   kind = "pct", sign = "-" },
+	prop_kbu_psy     = { key = "kbu_psy",     kind = "pct", sign = "-" },
+	prop_kbu_back    = { key = "kbu_back",    kind = "pct", sign = "-" },
+	prop_kbu_slots   = { key = "kbu_slots",   kind = "int" },
+	prop_kbu_sprint  = { key = "kbu_sprint",  kind = "pct", sign = "+" },
+	prop_kbu_run     = { key = "kbu_run",     kind = "pct", sign = "+" },
+	prop_kbu_jump    = { key = "kbu_jump",    kind = "pct", sign = "+" },
+	prop_kbu_reload  = { key = "kbu_reload",  kind = "pct", sign = "+" },
+	prop_kbu_magload = { key = "kbu_magload", kind = "pct", sign = "+" },
+}
+
+function prop_text(param1, name)
+	local p = name and PROPS[name]
+	if not p then
+		return ""
+	end
+	local title = game.translate_string(ini_sys:r_string_ex(name, "name") or name)
+	if type(param1) ~= "string" or param1 == "" then
+		return title
+	end
+
+	local sum = 0
+	for sec in string.gmatch(param1, "[^,%s]+") do
+		if ini_sys:section_exist(sec) then
+			sum = sum + (ini_sys:r_float_ex(sec, p.key) or 0)
+		end
+	end
+
+	if p.kind == "kg" then
+		return string.format("%s +%s %s", title, tostring(round_idp(sum, 1)), game.translate_string("st_kg"))
+	elseif p.kind == "int" then
+		return string.format("%s +%d", title, math.floor(sum + 0.5))
+	elseif p.kind == "persec" then
+		-- kbu_regen is a fraction of the full stamina bar per second
+		return string.format("%s +%.2f%s", title, sum * 100, game.translate_string("st_kbu_unit_persec"))
+	end
+	return string.format("%s %s%d%%", title, p.sign or "+", math.floor(sum * 100 + 0.5))
+end
+
+------------------------------------------------------------------------------------------
+-- Workbench: upgrade kit tier per backpack class (kbu_kit_tiers), kit kind per upgrade (kbu_kit)
+------------------------------------------------------------------------------------------
+local KIT_PROP = { utility = "prop_tonnage", magical = "prop_radio", physical = "prop_armor" }
+
+local function patch_tree(section, tree)
+	if not (section and type(tree) == "table") then
+		return
+	end
+	local cls = ini_sys:r_string_ex(section, "kbu_class")
+	if not (cls and cls ~= "") then
+		return
+	end
+	local tiers = {}
+	local str = ini_sys:r_string_ex(section, "kbu_kit_tiers")
+	if str and str ~= "" then
+		for n in string.gmatch(str, "%d+") do
+			tiers[#tiers + 1] = tonumber(n)
+		end
+	end
+	for _, cols in pairs(tree) do
+		for col, info in pairs(cols) do
+			local kit = info.section and ini_sys:r_string_ex(info.section, "kbu_kit")
+			if kit then
+				local group = math.ceil(col / 2)
+				local tier = tiers[group] or group
+				info.tier = tier
+				local pattern = utils_item.get_upgrade_prop_tool and utils_item.get_upgrade_prop_tool(KIT_PROP[kit] or "prop_tonnage")
+				if pattern then
+					local tool = string.gsub(pattern, "%^d", tostring(tier))
+					info.tool = tool
+				end
+			end
+		end
+	end
+end
+
+local function patch_upgrade_tree()
+	if not (utils_item and utils_item.get_upgrades_tree) then
+		return
+	end
+	local base_get_tree = utils_item.get_upgrades_tree
+	utils_item.get_upgrades_tree = function(section, new_table, ...)
+		local tree = base_get_tree(section, new_table, ...)
+		local ok, err = pcall(patch_tree, section, tree)
+		if not ok then
+			printf("![KBU] patch_tree failed for [%s]: %s", tostring(section), tostring(err))
+		end
+		return tree
+	end
+end
+
+------------------------------------------------------------------------------------------
+-- Mags Redux: faster magazine loading / unloading
+------------------------------------------------------------------------------------------
+local function patch_magazines()
+	if not (magazines and magazines.load_magazine and magazines.unload_magazine) then
+		return
+	end
+	local base_load = magazines.load_magazine
+	magazines.load_magazine = function(magazine, capacity, delay, ...)
+		local k = eff.kbu_magload
+		if k > 0 and type(delay) == "number" then
+			delay = delay / (1 + k)
+		end
+		return base_load(magazine, capacity, delay, ...)
+	end
+	local base_unload = magazines.unload_magazine
+	magazines.unload_magazine = function(magazine, delay, ...)
+		local k = eff.kbu_magload
+		if k > 0 and type(delay) == "number" then
+			delay = delay / (1 + k)
+		end
+		return base_unload(magazine, delay, ...)
+	end
+end
+
+------------------------------------------------------------------------------------------
+-- Effect cache
+------------------------------------------------------------------------------------------
+local function apply_mobility()
+	local spr, run, jmp = eff.kbu_sprint, eff.kbu_run, eff.kbu_jump
+	if speed and speed.add_speed and speed.remove_speed then
+		if spr > 0 then speed.add_speed("kbu_sprint", 1 + spr, true, true) else speed.remove_speed("kbu_sprint") end
+		if run > 0 then speed.add_speed("kbu_run", 1 + run, false, true) else speed.remove_speed("kbu_run") end
+	end
+	-- jump.add_jump is only safe with force = true (its non-forced branch reads an undefined table)
+	if jump and jump.add_jump and jump.remove_jump then
+		if jmp > 0 then jump.add_jump("kbu_jump", 1 + jmp, true) else jump.remove_jump("kbu_jump") end
+	end
+end
+
+local function rebuild(upgrades)
+	for i = 1, #KEYS do eff[KEYS[i]] = 0 end
+
+	if upgrades then
+		for i = 1, #upgrades do
+			local sect = ini_sys:r_string_ex(upgrades[i], "section")
+			if sect and ini_sys:section_exist(sect) then
+				for j = 1, #KEYS do
+					local key = KEYS[j]
+					local v = ini_sys:r_float_ex(sect, key)
+					if v and v > 0 then
+						eff[key] = eff[key] + v
+					end
+				end
+			end
+		end
+	end
+
+	local k = tonumber(opt("strength")) or 1
+	local slots = eff.kbu_slots
+	for i = 1, #KEYS do eff[KEYS[i]] = eff[KEYS[i]] * k end
+	eff.kbu_slots = math.floor(slots + 0.5)   -- whole slots, not scaled by the strength option
+
+	if opt("en_hits") == false then
+		eff.kbu_rad, eff.kbu_chem, eff.kbu_burn, eff.kbu_shock, eff.kbu_psy, eff.kbu_back = 0, 0, 0, 0, 0, 0
+	end
+	if opt("en_stamina") == false then
+		eff.kbu_drain, eff.kbu_regen = 0, 0
+	end
+	if opt("en_mobility") == false then
+		eff.kbu_sprint, eff.kbu_run, eff.kbu_jump = 0, 0, 0
+	end
+	if opt("en_reload") == false then
+		eff.kbu_reload, eff.kbu_magload = 0, 0
+	end
+	if opt("en_slots") == false then
+		eff.kbu_slots = 0
+	end
+
+	eff.kbu_drain  = math.min(eff.kbu_drain, MAX_REDUCTION)
+
+	active = false
+	for i = 1, #KEYS do
+		if eff[KEYS[i]] > 0 then active = true break end
+	end
+	last_power = nil
+
+	apply_mobility()
+
+	if opt("debug") then
+		local t = {}
+		for i = 1, #KEYS do t[#t + 1] = KEYS[i] .. "=" .. tostring(eff[KEYS[i]]) end
+		printf("[KBU] effects: %s", table.concat(t, " "))
+	end
+end
+
+local function scan()
+	local actor = db.actor
+	if not actor then
+		return
+	end
+	local sig = "none"
+	local list
+	local bp = actor:item_in_slot(BACKPACK_SLOT)
+	if bp then
+		local cls = ini_sys:r_string_ex(bp:section(), "kbu_class")
+		if cls and cls ~= "" then
+			list = {}
+			bp:iterate_installed_upgrades(function(upgr)
+				list[#list + 1] = upgr
+			end)
+			if #list > 0 then
+				table.sort(list)
+				sig = bp:id() .. "|" .. table.concat(list, ",")
+			else
+				list = nil
+			end
+		end
+	end
+	sig = sig .. "|" .. tostring(opt("strength")) .. tostring(opt("en_hits")) .. tostring(opt("en_stamina"))
+		.. tostring(opt("en_mobility")) .. tostring(opt("en_reload")) .. tostring(opt("en_slots"))
+	if sig == signature then
+		return
+	end
+	signature = sig
+	rebuild(list)
+end
+
+------------------------------------------------------------------------------------------
+-- Hits
+------------------------------------------------------------------------------------------
+local function from_behind(shit)
+	local d = shit.direction
+	if not d then
+		return false
+	end
+	local c = device().cam_dir
+	local dx, dz, cx, cz = d.x, d.z, c.x, c.z
+	local ld = math.sqrt(dx * dx + dz * dz)
+	local lc = math.sqrt(cx * cx + cz * cz)
+	if ld < 0.01 or lc < 0.01 then
+		return false
+	end
+	-- a projectile that travels the way the actor looks hits him in the back
+	return ((dx * cx + dz * cz) / (ld * lc)) > BACK_DOT
+end
+
+local function scale_hit(shit)
+	if not (active and shit) then
+		return
+	end
+	local power = shit.power
+	if not power or power <= 0 then
+		return
+	end
+	local t = shit.type
+	local key = hit_key[t]
+	local red = key and eff[key] or 0
+	if back_types[t] and eff.kbu_back > 0 and from_behind(shit) then
+		red = red + eff.kbu_back
+	end
+	if red > 0 then
+		if red > MAX_REDUCTION then red = MAX_REDUCTION end
+		shit.power = power * (1 - red)
+	end
+end
+
+------------------------------------------------------------------------------------------
+-- Reload animation speed
+------------------------------------------------------------------------------------------
+local function is_reload_anm(name)
+	local r = reload_anm[name]
+	if r == nil then
+		r = false
+		if (string.find(name, "^anm_reload") or string.find(name, "^anm_add_cartridge")
+			or string.find(name, "^anm_open") or string.find(name, "^anm_close"))
+			and (not string.find(name, "misfire")) then
+			r = true
+		end
+		reload_anm[name] = r
+	end
+	return r
+end
+
+local function scale_reload(anm_table, obj)
+	local k = eff.kbu_reload
+	if k <= 0 then
+		return
+	end
+	if not (type(anm_table) == "table" and obj and IsWeapon(obj)) then
+		return
+	end
+	local parent = obj:parent()
+	if not (parent and parent:id() == AC_ID) then
+		return
+	end
+	local name = anm_table.anm_name
+	if type(name) ~= "string" or not is_reload_anm(name) then
+		return
+	end
+	local spd = tonumber(anm_table.anm_speed)
+	if spd and spd > 0 then
+		anm_table.anm_speed = spd * (1 + k)
+	end
+end
+
+local function patch_engine_callbacks()
+	local base_hit = _G.CActor__BeforeHitCallback
+	if type(base_hit) == "function" then
+		_G.CActor__BeforeHitCallback = function(actor, shit, ...)
+			local ok, err = pcall(scale_hit, shit)
+			if not ok then
+				printf("![KBU] scale_hit failed: %s", tostring(err))
+			end
+			return base_hit(actor, shit, ...)
+		end
+	end
+	local base_play = _G.CHudItem__PlayHUDMotion
+	if type(base_play) == "function" then
+		_G.CHudItem__PlayHUDMotion = function(anm_table, obj, ...)
+			local res = base_play(anm_table, obj, ...)
+			if eff.kbu_reload > 0 then
+				local ok, err = pcall(scale_reload, (type(res) == "table") and res or anm_table, obj)
+				if not ok then
+					printf("![KBU] scale_reload failed: %s", tostring(err))
+				end
+			end
+			return res
+		end
+	end
+end
+
+------------------------------------------------------------------------------------------
+-- Periodic effects
+------------------------------------------------------------------------------------------
+-- Extra artefact belt slot. CCustomOutfit::get_artefact_count() asks this global hook for the
+-- final value; both the engine (CInventory::BeltWidth) and the inventory UI go through it, so
+-- the extra cell is real. It needs an outfit that is worn (no outfit -> no belt at all) and
+-- never raises the belt above MAX_BELT cells.
+local function patch_belt_size()
+	local base = _G.CCustomOutfit_get_artefact_count
+	_G.CCustomOutfit_get_artefact_count = function(count, ...)
+		if type(base) == "function" then
+			count = base(count, ...) or count
+		end
+		local add = eff.kbu_slots
+		if add > 0 and type(count) == "number" and count < MAX_BELT then
+			count = count + add
+			if count > MAX_BELT then count = MAX_BELT end
+		end
+		return count
+	end
+end
+
+-- The bonus is gone (backpack taken off / swapped): artefacts that no longer fit go to the ruck.
+local function enforce_belt(actor)
+	local outfit = actor:item_in_slot(7)
+	local c_outfit = outfit and outfit:cast_CustomOutfit()
+	local limit = c_outfit and c_outfit:get_artefact_count() or 0
+	local cnt = actor:belt_count()
+	if cnt <= limit then
+		return
+	end
+	local extra = {}
+	for i = limit, cnt - 1 do
+		local itm = actor:item_on_belt(i)
+		if itm then extra[#extra + 1] = itm end
+	end
+	for i = 1, #extra do
+		actor:move_to_ruck(extra[i])
+	end
+end
+
+local function actor_on_update()
+	local actor = db.actor
+	if not actor then
+		return
+	end
+
+	-- stamina drain: give back a part of what was spent since the previous frame
+	if active and eff.kbu_drain > 0 then
+		local p = actor.power
+		if last_power then
+			local spent = last_power - p
+			-- ignore big instant drops (scripts zeroing stamina etc.)
+			if spent > 0 and spent < 0.03 then
+				local back = spent * eff.kbu_drain
+				actor:change_power(back)
+				p = p + back
+			end
+		end
+		last_power = p
+	end
+
+	local tg = time_global()
+	if tg < next_tick then
+		return
+	end
+	next_tick = tg + TICK_MS
+	local dt = last_tick and (tg - last_tick) or 0
+	last_tick = tg
+
+	scan()
+
+	if eff.kbu_slots < last_slots then
+		local ok, err = pcall(enforce_belt, actor)
+		if not ok then
+			printf("![KBU] enforce_belt failed: %s", tostring(err))
+		end
+	end
+	last_slots = eff.kbu_slots
+
+	if (not active) or dt <= 0 or dt > 5000 then
+		return
+	end
+
+	if eff.kbu_regen > 0 and actor.power < 1 then
+		actor:change_power(eff.kbu_regen * dt / 1000)
+		last_power = nil
+	end
+
+end
+
+local function actor_on_first_update()
+	signature = nil
+	scan()
+end
+
+local function on_option_change()
+	signature = nil
+end
+
+function on_game_start()
+	-- [fix] some hit types (e.g. wound_2) don't exist in this engine build: skip nil keys
+	local function hk(name, key) local v = hit[name]; if v ~= nil then hit_key[v] = key end end
+	local function bt(name) local v = hit[name]; if v ~= nil then back_types[v] = true end end
+	hk("radiation", "kbu_rad")
+	hk("chemical_burn", "kbu_chem")
+	hk("burn", "kbu_burn")
+	hk("light_burn", "kbu_burn")
+	hk("shock", "kbu_shock")
+	hk("telepatic", "kbu_psy")
+	bt("fire_wound")
+	bt("wound")
+	bt("wound_2")
+	bt("explosion")
+
+	patch_upgrade_tree()
+	patch_magazines()
+	patch_engine_callbacks()
+	patch_belt_size()
+
+	RegisterScriptCallback("actor_on_first_update", actor_on_first_update)
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("on_option_change", on_option_change)
+end

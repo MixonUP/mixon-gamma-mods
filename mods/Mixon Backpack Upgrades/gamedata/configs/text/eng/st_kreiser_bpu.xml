@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_kbu_cap_a_name">
+		<text>Extra pockets</text>
+	</string>
+	<string id="st_kbu_cap_a_descr">
+		<text>Sewn-on side pockets and flaps. Slightly increase carry weight.</text>
+	</string>
+	<string id="st_kbu_cap_c_name">
+		<text>Expanded volume</text>
+	</string>
+	<string id="st_kbu_cap_c_descr">
+		<text>Expansion gussets for the main compartment. Noticeably increase carry weight.\n \nChoice: excludes "Lightweight frame".</text>
+	</string>
+	<string id="st_kbu_cap_d_name">
+		<text>Lightweight frame</text>
+	</string>
+	<string id="st_kbu_cap_d_descr">
+		<text>Light alloy frame: a smaller carry weight bonus, but less stamina is spent while moving.\n \nChoice: excludes "Expanded volume".</text>
+	</string>
+	<string id="st_kbu_cap_e_name">
+		<text>Cargo frame</text>
+	</string>
+	<string id="st_kbu_cap_e_descr">
+		<text>Rigid cargo frame with extra lashing points. Maximum carry weight bonus.\n \nChoice: excludes "Compression straps".</text>
+	</string>
+	<string id="st_kbu_cap_f_name">
+		<text>Compression straps</text>
+	</string>
+	<string id="st_kbu_cap_f_descr">
+		<text>Straps keep the load tight to the back: a small carry weight bonus and faster stamina recovery.\n \nChoice: excludes "Cargo frame".</text>
+	</string>
+	<string id="st_kbu_prot_a_name">
+		<text>Protective impregnation</text>
+	</string>
+	<string id="st_kbu_prot_a_descr">
+		<text>The fabric is treated with a protective compound. Slightly weakens radiation and chemical damage to the wearer.</text>
+	</string>
+	<string id="st_kbu_prot_c_name">
+		<text>Lead lining</text>
+	</string>
+	<string id="st_kbu_prot_c_descr">
+		<text>Leaded rubber sheets in the back panel and walls. Reduces incoming radiation.\n \nChoice: excludes "Chemical cover".</text>
+	</string>
+	<string id="st_kbu_prot_d_name">
+		<text>Chemical cover</text>
+	</string>
+	<string id="st_kbu_prot_d_descr">
+		<text>Sealed rubberized cover. Reduces chemical burn damage.\n \nChoice: excludes "Lead lining".</text>
+	</string>
+	<string id="st_kbu_prot_e_name">
+		<text>Thermal insulation</text>
+	</string>
+	<string id="st_kbu_prot_e_descr">
+		<text>A layer of fire-resistant fibre and foil. Reduces fire and heat damage.\n \nChoice: excludes "Dielectric layer".</text>
+	</string>
+	<string id="st_kbu_prot_f_name">
+		<text>Dielectric layer</text>
+	</string>
+	<string id="st_kbu_prot_f_descr">
+		<text>Insulating layer and a grounded frame rail. Reduces electric damage.\n \nChoice: excludes "Thermal insulation".</text>
+	</string>
+	<string id="st_kbu_ergo_a_name">
+		<text>Anatomic straps</text>
+	</string>
+	<string id="st_kbu_ergo_a_descr">
+		<text>Wide padded shoulder straps. Reduce stamina spent while moving.</text>
+	</string>
+	<string id="st_kbu_ergo_c_name">
+		<text>Hip belt</text>
+	</string>
+	<string id="st_kbu_ergo_c_descr">
+		<text>A load-bearing hip belt moves part of the weight to the hips. Speeds up stamina recovery.\n \nChoice: excludes "Kevlar insert".</text>
+	</string>
+	<string id="st_kbu_ergo_d_name">
+		<text>Kevlar insert</text>
+	</string>
+	<string id="st_kbu_ergo_d_descr">
+		<text>A kevlar pack in the back panel. Reduces bullet, shrapnel and claw damage when hit from behind.\n \nChoice: excludes "Hip belt".</text>
+	</string>
+	<string id="st_kbu_ergo_e_name">
+		<text>Load distribution system</text>
+	</string>
+	<string id="st_kbu_ergo_e_descr">
+		<text>Adjustable suspension with a ventilated back panel. Considerably reduces stamina spent while moving.</text>
+	</string>
+	<string id="st_kbu_rig_a_name">
+		<text>Strap pouches</text>
+	</string>
+	<string id="st_kbu_rig_a_descr">
+		<text>Magazine and ammo pouches on the shoulder straps. Speed up loading and unloading of magazines.</text>
+	</string>
+	<string id="st_kbu_rig_c_name">
+		<text>Quick pockets</text>
+	</string>
+	<string id="st_kbu_rig_c_descr">
+		<text>Quick-access magazine flaps. Speed up weapon reloading and magazine loading.\n \nChoice: excludes "Light suspension".</text>
+	</string>
+	<string id="st_kbu_rig_d_name">
+		<text>Light suspension</text>
+	</string>
+	<string id="st_kbu_rig_d_descr">
+		<text>A lightened suspension that does not restrict movement. Increases sprint and run speed.\n \nChoice: excludes "Quick pockets".</text>
+	</string>
+	<string id="st_kbu_rig_e_name">
+		<text>Reinforced straps</text>
+	</string>
+	<string id="st_kbu_rig_e_descr">
+		<text>Reinforced straps with a sternum strap hold the load firmly. Increase jump height.\n \nChoice: excludes "Quick-access pouches".</text>
+	</string>
+	<string id="st_kbu_rig_f_name">
+		<text>Quick-access pouches</text>
+	</string>
+	<string id="st_kbu_rig_f_descr">
+		<text>Extra pouches on the belt and side straps. Even faster magazine loading and a little more carry weight.\n \nChoice: excludes "Reinforced straps".</text>
+	</string>
+	<string id="st_kbu_comp_a_name">
+		<text>Container compartment</text>
+	</string>
+	<string id="st_kbu_comp_a_descr">
+		<text>A shielded artefact socket wired to the belt: +1 artefact slot (an outfit must be worn, 5 slots at most). Its lead lining also slightly reduces incoming radiation.</text>
+	</string>
+	<string id="st_kbu_comp_c_name">
+		<text>Lead compartment</text>
+	</string>
+	<string id="st_kbu_comp_c_descr">
+		<text>The compartment walls are reinforced with lead plates. Further reduces incoming radiation.\n \nChoice: excludes "Psi screen".</text>
+	</string>
+	<string id="st_kbu_comp_d_name">
+		<text>Psi screen</text>
+	</string>
+	<string id="st_kbu_comp_d_descr">
+		<text>A mesh of shielding alloy in the backpack walls. Reduces psi damage to the wearer.\n \nChoice: excludes "Lead compartment".</text>
+	</string>
+	<string id="st_kbu_comp_e_name">
+		<text>Shielded module</text>
+	</string>
+	<string id="st_kbu_comp_e_descr">
+		<text>A combined shielding module. Slightly reduces incoming radiation and psi damage.</text>
+	</string>
+	<string id="st_kbu_prop_weight">
+		<text>Carry weight</text>
+	</string>
+	<string id="st_kbu_prop_drain">
+		<text>Stamina drain</text>
+	</string>
+	<string id="st_kbu_prop_regen">
+		<text>Stamina recovery</text>
+	</string>
+	<string id="st_kbu_prop_rad">
+		<text>Radiation damage</text>
+	</string>
+	<string id="st_kbu_prop_chem">
+		<text>Chemical burn damage</text>
+	</string>
+	<string id="st_kbu_prop_burn">
+		<text>Fire damage</text>
+	</string>
+	<string id="st_kbu_prop_shock">
+		<text>Electric damage</text>
+	</string>
+	<string id="st_kbu_prop_psy">
+		<text>Psi damage</text>
+	</string>
+	<string id="st_kbu_prop_back">
+		<text>Damage when hit from behind</text>
+	</string>
+	<string id="st_kbu_prop_slots">
+		<text>Artefact slots</text>
+	</string>
+	<string id="st_kbu_prop_sprint">
+		<text>Sprint speed</text>
+	</string>
+	<string id="st_kbu_prop_run">
+		<text>Run speed</text>
+	</string>
+	<string id="st_kbu_prop_jump">
+		<text>Jump height</text>
+	</string>
+	<string id="st_kbu_prop_reload">
+		<text>Reload speed</text>
+	</string>
+	<string id="st_kbu_prop_magload">
+		<text>Magazine loading speed</text>
+	</string>
+	<string id="st_kbu_unit_persec">
+		<text>%/s</text>
+	</string>
+	<string id="ui_mcm_menu_kreiser_bpu">
+		<text>Backpack Upgrades</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_title">
+		<text>Mixon: Backpack Upgrades</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_desc">
+		<text>Settings of the scripted backpack upgrade effects. Carry weight (kg) comes from configs and is not changed here.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_strength">
+		<text>Effect strength (multiplier)</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_strength_desc">
+		<text>Global multiplier for all scripted upgrade effects (protection, stamina, speed, reload).</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_hits">
+		<text>Damage protection</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_hits_desc">
+		<text>Radiation, chemical, fire, electric, psi and the kevlar insert.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_stamina">
+		<text>Stamina effects</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_stamina_desc">
+		<text>Reduced stamina drain and faster stamina recovery.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_mobility">
+		<text>Speed and jump</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_mobility_desc">
+		<text>Sprint, run and jump bonuses.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_reload">
+		<text>Reload and magazines</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_reload_desc">
+		<text>Faster reload animations and magazine loading (Mags Redux).</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_slots">
+		<text>Extra artefact slot</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_en_slots_desc">
+		<text>+1 artefact belt slot from the Container compartment upgrade.</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_debug">
+		<text>Debug logging</text>
+	</string>
+	<string id="ui_mcm_kreiser_bpu_debug_desc">
+		<text>Print the summed effects to the log whenever the backpack or its upgrades change.</text>
+	</string>
+</string_table>

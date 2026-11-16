@@ -1,0 +1,445 @@
+--[[
+	Mixon Companion Training (CUP) - Artefact hunter branch.
+
+	The companion needs an artefact detector in his backpack (Echo / Bear / Grizzly / Veles /
+	Svarog); the better the detector, the bigger the search radius.
+	Nothing is created out of thin air (except the rare Hunter bonus): only artefacts that
+	really lie on the level are found. Online artefacts are registered in db.storage by their
+	binder, the ones without a parent are lying on the ground / floating in an anomaly.
+
+		tier 1  marks artefacts around him on the map (spot "cup_artefact", see modxml_cup) and
+		        reports distance and direction;
+		tier 2  radius x1.5; when an artefact is within PICK_RANGE and there is no fight he gets
+		        it out himself (WORK_TIME), puts it into HIS backpack and its condition is +5 pp;
+		3A      Hunter: radius x2, shorter cooldown, 15% chance of a second artefact of the same kind;
+		3B      Connoisseur: +15 pp at extraction, artefacts kept in his backpack slowly regain
+		        condition (+1 pp per game hour up to 60%).
+
+	Taking an artefact repeats what vanilla xr_gather_items does for NPCs: the anomaly zone is
+	told (on_artefact_take), the item is re-created in the NPC's inventory and the old one is
+	released. GAMMA keeps artefact condition in zz_item_artefact.cond_t, it is updated as well.
+]]
+
+local SPOT = "cup_artefact"
+local SCAN_PERIOD = 4000				-- real ms between scans
+local NEWS_CD = 30000					-- real ms between "found" messages of one hunter
+local NO_DET_CD = 600000				-- real ms between "I need a detector" messages
+local WORK_TIME = 20000					-- real ms to get an artefact out
+local PICK_RANGE, PICK_RANGE_HUNTER = 15, 25
+local PICK_CD, PICK_CD_HUNTER = 1800, 900	-- game seconds between extractions
+local RADIUS = { 15, 25, 35, 50 }		-- by detector tier
+local MULT_T2, MULT_HUNTER = 1.5, 2.0
+local COND_T2, COND_CONN = 0.05, 0.15
+local COND_MAX = 0.99					-- 1.0 would make GAMMA roll a random condition again
+local HUNTER_BONUS = 0.15
+local REGEN_STEP, REGEN_CAP, REGEN_MAX_HOURS = 0.01, 0.60, 24
+
+local DET_TIER = {
+	detector_simple = 1, detector_advanced = 2, detector_grizzly = 2,
+	detector_elite = 3, detector_scientific = 4,
+}
+local DET_CLASS = { DET_SIMP = 1, DET_ADVA = 2, DET_ELIT = 3, DET_SCIE = 4 }
+local NOT_AF_DET = { detector_geiger = true, detector_radio = true, detector_anomaly = true }
+local DIRS = { "n", "ne", "e", "se", "s", "sw", "w", "nw" }
+
+local sec_tier = {}		-- [section] = tier or false
+local det_cache = {}	-- [hunter id] = { t = expire, tier = n }
+local marks = {}		-- [artefact id] = true
+local told = {}			-- [artefact id] = true: already reported
+local work = {}			-- [hunter id] = { id = artefact id, t = start }
+local last_news = {}	-- [hunter id] = time_global
+local last_nodet = {}
+local t_scan = 0
+local spot_ok, spot_checked = true, false
+
+---------------------------------------------------------------------
+-- helpers
+---------------------------------------------------------------------
+local function check_spot()
+	spot_checked = true
+	local ok, res = pcall(function()
+		local xml = CScriptXmlInit()
+		xml:ParseFile("map_spots.xml")
+		return xml:NodeExist(SPOT) and xml:NodeExist(SPOT .. "_spot")
+	end)
+	spot_ok = ok and res and true or false
+	if spot_ok then
+		cup_core.log("artefact: map spot '%s' is registered", SPOT)
+	else
+		cup_core.warn_once("af_spot", "artefact: map spot '%s' not found in map_spots.xml, marks are off (messages still work)", SPOT)
+	end
+end
+
+local function tier_of_section(sec)
+	local t = sec_tier[sec]
+	if t == nil then
+		t = DET_TIER[sec] or false
+		if not t and string.find(sec, "^detector_") and not NOT_AF_DET[sec] then
+			local cls = ini_sys:r_string_ex(sec, "class")
+			t = cls and DET_CLASS[cls] or false
+		end
+		sec_tier[sec] = t
+	end
+	return t
+end
+
+-- best artefact detector in the backpack (0 = none), cached for a few seconds
+local function detector_tier(id, npc, now)
+	local c = det_cache[id]
+	if c and now < c.t then
+		return c.tier
+	end
+	local best = 0
+	npc:iterate_inventory(function(owner, item)
+		local t = item and tier_of_section(item:section())
+		if t and t > best then
+			best = t
+		end
+	end, npc)
+	det_cache[id] = { t = now + 8000, tier = best }
+	return best
+end
+
+local function unmark(aid)
+	marks[aid] = nil
+	if level.map_has_object_spot(aid, SPOT) ~= 0 then
+		level.map_remove_object_spot(aid, SPOT)
+	end
+end
+
+function clear_all()
+	for aid in pairs(marks) do
+		pcall(unmark, aid)
+	end
+end
+
+local function af_name(sec)
+	local n = ini_sys:r_string_ex(sec, "inv_name")
+	return n and game.translate_string(n) or sec
+end
+
+local function mark(aid, sec, named)
+	if marks[aid] or not spot_ok then
+		return
+	end
+	local hint = game.translate_string("st_cup_spot_artefact")
+	if named then
+		hint = hint .. ": " .. af_name(sec)
+	end
+	if level.map_has_object_spot(aid, SPOT) == 0 then
+		level.map_add_object_spot(aid, SPOT, hint)
+	end
+	marks[aid] = true
+end
+
+local function direction(from, to)
+	local dx, dz = to.x - from.x, to.z - from.z
+	-- +Z is north, +X is east
+	local a = math.deg(math.atan2(dx, dz))
+	if a < 0 then a = a + 360 end
+	local i = math.floor((a + 22.5) / 45) % 8 + 1
+	return game.translate_string("st_cup_dir_" .. DIRS[i])
+end
+
+local function send_news(npc, str_id, ...)
+	if not cup_core.CFG.art_news then
+		return
+	end
+	local args = { ... }
+	pcall(function()
+		dynamic_news_helper.send_tip(cup_core.tr(str_id, unpack(args)), cup_core.fmtname(npc), nil, 8, npc:character_icon(), "beep_1", "npc")
+	end)
+end
+
+local function is_degradable(sec)
+	local kind = ini_sys:r_string_ex(sec, "kind")
+	return kind == "i_arty" or kind == "i_arty_cont"
+end
+
+local function gamma_cond_table()
+	local t = zz_item_artefact and zz_item_artefact.cond_t
+	return type(t) == "table" and t or nil
+end
+
+-- artefacts lying on the level right now
+local function collect()
+	local list = {}
+	for aid, st in pairs(db.storage) do
+		local obj = type(st) == "table" and st.object
+		if obj and aid ~= 0 and type(aid) == "number" then
+			local ok, good = pcall(function()
+				if not IsArtefact(obj) or obj:parent() then
+					return false
+				end
+				local se = alife_object(aid)
+				if not se or se.parent_id ~= 65535 then
+					return false
+				end
+				return not get_object_story_id(aid)
+			end)
+			if ok and good then
+				list[#list + 1] = { id = aid, obj = obj, pos = obj:position(), sec = obj:section() }
+			end
+		end
+	end
+	return list
+end
+
+---------------------------------------------------------------------
+-- extraction
+---------------------------------------------------------------------
+local function pick_up(hid, npc, p, af)
+	local aid, obj, sec = af.id, af.obj, af.sec
+	local se = alife_object(aid)
+	if not (se and se.parent_id == 65535) or obj:parent() then
+		return false
+	end
+	local cond = obj:condition()
+	local bonus = (p.art >= 3 and p.art_ch == "B") and COND_CONN or COND_T2
+	local new_cond = nil
+	-- condition 1.0 = GAMMA has not rolled it yet: leave the roll to GAMMA
+	if cond < 0.995 then
+		new_cond = math.min(COND_MAX, cond + bonus * cup_core.CFG.power)
+	end
+
+	-- the same bookkeeping as vanilla xr_gather_items
+	local baz = bind_anomaly_zone
+	if baz then
+		local zone = baz.parent_zones_by_artefact_id and baz.parent_zones_by_artefact_id[aid]
+		if zone and zone.on_artefact_take then
+			zone:on_artefact_take(obj)
+		elseif baz.artefact_ways_by_id then
+			baz.artefact_ways_by_id[aid] = nil
+		end
+	end
+	pcall(function()
+		obj:get_artefact():FollowByPath("NULL", 0, vector():set(500, 500, 500))
+	end)
+
+	local se_new = alife_create_item(sec, npc, new_cond and { cond = new_cond } or nil)
+	if not se_new then
+		return false
+	end
+	local ct = gamma_cond_table()
+	if ct then
+		if new_cond then
+			ct[se_new.id] = new_cond
+		end
+		ct[aid] = nil
+	end
+	pcall(unmark, aid)
+	told[aid] = nil
+	alife_release(se)
+
+	local rec = cup_core.get_rec(hid, true)
+	if rec then
+		rec.st.af = (rec.st.af or 0) + 1
+		rec.cd.af = cup_core.game_sec() + ((p.art >= 3 and p.art_ch == "A") and PICK_CD_HUNTER or PICK_CD)
+	end
+	-- vanilla NPC statistic; the core gives XP for it (XP_NPC_STAT.artefacts_found)
+	if game_statistics and game_statistics.increment_npc_statistic then
+		pcall(game_statistics.increment_npc_statistic, npc, "artefacts_found")
+	end
+	cup_core.log("artefact: id=%s took %s (id=%s -> %s), condition %s -> %s", hid, sec, aid, se_new.id, cond, new_cond or "GAMMA roll")
+
+	local name = af_name(sec)
+	if new_cond then
+		send_news(npc, "st_cup_art_took", name, math.floor(new_cond * 100 + 0.5))
+	else
+		send_news(npc, "st_cup_art_took_raw", name)
+	end
+
+	if cup_banter and cup_banter.event then
+		cup_banter.event("art_took", npc)
+	end
+
+	if p.art >= 3 and p.art_ch == "A" and math.random() < HUNTER_BONUS then
+		local se_bonus = alife_create_item(sec, npc)
+		if se_bonus then
+			cup_core.log("artefact: Hunter bonus for id=%s: one more %s (id=%s)", hid, sec, se_bonus.id)
+			send_news(npc, "st_cup_art_bonus", name)
+		end
+	end
+	return true
+end
+
+-- Connoisseur: artefacts in his backpack regain condition
+local function regen(hid, npc)
+	local rec = cup_core.get_rec(hid, true)
+	if not rec then
+		return
+	end
+	local gs = cup_core.game_sec()
+	local last = tonumber(rec.cd.afr)
+	if not last or last > gs then
+		rec.cd.afr = gs
+		return
+	end
+	local hours = math.floor((gs - last) / 3600)
+	if hours < 1 then
+		return
+	end
+	rec.cd.afr = last + hours * 3600
+	if hours > REGEN_MAX_HOURS then
+		hours = REGEN_MAX_HOURS
+	end
+	local step = REGEN_STEP * hours * cup_core.CFG.power
+	local cap = REGEN_CAP
+	local ct = gamma_cond_table()
+	local n = 0
+	npc:iterate_inventory(function(owner, item)
+		if item and is_degradable(item:section()) then
+			local c = item:condition()
+			if c < cap then
+				local nc = math.min(cap, c + step)
+				item:set_condition(nc)
+				if ct then
+					ct[item:id()] = nc
+				end
+				n = n + 1
+			end
+		end
+	end, npc)
+	if n > 0 then
+		cup_core.dbg("artefact: Connoisseur id=%s restored %s artefact(s) by %s", hid, n, step)
+	end
+end
+
+---------------------------------------------------------------------
+-- tick (called by the core every 2 s)
+---------------------------------------------------------------------
+local function scan(hid, npc, p, now, list)
+	local tier = detector_tier(hid, npc, now)
+	if tier <= 0 then
+		work[hid] = nil
+		if now >= (last_nodet[hid] or 0) then
+			last_nodet[hid] = now + NO_DET_CD
+			send_news(npc, "st_cup_art_no_detector")
+		end
+		return
+	end
+	local hunter = p.art >= 3 and p.art_ch == "A"
+	if p.art >= 3 and p.art_ch == "B" then
+		regen(hid, npc)
+	end
+
+	local radius = RADIUS[tier] or RADIUS[1]
+	if hunter then
+		radius = radius * MULT_HUNTER
+	elseif p.art >= 2 then
+		radius = radius * MULT_T2
+	end
+	local pos = npc:position()
+	local r2 = radius * radius
+	local pick_r = hunter and PICK_RANGE_HUNTER or PICK_RANGE
+	local nearest, nearest_d = nil, pick_r * pick_r
+	local fresh, fresh_d = nil, nil
+
+	for i = 1, #list do
+		local af = list[i]
+		local d = af.pos:distance_to_sqr(pos)
+		if d <= r2 then
+			mark(af.id, af.sec, p.art >= 2)
+			if not told[af.id] and (not fresh_d or d < fresh_d) then
+				fresh, fresh_d = af, d
+			end
+			if d <= nearest_d then
+				nearest, nearest_d = af, d
+			end
+		end
+	end
+
+	if fresh and now - (last_news[hid] or 0) >= NEWS_CD then
+		last_news[hid] = now
+		told[fresh.id] = true
+		local apos = db.actor:position()
+		local dist = math.floor(apos:distance_to(fresh.pos) + 0.5)
+		if p.art >= 2 then
+			send_news(npc, "st_cup_art_found_named", af_name(fresh.sec), dist, direction(apos, fresh.pos))
+		else
+			send_news(npc, "st_cup_art_found", dist, direction(apos, fresh.pos))
+		end
+		cup_core.dbg("artefact: id=%s reported %s (id=%s) at %s m", hid, fresh.sec, fresh.id, dist)
+		if cup_banter and cup_banter.event then
+			cup_banter.event("art_found", npc)
+		end
+	end
+
+	-- extraction (tier 2+): no fight, cooldown is over
+	if p.art < 2 or not nearest or npc:best_enemy() then
+		work[hid] = nil
+		return
+	end
+	local rec = cup_core.get_rec(hid, true)
+	if not rec or cup_core.game_sec() < (tonumber(rec.cd.af) or 0) then
+		work[hid] = nil
+		return
+	end
+	local w = work[hid]
+	if not (w and w.id == nearest.id) then
+		work[hid] = { id = nearest.id, t = now }
+		actor_menu.set_msg(1, cup_core.fmtname(npc) .. ": " .. cup_core.tr("st_cup_art_working", af_name(nearest.sec)), 6)
+		cup_core.dbg("artefact: id=%s starts extracting %s (id=%s)", hid, nearest.sec, nearest.id)
+		return
+	end
+	if now - w.t < WORK_TIME then
+		return
+	end
+	work[hid] = nil
+	pick_up(hid, npc, p, nearest)
+end
+
+function tick(now)
+	-- marks of artefacts that were taken or went offline
+	if next(marks) then
+		for aid in pairs(marks) do
+			local obj = level.object_by_id(aid)
+			if not obj or obj:parent() then
+				unmark(aid)
+			end
+		end
+	end
+	local CFG = cup_core.CFG
+	if not (CFG.enable and CFG.en.artefact and db.actor and db.actor:alive()) then
+		if next(marks) then
+			clear_all()
+		end
+		return
+	end
+	if now < t_scan then
+		return
+	end
+	t_scan = now + SCAN_PERIOD
+
+	local PERK, COMP = cup_core.PERK, cup_core.COMP
+	local list = nil
+	for hid, npc in pairs(COMP) do
+		local p = PERK[hid]
+		if p and p.art > 0 and not npc:has_info("npcx_downed") then
+			if not spot_checked then
+				check_spot()
+			end
+			list = list or collect()
+			scan(hid, npc, p, now, list)
+		else
+			work[hid] = nil
+		end
+	end
+end
+
+local function on_net_destroy(obj)
+	if obj then
+		local id = obj:id()
+		det_cache[id] = nil
+		work[id] = nil
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		RegisterScriptCallback("npc_on_net_destroy", on_net_destroy)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_artefact.on_game_start failed: " .. tostring(err))
+	end
+end

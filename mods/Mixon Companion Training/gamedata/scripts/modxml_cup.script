@@ -1,0 +1,122 @@
+--[[
+	Mixon Companion Training (CUP) - DXML patches (no foreign file is overwritten):
+		gameplay\dialogs.xml   + dialog "cup_training_dialog"
+		ui\map_spots*.xml      + spot types "cup_enemy", "cup_artefact"
+		ui\idiots_ui.xml       + button "cup_training" in the Useful Idiots title bar
+
+	modxml_* scripts run in alphabetical order, so this one patches idiots_ui.xml
+	before modxml_idiots_ui parses (and caches) it.
+]]
+
+local DIALOG = [[
+<dialog id="cup_training_dialog">
+	<precondition>cup_core.dlg_is_trainable</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>st_cup_dlg_ask</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>st_cup_dlg_answer</text>
+			<action>cup_ui.dlg_open</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+]]
+
+local DIALOG_JOKE = [[
+<dialog id="cup_joke_dialog">
+	<precondition>cup_banter.dlg_can_joke</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>st_cup_dlg_joke_ask</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>st_cup_dlg_joke_answer</text>
+			<action>cup_banter.dlg_joke</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+]]
+
+local SPOTS = [[
+<cup_enemy>
+	<level_map spot="cup_enemy_spot"/>
+	<mini_map spot="cup_enemy_mini_spot"/>
+</cup_enemy>
+<cup_enemy_spot width="11" height="11" stretch="1" alignment="c">
+	<texture r="255" g="60" b="40">cup_tex_dot</texture>
+</cup_enemy_spot>
+<cup_enemy_mini_spot width="8" height="8" stretch="1" alignment="c">
+	<texture r="255" g="60" b="40">cup_tex_dot</texture>
+</cup_enemy_mini_spot>
+<cup_artefact>
+	<level_map spot="cup_artefact_spot"/>
+	<mini_map spot="cup_artefact_mini_spot"/>
+</cup_artefact>
+<cup_artefact_spot width="12" height="12" stretch="1" alignment="c">
+	<texture r="255" g="215" b="60">cup_tex_dot</texture>
+</cup_artefact_spot>
+<cup_artefact_mini_spot width="9" height="9" stretch="1" alignment="c">
+	<texture r="255" g="215" b="60">cup_tex_dot</texture>
+</cup_artefact_mini_spot>
+]]
+
+local BUTTON = [[
+<action name="cup_training" size="28" compact="1" icon="cup_icon_training" xoff="4" />
+]]
+
+local warned = {}
+
+local function patch(name, xml)
+	if name == [[gameplay\dialogs.xml]] then
+		xml:insertFromXMLString(DIALOG)
+		xml:insertFromXMLString(DIALOG_JOKE)
+
+	elseif string.find(name, "^ui\\map_spots_?%d*%.xml$") then
+		xml:insertFromXMLString(SPOTS)
+
+	elseif name == [[ui\idiots_ui.xml]] then
+		if not cup_mcm.get("idiots_button") then
+			return
+		end
+		local res = xml:query("action[name=reset]")
+		local el = res and res[1]
+		if not el then
+			res = xml:query("action[name=add_waypoint]")
+			el = res and res[1]
+		end
+		local parent = el and el.parent
+		if parent and parent.kids then
+			xml:insertFromXMLString(BUTTON, parent)
+		elseif not warned.idiots then
+			warned.idiots = true
+			printf("%s", "![CUP] Useful Idiots title bar not found in idiots_ui.xml, button skipped")
+		end
+	end
+end
+
+function on_xml_read()
+	RegisterScriptCallback("on_xml_read", function(name, xml)
+		local ok, err = pcall(patch, name, xml)
+		if not ok and not warned[name] then
+			warned[name] = true
+			printf("%s", "![CUP] DXML patch failed for " .. tostring(name) .. ": " .. tostring(err))
+		end
+	end)
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		RegisterScriptCallback("on_specific_character_dialog_list", function(character_id, dialog_list)
+			if dialog_list:has("friendly_companion_dialog") or dialog_list:has("dm_is_actor_companion_dialog") then
+				dialog_list:add("cup_training_dialog")
+				dialog_list:add("cup_joke_dialog")
+			end
+		end)
+	end)
+	if not ok then
+		printf("%s", "![CUP] modxml_cup.on_game_start failed: " .. tostring(err))
+	end
+end

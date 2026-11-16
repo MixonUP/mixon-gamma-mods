@@ -1,0 +1,13 @@
+diff --git a/The Long Road Ahead 2.3.1/zzzz_the_long_road_ahead.script.before_vvfix.txt b/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script
+index 8f17a07..5c16437 100644
+--- a/The Long Road Ahead 2.3.1/zzzz_the_long_road_ahead.script.before_vvfix.txt	
++++ b/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script	
+@@ -3559,7 +3559,7 @@ function teleport_companions(pos, lvid, gvid, forced)
+                 local final_pos = anchor_pos
+                 local final_lvid = lvid
+ 
+-                if offset_lvid and offset_lvid < 4294967295 and level.valid_vertex_id(offset_lvid) then
++                if offset_lvid and offset_lvid < 4294967295 and ((not level.valid_vertex_id) or level.valid_vertex_id(offset_lvid)) then
+                     final_pos = offset_pos
+                     final_lvid = offset_lvid
+                 end

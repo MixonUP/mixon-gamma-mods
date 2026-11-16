@@ -1,0 +1,475 @@
+--[[
+	Mixon Companion Training (CUP) - Medic branch.
+	The medic bandages the player (same call as the vanilla medic dialog) and, v2, APPLIES
+	a medkit to him: the real item is moved to the actor and eaten with db.actor:eat(), so
+	every effect of the item works as usual (boosters, Body Health System limbs through
+	actor_on_item_use) and no FDDA animation is started (that hook sits in the inventory UI).
+]]
+
+local BAND_RANGE = 6
+local BAND_CD, BAND_CD_SURGEON = 180000, 90000		-- real ms
+local KIT_HEALTH = 0.40
+local KIT_CD = 90000								-- real ms between medkits
+local STOCK_SEC, STOCK_SEC_SURGEON = 12 * 3600, 6 * 3600	-- game seconds
+local REVIVE_RANGE, REVIVE_TIME, REVIVE_CD, REVIVE_HP = 15, 8000, 120000, 0.5
+local REGEN_RANGE, REGEN_STEP, REGEN_PERIOD = 20, 0.05, 10000
+
+local BANDAGES = { bandage = true }
+local KITS = { "medkit", "medkit_army", "medkit_scientic" }
+
+-- v3: radiation. db.actor.radiation is 0..1, the HUD icon has 4 steps (ceil(r * 4)).
+local VODKA_RAD = 0.25								-- 2nd step of the icon: tier 1 pours vodka
+local ANTIRAD_RAD = 0.35							-- tier 2+ uses an antirad
+local ANTIRAD_CD, VODKA_CD = 120000, 180000			-- real ms
+local ANTIRAD_STOCK_SEC, ANTIRAD_STOCK_SEC_SURGEON = 12 * 3600, 6 * 3600	-- game seconds
+local VODKA_STOCK_SEC = 6 * 3600
+-- cheapest first, so the good stuff is kept for later
+local ANTIRADS = { "antirad_cystamine", "antirad_kalium", "antirad" }
+local VODKAS = { "vodka", "vodka2", "vodka_quality" }
+local cd_antirad = {}
+local cd_vodka = {}
+
+local cd_band = {}		-- [medic id] = time_global
+local cd_kit = {}
+local cd_rev = {}
+local progress = {}		-- [medic id] = { id = downed id, t = start }
+local t_regen = 0
+
+local function find_item(npc, sections)
+	local found = nil
+	npc:iterate_inventory(function(owner, item)
+		if not found and item and sections[item:section()] then
+			found = item
+		end
+	end, npc)
+	return found
+end
+
+local function find_first(npc, list)
+	for i = 1, #list do
+		local it = find_item(npc, { [list[i]] = true })
+		if it then
+			return it
+		end
+	end
+	return nil
+end
+
+local function find_kit(npc)
+	return find_first(npc, KITS)
+end
+
+local function say(npc, str_id, ...)
+	actor_menu.set_msg(1, cup_core.fmtname(npc) .. ": " .. cup_core.tr(str_id, ...), 6)
+end
+
+local function count_help(id, xp)
+	local rec = cup_core.get_rec(id, true)
+	if rec then
+		rec.st.heal = (rec.st.heal or 0) + 1
+	end
+	cup_core.add_xp(id, xp, "medic")
+end
+
+local function try_bandage(id, npc, p, now)
+	if now < (cd_band[id] or 0) then
+		return false
+	end
+	local b = db.actor.bleeding
+	if not (b and b > 0) then
+		return false
+	end
+	local item = find_item(npc, BANDAGES)
+	if not item and not cup_core.CFG.medic_free then
+		return false
+	end
+	if item then
+		local se = alife_object(item:id())
+		if se then
+			alife_release(se)
+		end
+	end
+	db.actor.bleeding = 1
+	cd_band[id] = now + (p.surgeon and BAND_CD_SURGEON or BAND_CD)
+	if not (cup_banter and cup_banter.event and cup_banter.event("bandage", npc, true)) then
+		say(npc, "st_cup_medic_bandaged")
+	end
+	count_help(id, cup_perks.XP_MEDIC_HELP)
+	cup_core.dbg("medic id=%s bandaged the actor (own bandage=%s)", id, item ~= nil)
+	return true
+end
+
+local function tip(npc, str_id, ...)
+	-- v4: a funny line of the same meaning instead of the plain one (cup_banter)
+	if cup_banter and cup_banter.medic_line and cup_banter.medic_line(npc, str_id) then
+		return
+	end
+	local text = cup_core.tr(str_id, ...)
+	local ok = pcall(function()
+		dynamic_news_helper.send_tip(text, cup_core.fmtname(npc), nil, 6, npc:character_icon(), "beep_1", "npc")
+	end)
+	if not ok then
+		actor_menu.set_msg(1, cup_core.fmtname(npc) .. ": " .. text, 6)
+	end
+end
+
+-- The item reaches the actor a frame or two after transfer/creation: wait for it, eat it,
+-- then deal with what is left of a multi-use kit (back to the medic / removed if it came
+-- from the personal stock). If eating is impossible the kit simply stays with the player.
+local function apply_kit(mid, item_id, from_stock)
+	local tries = 0
+	local eaten_at = nil
+	CreateTimeEvent("cup_medic", "kit_" .. tostring(item_id), 0.1, function()
+		local ok, done = pcall(function()
+			local actor = db.actor
+			if not (actor and actor:alive()) then
+				return true
+			end
+			local it = level.object_by_id(item_id)
+			local mine = it and it:parent() and it:parent():id() == actor:id()
+			if not eaten_at then
+				tries = tries + 1
+				if mine then
+					actor:eat(it)
+					eaten_at = time_global()
+					cup_core.dbg("medic id=%s: the actor was treated with item id=%s", mid, item_id)
+					return false
+				end
+				if tries > 300 then
+					cup_core.warn_once("kit_wait", "medic: medkit id=%s never reached the actor", item_id)
+					return true
+				end
+				return false
+			end
+			if time_global() - eaten_at < 700 then
+				return false
+			end
+			if mine then
+				if from_stock then
+					local se = alife_object(item_id)
+					if se then
+						alife_release(se)
+					end
+				else
+					local npc = cup_core.COMP[mid]
+					if npc and npc:alive() then
+						actor:transfer_item(it, npc)
+					end
+				end
+			end
+			return true
+		end)
+		if not ok then
+			cup_core.warn_once("kit_apply", "medic: applying a medkit failed (%s), the kit stays in your inventory", done)
+			return true
+		end
+		return done
+	end)
+end
+
+local function try_kit(id, npc, p, now)
+	if p.medic < 2 or now < (cd_kit[id] or 0) then
+		return false
+	end
+	if db.actor.health >= KIT_HEALTH then
+		return false
+	end
+	-- the downed player is handled by the Reanimator (cup_downed), not by a medkit
+	if cup_downed and cup_downed.is_down() then
+		return false
+	end
+	local surgeon = p.surgeon
+	local item = find_kit(npc)
+	if item then
+		local item_id, sec = item:id(), item:section()
+		npc:transfer_item(item, db.actor)
+		apply_kit(id, item_id, false)
+		cd_kit[id] = now + KIT_CD
+		tip(npc, "st_cup_medic_kit")
+		count_help(id, cup_perks.XP_MEDIC_HELP)
+		cup_core.dbg("medic id=%s applies %s from the inventory", id, sec)
+		return true
+	end
+	if not cup_core.CFG.medic_free then
+		return false
+	end
+	local rec = cup_core.get_rec(id, true)
+	if not rec then
+		return false
+	end
+	local gs = cup_core.game_sec()
+	if gs < (tonumber(rec.cd.kit) or 0) then
+		return false
+	end
+	local sec = surgeon and "medkit_army" or "medkit"
+	if not ini_sys:section_exist(sec) then
+		sec = "medkit"
+		if not ini_sys:section_exist(sec) then
+			return false
+		end
+	end
+	local se = alife_create_item(sec, db.actor)
+	if not se then
+		return false
+	end
+	apply_kit(id, se.id, true)
+	rec.cd.kit = gs + (surgeon and STOCK_SEC_SURGEON or STOCK_SEC)
+	cd_kit[id] = now + KIT_CD
+	tip(npc, "st_cup_medic_kit_stock")
+	count_help(id, cup_perks.XP_MEDIC_HELP)
+	cup_core.dbg("medic id=%s applies %s from the personal stock", id, sec)
+	return true
+end
+
+-- One radiation remedy: an item from the medic's backpack, otherwise (MCM "personal stock")
+-- a fresh one once per stock_sec game seconds. Applied exactly like a medkit (apply_kit).
+local function give_remedy(id, npc, list, stock_item, stock_sec, cd_key, str_own, str_stock)
+	local item = find_first(npc, list)
+	if item then
+		local item_id, sec = item:id(), item:section()
+		npc:transfer_item(item, db.actor)
+		apply_kit(id, item_id, false)
+		tip(npc, str_own)
+		cup_core.dbg("medic id=%s applies %s from the inventory (radiation %s)", id, sec, db.actor.radiation)
+		return true
+	end
+	if not cup_core.CFG.medic_free then
+		return false
+	end
+	local rec = cup_core.get_rec(id, true)
+	if not rec then
+		return false
+	end
+	local gs = cup_core.game_sec()
+	if gs < (tonumber(rec.cd[cd_key]) or 0) then
+		return false
+	end
+	local sec = stock_item
+	if not ini_sys:section_exist(sec) then
+		return false
+	end
+	local se = alife_create_item(sec, db.actor)
+	if not se then
+		return false
+	end
+	apply_kit(id, se.id, true)
+	rec.cd[cd_key] = gs + stock_sec
+	tip(npc, str_stock)
+	cup_core.dbg("medic id=%s applies %s from the personal stock (radiation %s)", id, sec, db.actor.radiation)
+	return true
+end
+
+-- tier 2+: antirad at ANTIRAD_RAD; tier 1 (and tier 2+ with no antirad left): vodka at VODKA_RAD
+local function try_rad(id, npc, p, now)
+	local rad = db.actor.radiation or 0
+	if rad < VODKA_RAD then
+		return false
+	end
+	if cup_downed and cup_downed.is_down() then
+		return false
+	end
+	if npc:best_enemy() then
+		return false
+	end
+	local surgeon = p.surgeon
+	if p.medic >= 2 and rad >= ANTIRAD_RAD then
+		if now < (cd_antirad[id] or 0) then
+			-- the antirad he has just given is still working: no vodka on top of it
+			return false
+		end
+		if give_remedy(id, npc, ANTIRADS, "antirad", surgeon and ANTIRAD_STOCK_SEC_SURGEON or ANTIRAD_STOCK_SEC, "rad",
+			"st_cup_medic_antirad", "st_cup_medic_antirad_stock") then
+			cd_antirad[id] = now + ANTIRAD_CD
+			count_help(id, cup_perks.XP_MEDIC_HELP)
+			return true
+		end
+	end
+	-- tier 2+ keeps vodka as the fallback for heavy radiation only
+	if p.medic >= 2 and rad < ANTIRAD_RAD then
+		return false
+	end
+	if not cup_core.CFG.medic_vodka or now < (cd_vodka[id] or 0) then
+		return false
+	end
+	if give_remedy(id, npc, VODKAS, "vodka", VODKA_STOCK_SEC, "vodka", "st_cup_medic_vodka", "st_cup_medic_vodka_stock") then
+		cd_vodka[id] = now + VODKA_CD
+		count_help(id, cup_perks.XP_MEDIC_HELP)
+		return true
+	end
+	return false
+end
+
+local function try_revive(id, npc, now, COMP)
+	local br = cup_dbno_bridge
+	if not (br and br.available()) or now < (cd_rev[id] or 0) then
+		progress[id] = nil
+		return
+	end
+	local ids = br.downed_ids()
+	local pos = npc:position()
+	local target = nil
+	local pr = progress[id]
+	for i = 1, #ids do
+		local tid = ids[i]
+		local tobj = tid ~= id and COMP[tid]
+		if tobj and tobj:position():distance_to_sqr(pos) <= REVIVE_RANGE * REVIVE_RANGE then
+			if pr and pr.id == tid then
+				target = tid
+				break
+			end
+			target = target or tid
+		end
+	end
+	if not target then
+		progress[id] = nil
+		return
+	end
+	if not (pr and pr.id == target) then
+		progress[id] = { id = target, t = now }
+		cup_core.dbg("medic id=%s starts reviving id=%s", id, target)
+		return
+	end
+	if now - pr.t < REVIVE_TIME then
+		return
+	end
+	progress[id] = nil
+	local tobj = COMP[target]
+	if br.revive(tobj, target, REVIVE_HP) then
+		cd_rev[id] = now + REVIVE_CD
+		local rec = cup_core.get_rec(id, true)
+		if rec then
+			rec.st.rev = (rec.st.rev or 0) + 1
+		end
+		cup_core.add_xp(id, cup_perks.XP_MEDIC_REVIVE, "revive")
+		pcall(function()
+			local header = cup_core.fmtname(npc)
+			dynamic_news_helper.send_tip(cup_core.tr("st_cup_medic_revived", tobj:character_name()), header, nil, 6, npc:character_icon(), "beep_1", "npc")
+		end)
+	end
+end
+
+-- v4, MCM "booze the stalker": any companion regularly makes the player drink vodka,
+-- radiation or not. The alcohol level of the actor is not readable from scripts, so the
+-- guard is time: nothing is poured sooner than BOOZE_MIN_GAP game seconds after ANY vodka
+-- the player drank (his own, the medic's or a previous round).
+local BOOZE_MIN_GAP = 15 * 60
+local last_vodka_gs = nil
+
+local function try_booze(now)
+	local CFG = cup_core.CFG
+	if not (CFG.enable and CFG.booze) then
+		return
+	end
+	local actor = db.actor
+	if cup_downed and cup_downed.is_down() then
+		return
+	end
+	local gs = cup_core.game_sec()
+	if not last_vodka_gs or last_vodka_gs > gs then
+		-- after loading: the first round comes a full interval later
+		last_vodka_gs = gs
+		return
+	end
+	local gap = math.max(BOOZE_MIN_GAP, (tonumber(CFG.booze_min) or 60) * 60)
+	if gs - last_vodka_gs < gap then
+		return
+	end
+	local apos = actor:position()
+	local donor, donor_item, stock_id = nil, nil, nil
+	for id, npc in pairs(cup_core.COMP) do
+		if npc:alive() and not npc:has_info("npcx_downed") and not npc:best_enemy()
+			and npc:position():distance_to_sqr(apos) <= BAND_RANGE * BAND_RANGE then
+			local item = find_first(npc, VODKAS)
+			if item then
+				donor, donor_item = npc, item
+				stock_id = nil
+				break
+			end
+			local p = cup_core.PERK[id]
+			if not donor and CFG.medic_free and CFG.en.medic and p and p.medic > 0 then
+				donor, stock_id = npc, id
+			end
+		end
+	end
+	if not donor then
+		return
+	end
+	local did = donor:id()
+	if donor_item then
+		local item_id = donor_item:id()
+		donor:transfer_item(donor_item, actor)
+		apply_kit(did, item_id, false)
+	else
+		if not ini_sys:section_exist("vodka") then
+			return
+		end
+		local se = alife_create_item("vodka", actor)
+		if not se then
+			return
+		end
+		apply_kit(stock_id, se.id, true)
+	end
+	last_vodka_gs = gs
+	tip(donor, "st_cup_medic_vodka")
+	cup_core.dbg("booze: id=%s makes the player drink (own bottle=%s)", did, donor_item ~= nil)
+end
+
+-- called by the core tick
+function tick_booze(now)
+	if db.actor and db.actor:alive() then
+		try_booze(now)
+	end
+end
+
+local function actor_on_item_use(obj)
+	local ok, sec = pcall(function() return obj:section() end)
+	if ok and (sec == "vodka" or sec == "vodka2" or sec == "vodka_quality") then
+		last_vodka_gs = cup_core.game_sec()
+	end
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		RegisterScriptCallback("actor_on_item_use", actor_on_item_use)
+	end)
+	if not ok then
+		printf("%s", "![CUP] cup_medic.on_game_start failed: " .. tostring(err))
+	end
+end
+
+function tick(now)
+	local CFG = cup_core.CFG
+	if not (CFG.enable and CFG.en.medic and db.actor and db.actor:alive()) then
+		return
+	end
+	local PERK, COMP = cup_core.PERK, cup_core.COMP
+	local apos = db.actor:position()
+	local br = cup_dbno_bridge
+	local regen = now >= t_regen
+	if regen then
+		t_regen = now + REGEN_PERIOD
+	end
+
+	local helped = false
+	for id, npc in pairs(COMP) do
+		local p = PERK[id]
+		if p and p.medic > 0 and not npc:has_info("npcx_downed") then
+			local pos = npc:position()
+			if not helped and pos:distance_to_sqr(apos) <= BAND_RANGE * BAND_RANGE then
+				helped = try_bandage(id, npc, p, now) or try_kit(id, npc, p, now) or try_rad(id, npc, p, now)
+			end
+			-- v5: Reanimator and Field Surgeon are independent perks
+			if p.reanim then
+				try_revive(id, npc, now, COMP)
+			end
+			if p.surgeon and regen then
+				for oid, other in pairs(COMP) do
+					if oid ~= id and not other:has_info("npcx_downed") and other.health < 1
+						and other:position():distance_to_sqr(pos) <= REGEN_RANGE * REGEN_RANGE then
+						br.add_health(other, REGEN_STEP * CFG.power)
+					end
+				end
+			end
+		end
+	end
+end
