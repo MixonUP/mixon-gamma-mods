@@ -23,15 +23,24 @@ REC_VERSION = 3
 BONUS_LEVEL = { [4] = true, [7] = true, [10] = true }
 
 -- points given for reaching this level
+-- v10: from the MCM settings (SET below): pts_per_level + 1 on the bonus levels
 function level_points(lvl)
-	return BONUS_LEVEL[lvl] and 2 or 1
+	local n = tonumber(SET.pts_per_level) or 1
+	if SET.pts_bonus and BONUS_LEVEL[lvl] then
+		n = n + 1
+	end
+	return n
 end
 
 -- all points earned by a companion of this level
-function earned_points(lvl)
-	local n = 0
+-- rec (optional): adds the personal bonus of the record (rec.bonus_pts)
+function earned_points(lvl, rec)
+	local n = tonumber(SET.pts_start) or 0
 	for l = 2, math.min(tonumber(lvl) or 1, MAX_LEVEL) do
 		n = n + level_points(l)
+	end
+	if rec then
+		n = n + (tonumber(rec.bonus_pts) or 0)
 	end
 	return n
 end
@@ -80,6 +89,39 @@ end
 EXTRA = {
 	reanimator = { branch = "medic", req = 2, pts = 4, ru = 320000, key = "R" },
 }
+-- v10: MCM settings of the Reanimator (written by cup_core.load_cfg; this file stays free
+-- of engine calls). free = no Medic tier needed; pts / ru = what it costs NOW.
+-- EXTRA.reanimator.pts (4) is what records bought before v10 have paid.
+-- pts_*: how many perk points companions get (per level, +1 on levels 4/7/10, at the start).
+SET = { reanim_free = true, reanim_pts = 2, reanim_ru = 80000, pts_per_level = 1, pts_bonus = true, pts_start = 0 }
+
+function extra_req(name)
+	if name == "reanimator" and SET.reanim_free then
+		return 0
+	end
+	return EXTRA[name] and EXTRA[name].req or 0
+end
+
+function extra_pts(name)
+	if name == "reanimator" then
+		return tonumber(SET.reanim_pts) or 2
+	end
+	return EXTRA[name] and EXTRA[name].pts or 0
+end
+
+function extra_ru(name)
+	if name == "reanimator" then
+		return tonumber(SET.reanim_ru) or 0
+	end
+	return EXTRA[name] and EXTRA[name].ru or 0
+end
+
+-- points a record has really paid for an extra perk (rec.exp, written when buying)
+function extra_paid(rec, name)
+	local paid = type(rec.exp) == "table" and tonumber(rec.exp[name])
+	return paid or (EXTRA[name] and EXTRA[name].pts) or 0
+end
+
 -- which extra perk sits in the 4th row of a branch without a choice
 EXTRA_ROW = { medic = "reanimator" }
 
@@ -157,7 +199,7 @@ function spent_points(rec)
 	if rec and type(rec.ex) == "table" then
 		for name, def in pairs(EXTRA) do
 			if rec.ex[name] then
-				n = n + def.pts
+				n = n + extra_paid(rec, name)
 			end
 		end
 	end
@@ -238,7 +280,7 @@ function resolve(rec, power, en, bridge_ok)
 	t = en.medic and tonumber(br.medic) or 0
 	p.medic = t
 	p.surgeon = t >= 3
-	p.reanim = en.medic and t >= EXTRA.reanimator.req and has_extra(rec, "reanimator") or false
+	p.reanim = en.medic and t >= extra_req("reanimator") and has_extra(rec, "reanimator") or false
 
 	t = en.scout and tonumber(br.scout) or 0
 	p.scout = t

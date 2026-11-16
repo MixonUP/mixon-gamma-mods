@@ -331,6 +331,14 @@ function UICup:RefreshTree(id, npc, rec)
 	if cup_core.CFG.power ~= 1 then
 		text = text .. "\\n" .. cup_core.tr("st_cup_note_power", cup_core.CFG.power)
 	end
+	if n.extra == "reanimator" then
+		-- v10: what the MCM settings mean right now
+		if cup_perks.SET.reanim_free then
+			text = text .. "\\n" .. T("st_cup_note_reanim_free")
+		else
+			text = text .. "\\n" .. cup_core.tr("st_cup_note_reanim_req", cup_perks.EXTRA.reanimator.req)
+		end
+	end
 	if n.extra == "reanimator" and cup_downed and cup_downed.cooldown_left then
 		local left = cup_downed.cooldown_left()
 		if not cup_core.CFG.actor_down then

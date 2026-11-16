@@ -184,7 +184,7 @@
 		<text>Select a perk</text>
 	</string>
 	<string id="st_cup_desc_none">
-		<text>Levels 4, 7 and 10 give the companion two points, the others one (12 in total). A tier costs as many points as its number: 1, 2 and 3. Tier three is a choice between two perks; the Carrier and the Medic have no choice, and the Medic's Reanimator is a separate perk for 4 points.\nExperience comes from kills, kills made near the companion, survived emissions, tasks you complete and time in the squad.</text>
+		<text>A companion gets perk points for levels; how many is set in MCM (default: 1 point per level and one more at levels 4, 7 and 10, 12 in total). A tier costs as many points as its number: 1, 2 and 3. Tier three is a choice between two perks; the Carrier and the Medic have no choice, and the Medic's Reanimator is a separate perk whose cost is set in MCM.\nExperience comes from kills, kills made near the companion, survived emissions, tasks you complete and time in the squad.</text>
 	</string>
 	<string id="st_cup_state_learned">
 		<text>Learned.</text>
@@ -352,10 +352,10 @@
 		<text>Multiplies all companion experience.</text>
 	</string>
 	<string id="ui_mcm_kreiser_cup_cost_mult">
-		<text>Price multiplier</text>
+		<text>Multiplier of all prices</text>
 	</string>
 	<string id="ui_mcm_kreiser_cup_cost_mult_desc">
-		<text>Price of perks (50000 / 120000 / 240000 RU, Reanimator 320000 RU) and of the reset (80000 RU per level) is multiplied by this. 0 - free.</text>
+		<text>Multiplies the rouble price of ALL perks and of the reset. Base prices: tiers 50000 / 120000 / 240000 RU, reset 80000 RU per level, Reanimator - from the option below. 1 - as is, 0.5 - half price, 0 - free. Does not affect points.</text>
 	</string>
 	<string id="ui_mcm_kreiser_cup_power">
 		<text>Perk strength</text>
@@ -601,9 +601,51 @@
 		<text>Reanimator</text>
 	</string>
 	<string id="st_cup_p_medic_R_d">
-		<text>A separate perk: needs Medic tier two, costs 4 points. Compatible with the Field Surgeon.\nYou can be knocked down instead of dying: if the Reanimator is alive, on his feet and within 50 m, a lethal hit puts you down for 60 s. He runs to you and comes right up to you, kneels and in 8 s gets you up with 35% health.\nAfter that the perk is on cooldown for 4 game hours: go down again in that time and you die. Nobody came in time - you die as well.\nHe revives companions the same way: 8 s within 15 m, 50% health, cooldown 120 s (needs the Companion Downed But Not Out mod).</text>
+		<text>A separate perk, compatible with the Field Surgeon. Its cost in points and roubles and the Medic tier requirement are set in MCM (default: available at once, 2 points).\nYou can be knocked down instead of dying: if the Reanimator is alive, on his feet and within 50 m, a lethal hit puts you down for 60 s. He runs to you, comes right up, kneels and in 8 s gets you up with 35% health.\nAfter that the perk is on cooldown for 4 game hours: go down again in that time and you die. Nobody came in time - you die as well.\nHe revives companions the same way: 8 s within 15 m, 50% health, cooldown 120 s (needs the Companion Downed But Not Out mod).</text>
 	</string>
 	<string id="st_cup_down_help">
 		<text>Your companion is helping you</text>
+	</string>
+	<string id="st_cup_note_reanim_free">
+		<text>Available at once: no Medic tiers needed (MCM setting).</text>
+	</string>
+	<string id="st_cup_note_reanim_req">
+		<text>Requires Medic tier %s (the MCM option that makes the Reanimator available at once is off).</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_reanim_free_access">
+		<text>Reanimator available at once</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_reanim_free_access_desc">
+		<text>The Reanimator perk (you can be knocked down and the companion revives you) can be bought without Medic tiers, even at companion level 1. If disabled it needs Medic tier two, and an already bought perk sleeps until then. The Medic branch must be enabled.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_reanim_points">
+		<text>Reanimator: cost in points</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_reanim_points_desc">
+		<text>How many points the perk costs. A bought perk remembers what was paid: a reset returns exactly that (bought before this version - 4 points).</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_reanim_price">
+		<text>Reanimator: price, RU</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_reanim_price_desc">
+		<text>Price of the perk in roubles. Multiplied by the multiplier of all prices.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_pts_per_level">
+		<text>Points per level</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_pts_per_level_desc">
+		<text>How many perk points a companion gets for every new level. Free points of all companions are recomputed at once: earned minus spent. If lowered, bought perks stay and free points just do not go below zero.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_pts_bonus_levels">
+		<text>Bonus point at levels 4, 7, 10</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_pts_bonus_levels_desc">
+		<text>One more point at levels 4, 7 and 10.</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_pts_start">
+		<text>Starting points</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_pts_start_desc">
+		<text>How many points every companion has from level one.</text>
 	</string>
 </string_table>

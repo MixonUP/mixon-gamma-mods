@@ -106,12 +106,13 @@ end
 function migrate_rec(id, r)
 	local old_v, old_pts = r.v, r.pts
 	cup_perks.migrate_structure(r)
-	local earned = cup_perks.earned_points(r.lvl)
+	local earned = cup_perks.earned_points(r.lvl, r)
 	local spent = cup_perks.spent_points(r)
 	if spent > earned then
 		r.br = {}
 		r.ch = {}
 		r.ex = {}
+		r.exp = {}
 		r.pts = earned
 		log("migration v%s -> v%s: id=%s lvl=%s perks cost %s points, only %s earned: ALL PERKS REFUNDED, free points %s",
 			old_v, cup_perks.REC_VERSION, id, r.lvl, spent, earned, r.pts)
@@ -152,6 +153,12 @@ function get_rec(id, create)
 	r.br = type(r.br) == "table" and r.br or {}
 	r.ch = type(r.ch) == "table" and r.ch or {}
 	r.ex = type(r.ex) == "table" and r.ex or {}
+	r.exp = type(r.exp) == "table" and r.exp or {}
+	-- v10: points granted by hand. An older save marks them with mixon_bonus = true (+10).
+	if r.mixon_bonus == true and r.bonus_pts == nil then
+		r.bonus_pts = 10
+		log("record id=%s: mixon_bonus -> bonus_pts = 10", id)
+	end
 	r.st = type(r.st) == "table" and r.st or {}
 	r.cd = type(r.cd) == "table" and r.cd or {}
 	if (tonumber(r.v) or 1) < cup_perks.REC_VERSION then
@@ -185,12 +192,32 @@ local function clear_all()
 	for id in pairs(AURA) do AURA[id] = nil end
 end
 
+-- v10: free points always follow the settings: earned (MCM + personal bonus) minus spent
+-- (tiers + what was really paid for the extra perks). Lower settings never take perks away:
+-- the free points just stop at 0.
+function sync_points(id, rec)
+	local earned = cup_perks.earned_points(rec.lvl, rec)
+	local spent = cup_perks.spent_points(rec)
+	local free = earned - spent
+	if free < 0 then
+		if rec.pts ~= 0 then
+			log("points id=%s: perks cost %s, the settings give only %s - perks are kept, free points %s -> 0", id, spent, earned, rec.pts)
+		end
+		free = 0
+	end
+	if rec.pts ~= free then
+		log("points id=%s: lvl=%s earned %s, spent %s, free points %s -> %s", id, rec.lvl, earned, spent, rec.pts, free)
+		rec.pts = free
+	end
+end
+
 function rebuild_perk(id)
 	local rec = get_rec(id, true)
 	if not rec then
 		PERK[id] = nil
 		return
 	end
+	sync_points(id, rec)
 	PERK[id] = cup_perks.resolve(rec, CFG.power, CFG.en, bridge_ok())
 end
 
@@ -406,8 +433,8 @@ end
 ---------------------------------------------------------------------
 function costs(branch, tier, extra)
 	if extra then
-		local def = cup_perks.EXTRA[extra]
-		return def.pts, math.floor(def.ru * CFG.cost_mult + 0.5)
+		-- v10: the Reanimator costs what MCM says (money is still scaled by cost_mult)
+		return cup_perks.extra_pts(extra), math.floor(cup_perks.extra_ru(extra) * CFG.cost_mult + 0.5)
 	end
 	local ru = math.floor(cup_perks.tier_money(tier) * CFG.cost_mult + 0.5)
 	return cup_perks.tier_points(branch, tier), ru
@@ -427,7 +454,7 @@ function perk_state(rec, branch, tier, choice, extra)
 		if not CFG.en[def.branch] then
 			return "disabled"
 		end
-		if (tonumber(rec.br[def.branch]) or 0) < def.req then
+		if (tonumber(rec.br[def.branch]) or 0) < cup_perks.extra_req(extra) then
 			return "locked"
 		end
 		return "available"
@@ -473,6 +500,8 @@ function buy(id, branch, tier, choice, extra)
 	end
 	if extra then
 		rec.ex[extra] = true
+		-- remember what was paid: spent_points and the reset use it
+		rec.exp[extra] = pts
 	else
 		rec.br[branch] = tier
 		if tier == 3 and cup_perks.has_choice(branch) then
@@ -503,7 +532,8 @@ function reset(id)
 	rec.br = {}
 	rec.ch = {}
 	rec.ex = {}
-	rec.pts = cup_perks.earned_points(rec.lvl)
+	rec.exp = {}
+	rec.pts = cup_perks.earned_points(rec.lvl, rec)
 	rebuild_perk(id)
 	mark_dirty()
 	log("perks reset: id=%s pts=%s cost=%s RU", id, rec.pts, ru)
@@ -621,6 +651,13 @@ function load_cfg()
 	CFG.xp_mult = tonumber(g("xp_mult")) or 1
 	CFG.cost_mult = tonumber(g("cost_mult")) or 1
 	CFG.power = tonumber(g("power")) or 1
+	local set = cup_perks.SET
+	set.reanim_free = g("reanim_free_access") and true or false
+	set.reanim_pts = math.max(1, math.min(4, math.floor(tonumber(g("reanim_points")) or 2)))
+	set.reanim_ru = math.max(0, tonumber(g("reanim_price")) or 0)
+	set.pts_per_level = math.max(1, math.min(3, math.floor(tonumber(g("pts_per_level")) or 1)))
+	set.pts_bonus = g("pts_bonus_levels") and true or false
+	set.pts_start = math.max(0, math.min(10, math.floor((tonumber(g("pts_start")) or 0) + 0.5)))
 	for i = 1, #cup_perks.BRANCHES do
 		local b = cup_perks.BRANCHES[i]
 		CFG.en[b] = g("en_" .. b) and true or false
