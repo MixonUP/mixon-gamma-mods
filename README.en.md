@@ -528,6 +528,18 @@ Applies at once, no reload needed. The bonus goes through the Experience Framewo
 
 <img src="https://img.shields.io/badge/requires-GAMMA%20%2B%20Modded%20Exes%202025%2B-8b4513?style=flat-square" alt="requires: GAMMA + Modded Exes 2025+"> <img src="https://img.shields.io/badge/requires-MCM-b8860b?style=flat-square" alt="requires: MCM"> <img src="https://img.shields.io/badge/new%20game-not%20required-556b2f?style=flat-square" alt="new game: not required">
 
+
+### Dependencies
+
+| Mod | Required | Optional (detected automatically, all in GAMMA) |
+|---|---|---|
+| **Mixon Companion Training** | Anomaly 1.5.3 + Modded Exes (2024+), MCM | Useful Idiots (training button), Companion DBNO (Reanimator revives downed companions), Body Health System (limb healing), Experience Framework (companion level in the window), Soulslike, G_FLAT, Tougher Important NPCs |
+| **Mixon Backpack Upgrades** | Anomaly 1.5.3 + Modded Exes (2024+, needed for the extra artefact slot), MCM | Experience Framework (sprint, jump and carry weight bonuses), a_pack Upgradeable Backpacks (compatibility patch included) |
+| **Zombie Raid (Mixon)** | Anomaly 1.5.3, MCM | GAMMA heavy zombified squads (used in large raids if present) |
+| **Carry Weight (Mixon)** | Experience Framework, MCM | — |
+
+All required dependencies are part of G.A.M.M.A. — on GAMMA you don't need to install anything else.
+
 1. Download the repository (**Code → Download ZIP**) and unpack it.
 2. For each mod you want from the [`mods/`](mods) folder, copy the whole folder into `<GAMMA>\mods\`, e.g. `E:\GAMMA\GAMMA RC3\mods\Mixon Companion Training\` (there must be a `gamedata` folder inside).
 3. Open MO2, press **F5** (refresh) and **enable** the mods with the checkbox. Place them **above** the other mods (higher priority) — the easiest way is to drag them to the very top of the list.

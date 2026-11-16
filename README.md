@@ -524,6 +524,18 @@
 
 <img src="https://img.shields.io/badge/%D1%82%D1%80%D0%B5%D0%B1%D1%83%D0%B5%D1%82%D1%81%D1%8F-GAMMA%20%2B%20Modded%20Exes%202025%2B-8b4513?style=flat-square" alt="требуется: GAMMA + Modded Exes 2025+"> <img src="https://img.shields.io/badge/%D1%82%D1%80%D0%B5%D0%B1%D1%83%D0%B5%D1%82%D1%81%D1%8F-MCM-b8860b?style=flat-square" alt="требуется: MCM"> <img src="https://img.shields.io/badge/%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F%20%D0%B8%D0%B3%D1%80%D0%B0-%D0%BD%D0%B5%20%D0%BD%D1%83%D0%B6%D0%BD%D0%B0-556b2f?style=flat-square" alt="новая игра: не нужна">
 
+
+### Зависимости
+
+| Мод | Обязательно | Необязательно (подхватывается само, всё есть в GAMMA) |
+|---|---|---|
+| **Mixon Companion Training** | Anomaly 1.5.3 + Modded Exes (2024+), MCM | Useful Idiots (кнопка подготовки), Companion DBNO (Реаниматолог поднимает упавших напарников), Body Health System (лечение частей тела), Experience Framework (уровень напарника в окне), Soulslike, G_FLAT, Tougher Important NPCs |
+| **Mixon Backpack Upgrades** | Anomaly 1.5.3 + Modded Exes (2024+, нужен для доп. ячейки артефакта), MCM | Experience Framework (бонусы к бегу, прыжку и весу), a_pack Upgradeable Backpacks (патч совместимости встроен) |
+| **Zombie Raid (Mixon)** | Anomaly 1.5.3, MCM | тяжёлые зомби-отряды GAMMA (используются в больших рейдах, если есть) |
+| **Carry Weight (Mixon)** | Experience Framework, MCM | — |
+
+Все обязательные зависимости входят в G.A.M.M.A. — на GAMMA ничего ставить дополнительно не нужно.
+
 1. Скачайте репозиторий (**Code → Download ZIP**) и распакуйте.
 2. Для каждого нужного мода из папки [`mods/`](mods) скопируйте папку целиком в `<GAMMA>\mods\`, например `E:\GAMMA\GAMMA RC3\mods\Mixon Companion Training\` (внутри должна быть папка `gamedata`).
 3. Откройте MO2, нажмите **F5** (обновить) и **включите** моды галочкой. Ставьте их **выше** (с большим приоритетом) остальных модов — проще всего перетащить в самый верх списка.
