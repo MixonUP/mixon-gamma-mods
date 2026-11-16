@@ -6,3 +6,7 @@
 *.xml -text
 *.ltx -text
 *.diff -text
+*.script linguist-language=Lua
+*.ltx linguist-language=INI
+*.xml linguist-detectable=false
+*.diff linguist-detectable=false
