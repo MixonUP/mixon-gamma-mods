@@ -11,6 +11,8 @@
 <a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-backpack-upgrades">Backpack Upgrades</a> ·
 <a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-zombie-raid">Zombie Raid</a> ·
 <a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-carry-weight">Carry Weight</a></p>
+<p align="center"><b>Telegram автора:</b> <a href="https://t.me/nnw_ai">t.me/nnw_ai</a></p>
+
 
 
 <h1 align="center">MIXON GAMMA MODS</h1>
