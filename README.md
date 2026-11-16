@@ -74,6 +74,18 @@
 
 ---
 
+
+### 🎮 Из игры
+
+| | |
+|---|---|
+| ![Окно подготовки](docs/media/game/training_window.jpg) | ![Нокдаун: падение на спину](docs/media/game/downed_fall.jpg) |
+| Окно подготовки в стиле КПК | Нокдаун: падение на спину, «Ждите помощи: … бежит к вам» |
+| ![Напарник оказывает помощь](docs/media/game/downed_blood.jpg) | ![Анекдот напарника](docs/media/game/joke_msg.jpg) |
+| Напарник поднимает: полосы «Напарник оказывает помощь» и «БЕЗ СОЗНАНИЯ» | Напарник травит анекдот |
+
+🎬 Видео: [нокдаун и подъём](docs/media/game/knockdown_revive.mp4) · [окно подготовки и анекдот](docs/media/game/companion_demo.mp4)
+
 <a id="companion"></a>
 
 <p align="center">

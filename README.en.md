@@ -76,6 +76,18 @@
 
 ---
 
+
+### 🎮 In-game
+
+| | |
+|---|---|
+| ![Training window](docs/media/game/training_window.jpg) | ![Knockdown](docs/media/game/downed_fall.jpg) |
+| PDA-style training window | Knockdown: you fall on your back, "help is coming, … runs to you" |
+| ![Revive](docs/media/game/downed_blood.jpg) | ![Joke](docs/media/game/joke_msg.jpg) |
+| The companion revives you: "Companion is helping you" and "UNCONSCIOUS" bars | A companion tells a joke |
+
+🎬 Video: [knockdown and revive](docs/media/game/knockdown_revive.mp4) · [training window and a joke](docs/media/game/companion_demo.mp4)
+
 <a id="companion"></a>
 
 <p align="center">
