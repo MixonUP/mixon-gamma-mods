@@ -637,6 +637,7 @@ If the mod folder has a different name on your side (Dirt & Wear, for example), 
 | Mod | Problem | Fix |
 |---|---|---|
 | **The Long Road Ahead 2.3.1** | Crash `zzzz_the_long_road_ahead.script:3562: attempt to call field 'valid_vertex_id' (a nil value)` when companions are teleported | [`tlra_valid_vertex_id_fix.diff`](patches/tlra_valid_vertex_id_fix.diff): the check is only called if the function exists in the engine |
+| **G.A.M.M.A. ZCP 1.4 Balanced Spawns** | Busy Hands: `smr_pop.script(1182) : add_random_npc_to_squad` while spawning squads, game saved to tempsave | [`gamma_zcp_1.4_register_member_fix.diff`](patches/gamma_zcp_1.4_register_member_fix.diff): if the created object cannot join the squad, the spawn is dropped instead of crashing the script engine |
 | **Dirt & Wear** | Timer and restore errors, shader conflict with SSS23/Atmospherics | [`dirt_wear_fix.diff`](patches/dirt_wear_fix.diff), [`dirt_shake_weapon_fix.diff`](patches/dirt_shake_weapon_fix.diff) (scripts). The shaders have to be merged with the SSS23/Atmospherics versions by hand |
 | **Companion anti awol 1.1.2** | Broken/untranslated strings in the Russian localisation | [`companion_anti_awol_rus_fix.diff`](patches/companion_anti_awol_rus_fix.diff) (the file is cp1251) |
 | **LootBoxes GAMMA** | Typo `arcade_token` instead of `arcade_tokens` in the tool settings | Correct the section name in `configs/items/settings/lootbox_tools.ltx` |

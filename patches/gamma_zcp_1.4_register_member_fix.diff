@@ -1,0 +1,24 @@
+--- a/gamedata/scripts/smr_pop.script
++++ b/gamedata/scripts/smr_pop.script
+@@ -1179,7 +1179,20 @@
+         smr_debug.get_log().error("population/monsters", "error while adding %s to squad %s", section, squad:section_name())
+         return nil
+     end
+-    squad:register_member(npc.id)
++    -- Mixon fix: register_member is an engine call that throws (Busy Hands) when the created
++    -- object is not a creature or the squad is gone; drop the spawn instead of killing the script engine.
++    local cls = npc.clsid and npc:clsid()
++    if not (cls and (IsStalker(nil, cls) or IsMonster(nil, cls))) then
++        smr_debug.get_log().error("population/monsters", "%s is not a creature, not adding to squad %s", section, squad:section_name())
++        safe_release_manager.release(npc)
++        return nil
++    end
++    local ok, err = pcall(squad.register_member, squad, npc.id)
++    if not ok then
++        smr_debug.get_log().error("population/monsters", "register_member failed for %s in squad %s: %s", section, squad:section_name(), tostring(err))
++        safe_release_manager.release(npc)
++        return nil
++    end
+     smr_debug.get_log().info("population/monsters", "added %s to squad %s", section, squad:section_name())
+     return npc
+ end
