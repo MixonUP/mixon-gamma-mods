@@ -1,7 +1,7 @@
-diff --git a/132- Companion anti awol 1.1.2 - Skieppy/ui_st_companion_anti_awol.rus.orig.txt b/132- Companion anti awol 1.1.2 - Skieppy/gamedata/configs/text/rus/ui_st_companion_anti_awol.xml
+diff --git "a/132- Companion anti awol 1.1.2 - Skieppy/gamedata/configs/text/rus/ui_st_companion_anti_awol.xml" "b/132- Companion anti awol 1.1.2 - Skieppy/gamedata/configs/text/rus/ui_st_companion_anti_awol.xml"
 index 1fba9e2..49f800f 100644
---- a/132- Companion anti awol 1.1.2 - Skieppy/ui_st_companion_anti_awol.rus.orig.txt	
-+++ b/132- Companion anti awol 1.1.2 - Skieppy/gamedata/configs/text/rus/ui_st_companion_anti_awol.xml	
+--- "a/132- Companion anti awol 1.1.2 - Skieppy/gamedata/configs/text/rus/ui_st_companion_anti_awol.xml"
++++ "b/132- Companion anti awol 1.1.2 - Skieppy/gamedata/configs/text/rus/ui_st_companion_anti_awol.xml"
 @@ -68,4 +68,13 @@
  	<string id="ui_mcm_companion_anti_awol_companion_regroup_key_desc">
  		<text>При использовании этой клавиши компаньон перегруппируется</text>

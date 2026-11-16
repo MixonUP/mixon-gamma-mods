@@ -1,7 +1,7 @@
-diff --git a/The Long Road Ahead 2.3.1/zzzz_the_long_road_ahead.script.before_vvfix.txt b/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script
+diff --git "a/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script" "b/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script"
 index 8f17a07..5c16437 100644
---- a/The Long Road Ahead 2.3.1/zzzz_the_long_road_ahead.script.before_vvfix.txt	
-+++ b/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script	
+--- "a/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script"
++++ "b/The Long Road Ahead 2.3.1/gamedata/scripts/zzzz_the_long_road_ahead.script"
 @@ -3559,7 +3559,7 @@ function teleport_companions(pos, lvid, gvid, forced)
                  local final_pos = anchor_pos
                  local final_lvid = lvid

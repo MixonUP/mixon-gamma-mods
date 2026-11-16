@@ -38,10 +38,10 @@
 
 ```bash
 cd "E:/GAMMA/GAMMA RC3/mods"
-git apply --unsafe-paths -p1 --directory=. path/to/patch.diff
+git apply -p1 C:/path/to/patches/tlra_valid_vertex_id_fix.diff
 ```
 
-Или вручную: в каждом diff видно, какую строку заменить.
+Если папка мода у вас называется иначе (например, Dirt & Wear), поправьте путь в первых строках diff или замените строки вручную: в diff видно, что именно поменять. Перед применением сделайте копию файла.
 
 | Мод | Ошибка | Исправление |
 |---|---|---|
