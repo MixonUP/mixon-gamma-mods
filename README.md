@@ -6,6 +6,13 @@
 
 <p align="center"><b>Русский</b> · <a href="README.en.md">English</a></p>
 
+<p align="center"><b>ModDB:</b>
+<a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-companion-training">Companion Training</a> ·
+<a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-backpack-upgrades">Backpack Upgrades</a> ·
+<a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-zombie-raid">Zombie Raid</a> ·
+<a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-carry-weight">Carry Weight</a></p>
+
+
 <h1 align="center">MIXON GAMMA MODS</h1>
 
 <p align="center">
