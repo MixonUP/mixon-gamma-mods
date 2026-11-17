@@ -1,0 +1,16 @@
+--- a/gamedata/scripts/igi_task_manager.script
++++ b/gamedata/scripts/igi_task_manager.script
+@@ -94,6 +94,13 @@
+ 
+ 	local ok, out = pcall(Igi.try_prepare_quest, task_id, task_data, tg_id)
+ 	if not ok then
++		-- Mixon fix: a target that no longer exists resolves to false and alife_object(false)
++		-- throws "compare number with boolean". That only means the task is not available
++		-- right now, so skip it quietly instead of showing the "WTF crashed" PDA message.
++		if type(out) == "string" and string.find(out, "compare number with boolean", 1, true) then
++			printf("WTF: task %s skipped, its target is gone", tostring(task_id))
++			return false
++		end
+ 		on_task_crashed(out)
+ 	end
+ 	return ok and (out ~= nil)
