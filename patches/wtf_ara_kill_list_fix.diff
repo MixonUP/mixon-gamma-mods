@@ -1,0 +1,37 @@
+--- a/gamedata/scripts/igi_ara.script
++++ b/gamedata/scripts/igi_ara.script
+@@ -48,11 +48,13 @@
+ 
+ function Ara.on_init(entity)
+ 	igi_helper.trace_assert(type(entity.squads) == "table", "ARA: entity.squads is not a table", entity)
++	-- Mixon fix: create the list once; the original reset it inside the loop (each squad wiped
++	-- the previous one) and never created it when the squad was already gone.
++	entity.ara_to_kill = entity.ara_to_kill or {}
+ 	for _, squad_id in pairs(entity.squads) do
+ 		local se_squad = alife_object(squad_id)
+ 		igi_helper.trace_assert(se_squad and se_squad.squad_members, "ARA: id is not a squad", squad_id)
+ 
+-		entity.ara_to_kill = {}
+ 		for member in se_squad:squad_members() do
+ 			entity.ara_to_kill[member.id] = true
+ 		end
+@@ -60,7 +62,7 @@
+ end
+ 
+ local function all_squads_dead(entity)
+-	for _, id in pairs(entity.squads) do
++	for _, id in pairs(entity.squads or {}) do
+ 		if alife_object(id) then
+ 			return false
+ 		end
+@@ -70,6 +72,10 @@
+ 
+ function Ara.status(entity)
+ 	if entity._status then return entity._status end
++	-- Mixon fix: status can be asked before on_init filled the list (level change)
++	if not entity.ara_to_kill then
++		return igi_subtask.TASK_STATUSES.RUNNING
++	end
+ 	for id in pairs(entity.ara_to_kill) do
+ 		if killed_by_player[id] then
+ 			entity._status = igi_subtask.TASK_STATUSES.COMPLETED
