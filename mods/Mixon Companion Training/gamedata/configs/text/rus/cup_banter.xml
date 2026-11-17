@@ -777,4 +777,19 @@
 	<string id="st_cup_an_42_2">
 		<text>Ђќба где-то есть, оба свет€т, и оба достаютс€ —идоровичуї.</text>
 	</string>
+	<string id="ui_mcm_kreiser_cup_voice_lang">
+		<text>язык озвучки</text>
+	</string>
+	<string id="ui_mcm_kreiser_cup_voice_lang_desc">
+		<text>Ђјвтої: английские голоса, если игра на английском, иначе русские.</text>
+	</string>
+	<string id="ui_mcm_lst_cup_vlang_auto">
+		<text>авто (€зык игры)</text>
+	</string>
+	<string id="ui_mcm_lst_cup_vlang_ru">
+		<text>русский</text>
+	</string>
+	<string id="ui_mcm_lst_cup_vlang_en">
+		<text>английский</text>
+	</string>
 </string_table>

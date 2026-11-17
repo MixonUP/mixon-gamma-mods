@@ -81,18 +81,29 @@ local function one_life()
 	return ok and res and true or false
 end
 
+-- voice language: MCM 0 = auto (English voice when the game text is English), 1 = RU, 2 = EN.
+-- English takes live in sounds\cup\banter_en\ with the same file names.
+local function voice_dir()
+	local lang = tonumber(opt("voice_lang")) or 0
+	if lang == 0 then
+		lang = (game.translate_string("st_cup_dlg_joke_ask") == "Tell me a joke.") and 2 or 1
+	end
+	return (lang == 2) and "cup\\banter_en\\" or "cup\\banter\\"
+end
+
 local function play_voice(npc, key)
 	if not opt("banter_voice") then
 		return
 	end
+	local dir = voice_dir()
 	local function exists(k)
-		local ex = snd_exists[k]
+		local ex = snd_exists[dir .. k]
 		if ex == nil then
 			local ok, res = pcall(function()
-				return getFS():exist("$game_sounds$", "cup\\banter\\" .. k .. ".ogg") ~= nil
+				return getFS():exist("$game_sounds$", dir .. k .. ".ogg") ~= nil
 			end)
 			ex = ok and res and true or false
-			snd_exists[k] = ex
+			snd_exists[dir .. k] = ex
 		end
 		return ex
 	end
@@ -111,7 +122,7 @@ local function play_voice(npc, key)
 	end
 	local id = (npc and npc.id and npc:id()) or 0
 	key = key .. takes[(id % #takes) + 1]
-	local path = "cup\\banter\\" .. key
+	local path = dir .. key
 	pcall(function()
 		local snd = sound_object(path)
 		snd:play_at_pos(npc, npc:position(), 0, sound_object.s3d)

@@ -67,7 +67,7 @@
 
 | Mod | What it does | MCM page |
 |---|---|---|
-| **[Mixon Companion Training](mods/Mixon%20Companion%20Training)** | Companion progression: 7 perk branches, a PDA-style training window, a medic (medkits, antirad, vodka), player knockdown with a companion revive, artefact hunting, banter and jokes with voice-over (4 voices) | Companion Training · «Развитие напарников» |
+| **[Mixon Companion Training](mods/Mixon%20Companion%20Training)** | Companion progression: 7 perk branches, a PDA-style training window, a medic (medkits, antirad, vodka), player knockdown with a companion revive, artefact hunting, banter and jokes with Russian and English voice-over (3 voices each) | Companion Training · «Развитие напарников» |
 | **[Mixon Backpack Upgrades](mods/Mixon%20Backpack%20Upgrades)** | Backpack upgrades at technicians: 4 backpack classes, 5 branches, +1 artefact slot, protection, ergonomics, rigging | Backpack Upgrades · «Улучшения рюкзаков» |
 | **[Zombie Raid (Mixon)](mods/Zombie%20Raid%20%28Mixon%29)** | Zombified raids: on a hotkey or at random, 4 sizes, a "repel the attack" task, reward by kill count | Zombie raid (Mixon) · «Рейд зомбированных (Mixon)» |
 | **[Carry Weight (Mixon)](mods/Carry%20Weight%20%28Mixon%29)** | Extra carry weight, 10–150 kg, a slider in MCM | Carry weight (Mixon) · «Переносимый вес (Mixon)» |
@@ -289,7 +289,7 @@ Supplies come from the companion's backpack. If he has none, the "Medic's person
 - **Jokes** come when it is calm: more often at night, at a campfire and when you are crouching. There is also a "Tell me a joke" line in dialogue.
 - **Invictus:** lines about it are only heard in a one-life game.
 - One companion speaks at a time; lines do not repeat until the whole category has been used.
-- **Voice-over (Russian):** 4 takes of every line — Vlad ×2, Alexey I and Nester Surovy (generated with ElevenLabs). Each companion has his own voice and keeps it.
+- **Voice-over (Russian + English):** 3 voices per line in each language. Russian: Vlad, Alexey I and Nester Surovy. English (with a Russian accent): Maxim, Petr and Alex. All generated with ElevenLabs. Each companion keeps his own voice. Language is set in MCM: "auto" uses the English voice when your game is in English.
 - **"Booze the stalker"** («Спаивать сталкера») (MCM, off by default): every 15–120 game minutes a companion within 6 m, out of combat, treats you to vodka from his backpack.
 
 | Voice | Sample |
@@ -297,6 +297,9 @@ Supplies come from the companion's backpack. If he has none, the "Medic's person
 | Vlad | [voice_vlad_vodka.ogg](docs/media/voice_vlad_vodka.ogg) |
 | Alexey I | [voice_alexey_vodka.ogg](docs/media/voice_alexey_vodka.ogg) |
 | Nester Surovy | [voice_nester_invictus.ogg](docs/media/voice_nester_invictus.ogg) |
+| Maxim (EN) | [voice_en_maxim_vodka.ogg](docs/media/voice_en_maxim_vodka.ogg) |
+| Petr (EN) | [voice_en_petr_invictus.ogg](docs/media/voice_en_petr_invictus.ogg) |
+| Alex (EN) | [voice_en_alex_vodka.ogg](docs/media/voice_en_alex_vodka.ogg) |
 
 <sub>GitHub does not embed a player for .ogg — the link opens or downloads the file.</sub>
 
@@ -759,6 +762,7 @@ Milestones of **Mixon Companion Training**. Details (in Russian) are in [`README
 
 | Version | What was added |
 |:-:|---|
+| **v11** | English voice-over: all 244 banter lines and jokes voiced by 3 Russian-accented English voices. New MCM option "Voice language" (auto / Russian / English). The second Vlad take was removed from the Russian voice-over |
 | **v9** | Nobody falls through the ground: the Reanimator only teleports onto a verified AI-map vertex 1.2–1.8 m from the player. On his way the companion ignores danger. The lying camera no longer sinks into the ground or a slope |
 | **v8** | Revive at arm's length: from 5 m the companion moves in a crouch, kneels beside you and stays that way to the end. The green "Your companion is helping you" bar |
 | **v7** | The Reanimator is guaranteed to arrive: a "go to point" order every tick, he does not see enemies, teleport fallback, +15 s on the timer |
