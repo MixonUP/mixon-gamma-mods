@@ -1,0 +1,14 @@
+--- a/gamedata/scripts/liz_fdda_redone_headgear_animations.script
++++ b/gamedata/scripts/liz_fdda_redone_headgear_animations.script
+@@ -277,6 +277,11 @@
+         --- nvg?
+         --- equip
+         local item_obj_equip = level.object_by_id(self.obj_id)
++        -- Mixon fix: the item can vanish before this runs (e.g. Combined Helmets rebuilds it);
++        -- line 287 used it without a check and crashed the game. Cancel the whole swap instead.
++        if not item_obj_equip then
++            return lam2.states.success
++        end
+         if item_obj_equip then
+             lam2.add_action_first(ta_move_item(item_obj_equip, self.bag, "equip"))
+             if not ini_blacklist:section_exist(item_obj_equip:section()) then
