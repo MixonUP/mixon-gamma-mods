@@ -1,0 +1,401 @@
+--[[
+	Zone Operations (Mixon) - DXML: one generic offer dialog, added to every commander that
+	gives an operation (zop_registry.is_giver). Its text comes from the operation itself.
+	Also adds the profile of the Duty commander who takes over captured Yanov
+	(npc section zop_dolg_commander, see configs\mod_system_zop.ltx).
+	No foreign file is overwritten.
+]]
+
+local DIALOG = [[
+<dialog id="zop_offer_dialog">
+	<precondition>zop_core.dlg_can_offer</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>st_zop_dlg_ask</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<script_text>zop_core.dlg_offer_text</script_text>
+			<next>2</next>
+			<next>3</next>
+		</phrase>
+		<phrase id="2">
+			<text>st_zop_dlg_accept</text>
+			<action>zop_core.dlg_accept</action>
+		</phrase>
+		<phrase id="3">
+			<text>st_zop_dlg_decline</text>
+		</phrase>
+	</phrase_list>
+</dialog>
+]]
+
+-- Colonel Mixon's talk: who he is, the situation at Yanov, Duty's reason to hold it, the Zone.
+-- Every answer leads back to the same list of questions, "bye" ends the talk.
+local function mixon_talk()
+	local MENU = { "q_who", "q_sit", "q_why", "q_zone", "q_mon", "bye" }
+	local P = "st_zop_mx_"
+	local id = {}
+	local n = 1 -- 0 and 1 are taken by the start and menu phrases
+	local function new(key) n = n + 1; id[key] = n; return n end
+	-- fixed ids: 0 = actor start, 1 = npc menu
+	local out = {}
+	local function phrase(pid, text, nexts)
+		local t = { string.format('<phrase id="%d"><text>%s%s</text>', pid, P, text) }
+		for _, nx in ipairs(nexts or {}) do
+			t[#t + 1] = string.format("<next>%d</next>", nx)
+		end
+		t[#t + 1] = "</phrase>"
+		out[#out + 1] = table.concat(t)
+	end
+	for _, k in ipairs(MENU) do new(k) end
+	local chain = {
+		q_who = { "a_who1", "q_who2", "a_who2", "q_who3", "a_who3", "q_name", "a_name" },
+		q_sit = { "a_sit" },
+		q_why = { "a_why" },
+		q_zone = { "a_zone1", "q_zone2", "a_zone2" },
+		q_mon = { "a_mon" },
+	}
+	for _, list in pairs(chain) do
+		for _, k in ipairs(list) do new(k) end
+	end
+	local menu_ids = {}
+	for _, k in ipairs(MENU) do menu_ids[#menu_ids + 1] = id[k] end
+	phrase(0, "start", { 1 })
+	phrase(1, "menu", menu_ids)
+	for _, k in ipairs(MENU) do
+		local list = chain[k]
+		if list then
+			phrase(id[k], k, { id[list[1]] })
+			for i, step in ipairs(list) do
+				local nxt = list[i + 1]
+				phrase(id[step], step, nxt and { id[nxt] } or menu_ids)
+			end
+		else
+			phrase(id[k], k, nil) -- bye
+		end
+	end
+	return '<dialog id="zop_mixon_talk"><phrase_list>' .. table.concat(out) .. "</phrase_list></dialog>"
+end
+
+local COMMANDER_PROFILE = [[
+<character id="zop_dolg_commander">
+	<class>zop_dolg_commander</class>
+</character>
+]]
+
+local COMMANDER_DESC = [[
+<specific_character id="zop_dolg_commander" team_default="1">
+	<name>st_zop_dolg_commander_name</name>
+	<icon>ui_inGame2_Dolg_4</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_dolg_commander_bio</bio>
+	<class>zop_dolg_commander</class>
+	<community>dolg</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\dolg_3\</snd_config>
+	<rank>55000</rank>
+	<reputation>2000</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_dolg\stalker_dolg_4_security_squad_leader</visual>
+	<supplies>
+		[spawn] \n
+		wpn_ak74 \n
+		ammo_5.45x39_fmj = 2 \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>zop_mixon_talk</actor_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>drx_sl_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+]]
+
+-- Freedom commander Yastreb: takes Voronin's place in the bunker after freedom_rostok
+local FREEDOM_PROFILE = [[
+<character id="zop_freedom_commander">
+	<class>zop_freedom_commander</class>
+</character>
+]]
+
+local FREEDOM_DESC = [[
+<specific_character id="zop_freedom_commander" team_default="1">
+	<name>st_zop_freedom_commander_name</name>
+	<icon>ui_inGame2_Freedom_5</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_freedom_commander_bio</bio>
+	<class>zop_freedom_commander</class>
+	<community>freedom</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\freedom_3\</snd_config>
+	<rank>52000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_freedom\stalker_freedom4a</visual>
+	<supplies>
+		[spawn] \n
+		wpn_sig550 \n
+		ammo_5.56x45_ss190 = 2 \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>drx_sl_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+]]
+
+-- Clear Sky: Kholodny, in charge of the Jupiter checkpoint after csky_jupiter (npc section zop_csky_commander)
+local CSKY_PROFILE = [[
+<character id="zop_csky_commander">
+	<class>zop_csky_commander</class>
+</character>
+]]
+
+local CSKY_DESC = [[
+<specific_character id="zop_csky_commander" team_default="1">
+	<name>st_zop_csky_commander_name</name>
+	<icon>ui_inGame2_csky_5</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_commander_bio</bio>
+	<class>zop_csky_commander</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>52000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_nebo\stalker_nebo_2_face_2</visual>
+	<supplies>
+		[spawn] \n
+		wpn_sig550 \n
+		ammo_5.56x45_ss190 = 2 \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>drx_sl_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+]]
+
+-- Clear Sky boss Viking and the trader Arsenal at the Agroprom factory; the Clear Sky trader Kompas
+-- at Rostok (no operation sends him now, the profile stays for saves that have him)
+local CSKY2_PROFILE = [[
+<character id="zop_csky_viking">
+	<class>zop_csky_viking</class>
+</character>
+<character id="zop_csky_salazar">
+	<class>zop_csky_salazar</class>
+</character>
+<character id="zop_csky_kruger_mechanic">
+	<class>zop_csky_kruger_mechanic</class>
+</character>
+<character id="zop_csky_arsenal">
+	<class>zop_csky_arsenal</class>
+</character>
+<character id="zop_csky_rostok_trader">
+	<class>zop_csky_rostok_trader</class>
+</character>
+]]
+
+local CSKY2_DESC = [[
+<specific_character id="zop_csky_viking" team_default="1">
+	<name>st_zop_csky_viking_name</name>
+	<icon>ui_inGame2_csky_5</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_viking_bio</bio>
+	<class>zop_csky_viking</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>60000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_nebo\stalker_nebo_2_face_3</visual>
+	<supplies>
+		[spawn] \n
+		wpn_sig550 \n
+		ammo_5.56x45_ss190 = 2 \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>drx_sl_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_csky_salazar" team_default="1">
+	<name>st_zop_csky_salazar_name</name>
+	<icon>ui_inGame2_csky_3</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_salazar_bio</bio>
+	<class>zop_csky_salazar</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>30000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_nebo\stalker_nebo_2_face_2</visual>
+	<supplies>
+		[spawn] \n
+		wpn_ak74u \n
+		ammo_5.45x39_fmj = 2 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_init_trader</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>buy_route</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_csky_kruger_mechanic" team_default="1">
+	<name>st_zop_csky_kruger_name</name>
+	<icon>ui_inGame2_stalker_nebo_2_face_3</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_kruger_bio</bio>
+	<class>zop_csky_kruger_mechanic</class>
+	<mechanic_mode>1</mechanic_mode>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>30000</rank>
+	<reputation>1500</reputation>
+	<money min="50000" max="75000" infinitive="1"/>
+	<visual>actors\stalker_nebo\stalker_nebo_2_face_3</visual>
+	<supplies>
+		[spawn] \n
+		wpn_ak74u \n
+		ammo_5.45x39_fmj = 2 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_init_trader</actor_dialog>
+	<actor_dialog>dm_init_mechanic</actor_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_tech_repair</actor_dialog>
+	<actor_dialog>dm_encrypted_pda</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_csky_arsenal" team_default="1">
+	<name>st_zop_csky_arsenal_name</name>
+	<icon>ui_inGame2_csky_3</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_arsenal_bio</bio>
+	<class>zop_csky_arsenal</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>30000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_nebo\stalker_nebo_3</visual>
+	<supplies>
+		[spawn] \n
+		wpn_ak74u \n
+		ammo_5.45x39_fmj = 2 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_init_trader</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>buy_route</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_csky_rostok_trader" team_default="1">
+	<name>st_zop_csky_rostok_trader_name</name>
+	<icon>ui_inGame2_csky_3</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_rostok_trader_bio</bio>
+	<class>zop_csky_rostok_trader</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>30000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="0"/>
+	<visual>actors\stalker_nebo\stalker_trader_nebo</visual>
+	<supplies>
+		[spawn] \n
+		wpn_ak74u \n
+		ammo_5.45x39_fmj = 2 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_init_trader</actor_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>buy_route</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+]]
+
+local warned = false
+
+local function inject(xml, text, what)
+	local ok, err = pcall(function() xml:insertFromXMLString(text) end)
+	if not ok then
+		printf("![ZOP] DXML %s patch failed: %s", what, tostring(err))
+	end
+end
+
+function on_xml_read()
+	RegisterScriptCallback("on_xml_read", function(name, xml)
+		if name == [[gameplay\dialogs.xml]] then
+			local ok, err = pcall(function() xml:insertFromXMLString(DIALOG) end)
+			if not ok and not warned then
+				warned = true
+				printf("![ZOP] DXML dialog patch failed: %s", tostring(err))
+			end
+			inject(xml, mixon_talk(), "Mixon talk")
+		elseif name == [[gameplay\npc_profile.xml]] then
+			inject(xml, COMMANDER_PROFILE, "npc_profile")
+			inject(xml, FREEDOM_PROFILE, "freedom npc_profile")
+			inject(xml, CSKY_PROFILE, "csky npc_profile")
+			inject(xml, CSKY2_PROFILE, "csky2 npc_profile")
+		elseif name == [[gameplay\character_desc_jupiter.xml]] then
+			inject(xml, COMMANDER_DESC, "commander profile")
+			inject(xml, FREEDOM_DESC, "freedom commander profile")
+			inject(xml, CSKY_DESC, "csky commander profile")
+			inject(xml, CSKY2_DESC, "csky2 profiles")
+		end
+	end)
+end
+
+function on_game_start()
+	local ok, err = pcall(function()
+		RegisterScriptCallback("on_specific_character_dialog_list", function(character_id, dialog_list)
+			if zop_registry.is_giver(character_id) then
+				dialog_list:add("zop_offer_dialog")
+			end
+			-- Loki gives Freedom's mirror of Colonel Mixon's tasks (jup_a6_freedom_leader_task_N);
+			-- his stock profile has no generic task dialogs
+			if character_id == "jup_a6_freedom_leader" then
+				dialog_list:add("dm_ordered_task_dialog")
+				dialog_list:add("dm_ordered_task_completed_dialog")
+			end
+		end)
+	end)
+	if not ok then
+		printf("![ZOP] dialog hook failed: %s", tostring(err))
+	end
+end

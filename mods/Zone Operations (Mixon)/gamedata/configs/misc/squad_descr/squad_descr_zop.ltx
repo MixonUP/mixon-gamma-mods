@@ -1,0 +1,223 @@
+; Zone Operations (Mixon) - squads for assaults and garrisons (stock NPC sections only)
+
+[zop_dolg_assault]:online_offline_group
+faction = dolg
+npc_random = sim_default_duty_3, sim_default_duty_3, sim_default_duty_4
+npc_in_squad = 4, 5
+
+[zop_dolg_garrison]:online_offline_group
+faction = dolg
+npc_random = sim_default_duty_2, sim_default_duty_3, sim_default_duty_4
+npc_in_squad = 3, 4
+
+[zop_csky_assault]:online_offline_group
+faction = csky
+npc_random = sim_default_csky_2, sim_default_csky_3, sim_default_csky_4
+npc_in_squad = 4, 5
+
+[zop_csky_garrison]:online_offline_group
+faction = csky
+npc_random = sim_default_csky_2, sim_default_csky_3
+npc_in_squad = 3, 4
+
+[zop_army_assault]:online_offline_group
+faction = army
+npc_random = sim_default_military_3, sim_default_military_3, sim_default_military_4
+npc_in_squad = 4, 5
+
+[zop_army_garrison]:online_offline_group
+faction = army
+npc_random = sim_default_military_2, sim_default_military_3
+npc_in_squad = 3, 4
+
+; service NPCs that walk into a captured base together: the Duty commander (takes Loki's post, gives
+; tasks) plus the stock warfare trader + mechanic (base jobs take them by name: check_npc_trader / _mechanic)
+[zop_dolg_services]:online_offline_group
+faction = dolg
+npc = zop_dolg_commander, sim_default_dolg_trader, sim_default_dolg_mechanic
+
+; raids for Colonel Mixon's tasks (zop_raid.script): convoys, strike groups, camps - 4 to 6 fighters
+[zop_raid_killer]:online_offline_group
+faction = killer
+npc_random = sim_default_killer_2, sim_default_killer_3, sim_default_killer_3, sim_default_killer_4
+npc_in_squad = 4, 6
+
+[zop_raid_bandit]:online_offline_group
+faction = bandit
+npc_random = sim_default_bandit_2, sim_default_bandit_3, sim_default_bandit_3, sim_default_bandit_4
+npc_in_squad = 5, 6
+
+[zop_raid_monolith]:online_offline_group
+faction = monolith
+npc_random = sim_default_monolith_2, sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_4
+npc_in_squad = 4, 6
+
+[zop_raid_greh]:online_offline_group
+faction = greh
+npc_random = sim_default_greh_2, sim_default_greh_3, sim_default_greh_3, sim_default_greh_4
+npc_in_squad = 4, 6
+
+[zop_raid_freedom]:online_offline_group
+faction = freedom
+npc_random = sim_default_freedom_2, sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_4
+npc_in_squad = 4, 6
+
+[zop_raid_dolg]:online_offline_group
+faction = dolg
+npc_random = sim_default_duty_2, sim_default_duty_3, sim_default_duty_3, sim_default_duty_4
+npc_in_squad = 4, 6
+
+[zop_raid_army]:online_offline_group
+faction = army
+npc_random = sim_default_military_2, sim_default_military_3, sim_default_military_3, sim_default_military_4
+npc_in_squad = 4, 6
+
+[zop_raid_renegade]:online_offline_group
+faction = renegade
+npc_random = sim_default_renegade_2, sim_default_renegade_3, sim_default_renegade_3
+npc_in_squad = 4, 6
+
+; Freedom: assaults and garrisons for the Freedom chain (Garbage checkpoint -> Yanov -> Rostok)
+[zop_freedom_assault]:online_offline_group
+faction = freedom
+npc_random = sim_default_freedom_3, sim_default_freedom_3, sim_default_freedom_4
+npc_in_squad = 4, 5
+
+[zop_freedom_garrison]:online_offline_group
+faction = freedom
+npc_random = sim_default_freedom_2, sim_default_freedom_3, sim_default_freedom_4
+npc_in_squad = 3, 4
+
+; Freedom's service NPCs (stock warfare trader + mechanic) for captured Duty posts
+[zop_freedom_services]:online_offline_group
+faction = freedom
+npc = sim_default_freedom_trader, sim_default_freedom_mechanic
+
+; after freedom_rostok: Duty's people left for Zaton, Freedom's own take their places
+; HQ (Petrenko's trader place, the medic's place)
+[zop_freedom_hq_services]:online_offline_group
+faction = freedom
+npc = sim_default_freedom_trader, sim_default_freedom_medic
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+; Voronin's bunker: commander Yastreb (logic patched in configs\scripts\bar\mod_bar_dolg_bunker_logic_zop.ltx)
+[zop_freedom_commander_squad]:online_offline_group
+faction = freedom
+npc = zop_freedom_commander
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+; the 100 Rads mechanic's place (bar_visitors_cardan_tech accepts any mechanic)
+[zop_freedom_mechanic_squad]:online_offline_group
+faction = freedom
+npc = sim_default_freedom_mechanic
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+; zombie waves of the first version of csky_rostok: not used by any operation now, kept because
+; saves may still hold squads of this section
+[zop_zombied_wave]:online_offline_group
+faction = zombied
+npc_random = sim_default_zombied_2, sim_default_zombied_3, sim_default_zombied_3, sim_default_zombied_4
+npc_in_squad = 4, 6
+
+; ---- Clear Sky chain v2: one NPC per service squad, so a dead one is replaced on his own
+; (their places are posts - exclusive beh jobs, configs\scripts\<level>\zop_csky_*_posts.ltx)
+; the strange dead coming at the scientists' bunker: the strongest zombies, 5 per squad
+[zop_zombied_elite]:online_offline_group
+faction = zombied
+npc_random = sim_default_zombied_4
+npc_in_squad = 5, 5
+
+; the Monolith's last wave at the bunker: veterans, masters and a legend in every squad
+[zop_monolith_elite]:online_offline_group
+faction = monolith
+npc = zop_monolith_legend
+npc_random = sim_default_monolith_3, sim_default_monolith_4, sim_default_monolith_4
+npc_in_squad = 5, 6
+
+[zop_csky_mechanic_squad]:online_offline_group
+faction = csky
+npc = sim_default_csky_mechanic
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_trader_squad]:online_offline_group
+faction = csky
+npc = sim_default_csky_trader
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_arsenal_squad]:online_offline_group
+faction = csky
+npc = zop_csky_arsenal
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_salazar_squad]:online_offline_group
+faction = csky
+npc = zop_csky_salazar
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_kruger_squad]:online_offline_group
+faction = csky
+npc = zop_csky_kruger_mechanic
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_barman_squad]:online_offline_group
+faction = csky
+npc = sim_default_csky_barman
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_medic_squad]:online_offline_group
+faction = csky
+npc = sim_default_csky_medic
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_viking_squad]:online_offline_group
+faction = csky
+npc = zop_csky_viking
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+; Kompas, the trader the first version of csky_rostok brought to Rostok: not sent by any operation
+; now (csky_rostok is the bunker on Yantar); kept, with his post and tasks, for saves that have him
+[zop_csky_rostok_trader_squad]:online_offline_group
+faction = csky
+npc = zop_csky_rostok_trader
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+[zop_csky_kholodny_squad]:online_offline_group
+faction = csky
+npc = zop_csky_commander
+; counts as arrived at once: gets its post job and walks straight to it (no 50 m arrival wait)
+always_arrived = true
+
+; the army dug in at the factory, and its counterattack
+[zop_army_occupy]:online_offline_group
+faction = army
+npc_random = sim_default_military_3, sim_default_military_3, sim_default_military_4, sim_default_military_4
+npc_in_squad = 5, 6
+
+[zop_army_counter]:online_offline_group
+faction = army
+npc_random = sim_default_military_3, sim_default_military_4, sim_default_military_4, sim_default_military_5
+npc_in_squad = 5, 6
+
+; Monolith: zop_monolith_wave belonged to the first version of csky_rostok (not used now, kept for
+; saves); zop_monolith_pro are the veterans holding the Jupiter checkpoint
+[zop_monolith_wave]:online_offline_group
+faction = monolith
+npc_random = sim_default_monolith_3, sim_default_monolith_3, sim_default_monolith_4
+npc_in_squad = 4, 6
+
+[zop_monolith_pro]:online_offline_group
+faction = monolith
+npc_random = sim_default_monolith_4
+npc_in_squad = 5, 6

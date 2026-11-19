@@ -1,0 +1,62 @@
+; Zone Operations (Mixon): csky_factory - Clear Sky's main base in the small factory on Agroprom
+; posts of Clear Sky's people at agr_smart_terrain_4_4 (exclusive jobs, see smart\mod_agr_smart_terrain_4_4_zop.ltx)
+; beh_cover walks the NPC to the exact level vertex and plays wait_anim there
+
+[logic@zop_csky_factory_mechanic]
+suitable = {=check_npc_name(csky_mechanic)} true
+prior = 50
+active = beh@zop_csky_factory_mechanic
+trade = items\trade\trade_generic_mechanic.ltx
+level_spot = mechanic
+
+[beh@zop_csky_factory_mechanic]
+behavior_state = beh_cover
+target = lvid:198896
+wait_anim = animpoint_sit_normal
+meet = meet@zop_csky_factory
+
+[logic@zop_csky_factory_arsenal]
+suitable = {=check_npc_name(zop_csky_arsenal)} true
+prior = 50
+active = beh@zop_csky_factory_arsenal
+trade = items\trade\trade_csky_spore.ltx
+level_spot = trader
+
+[beh@zop_csky_factory_arsenal]
+behavior_state = beh_cover
+target = lvid:192988
+wait_anim = animpoint_sit_normal
+meet = meet@zop_csky_factory
+
+[logic@zop_csky_factory_barman]
+suitable = {=check_npc_name(csky_barman)} true
+prior = 50
+active = beh@zop_csky_factory_barman
+trade = items\trade\trade_generic_barman.ltx
+level_spot = barman
+
+[beh@zop_csky_factory_barman]
+behavior_state = beh_cover
+target = lvid:194896
+wait_anim = animpoint_stay_table
+meet = meet@zop_csky_factory
+
+[logic@zop_csky_factory_viking]
+suitable = {=check_npc_name(zop_csky_viking)} true
+prior = 50
+active = beh@zop_csky_factory_viking
+level_spot = quest_npc
+
+[beh@zop_csky_factory_viking]
+behavior_state = beh_cover
+target = lvid:191792
+wait_anim = animpoint_sit_low
+meet = meet@zop_csky_factory
+
+[meet@zop_csky_factory]
+; they stay at their place when the player comes: no talk animation, no greeting
+close_anim = nil
+far_anim = nil
+close_snd_hello = nil
+close_snd_bye = nil
+use = true

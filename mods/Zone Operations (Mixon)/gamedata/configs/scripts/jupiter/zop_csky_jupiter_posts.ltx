@@ -1,0 +1,88 @@
+; Zone Operations (Mixon): csky_jupiter - Clear Sky's northern base at the Jupiter checkpoint
+; posts of Clear Sky's people at jup_a10_smart_terrain (exclusive jobs, see smart\mod_jup_a10_smart_terrain_zop.ltx)
+; beh_cover walks the NPC to the exact level vertex and plays wait_anim there (it sets no direction)
+
+[logic@zop_csky_jupiter_kholodny]
+suitable = {=check_npc_name(zop_csky_commander)} true
+prior = 50
+active = beh@zop_csky_jupiter_kholodny
+level_spot = quest_npc
+
+[beh@zop_csky_jupiter_kholodny]
+behavior_state = beh_cover
+target = lvid:730511
+wait_anim = animpoint_sit_high
+meet = meet@zop_csky_jupiter
+
+[logic@zop_csky_jupiter_salazar]
+suitable = {=check_npc_name(zop_csky_salazar)} true
+prior = 50
+active = animpoint@zop_csky_jupiter_salazar
+trade = items\trade\trade_csky_spore.ltx
+level_spot = trader
+
+; he sits at the table on the level's own sitting point (the bandit leader's place in vanilla)
+[animpoint@zop_csky_jupiter_salazar]
+cover_name = jup_a10_bandit_leader_sit_animpoint
+avail_animations = animpoint_sit_normal
+use_camp = false
+meet = meet@zop_csky_jupiter
+
+; Kruger, the mechanic (npc section zop_csky_kruger_mechanic)
+[logic@zop_csky_jupiter_mechanic]
+suitable = {=check_npc_name(zop_csky_kruger)} true
+prior = 50
+active = beh@zop_csky_jupiter_mechanic
+trade = items\trade\trade_generic_mechanic.ltx
+level_spot = mechanic
+
+; he sits on his chair behind the workbench (props of csky_jupiter in zop_operations.ltx), facing it:
+; beh_cover gives no direction, so this is a one-point path whose pose is put at an exact point
+; with an exact direction (pt1 = time,pose | pos:where to walk  animpoint:x,y,z,dir x,y,z)
+[beh@zop_csky_jupiter_mechanic]
+behavior_state = beh_move
+target = waypoint
+wait_anim = guard_na
+walk_anim = patrol
+jog_anim = rush
+run_anim = rush
+delay_anim = animpoint_sit_normal
+use_camp = false
+pt1 = 88860000,animpoint_sit_normal | pos:7.00,24.61,-190.40 animpoint:7.00,24.61,-190.40,1,0,0
+path_end = loop
+meet = meet@zop_csky_jupiter
+
+[logic@zop_csky_jupiter_medic]
+suitable = {=check_npc_name(csky_medic)} true
+prior = 50
+active = beh@zop_csky_jupiter_medic
+trade = items\trade\trade_generic_medic.ltx
+level_spot = quest_npc
+
+[beh@zop_csky_jupiter_medic]
+behavior_state = beh_cover
+target = lvid:805324
+wait_anim = guard_na
+meet = meet@zop_csky_jupiter
+
+; the barman sits on the ground
+[logic@zop_csky_jupiter_barman]
+suitable = {=check_npc_name(csky_barman)} true
+prior = 50
+active = beh@zop_csky_jupiter_barman
+trade = items\trade\trade_generic_barman.ltx
+level_spot = barman
+
+[beh@zop_csky_jupiter_barman]
+behavior_state = beh_cover
+target = lvid:802920
+wait_anim = sit_ass
+meet = meet@zop_csky_jupiter
+
+[meet@zop_csky_jupiter]
+; they stay at their place when the player comes: no talk animation, no greeting
+close_anim = nil
+far_anim = nil
+close_snd_hello = nil
+close_snd_bye = nil
+use = true

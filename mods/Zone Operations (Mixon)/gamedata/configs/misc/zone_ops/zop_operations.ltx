@@ -1,0 +1,320 @@
+; Zone Operations (Mixon) - operation descriptors.
+; One section per operation. The engine (zop_*.script) runs any of them; a new operation needs
+; a new section here plus its texts (st_zop_<id>_*), no new code.
+;
+; actor_faction  player's true community (get_actor_true_community)
+; giver          story id = character profile of the commander who offers it (dialog is added to him)
+; type           assault (clear target smarts one by one) | defense (beat attacker waves at target)
+; targets        smart names, in order
+; enemy          community that must be cleared (assault) / that attacks (defense)
+; ally_squad / ally_count            squads that assault with the player (spawned at the muster smart)
+; attacker_squad / attacker_count    defense waves; delay_hours before they arrive
+; muster         fixed muster smart (default: picked 150-400 m from the first target)
+; flank_count / flank_squad / flank_target / flank_muster
+;                two-sided assault: a second group sets out with the first from flank_muster
+;                (default: far side of flank_target) and fights at flank_target meanwhile
+; radius         metres around a target smart that must be clear
+; evacuate       story_squad:smart pairs sent away before the fight (story NPCs never die here)
+; capture        true = cleared targets become the faction's (no enemy respawn, garrison kept);
+;                on a defense: the target becomes the faction's when the defense succeeds
+; garrison_squad / garrison_count    garrison per captured smart
+; services       stock squads of the faction's service NPCs that walk in after a capture
+;                (trader / mechanic: base jobs take them by name, e.g. dolg_sim_squad_trader)
+; services       entries may be section:smart - that squad walks to its own smart
+; services_home  captured smart that owns the services (default: the last target)
+; services_escort       squad that walks with them and then joins the garrison
+; services_delay_hours  hours after the capture before they set out (re-sent a day after they die)
+; services_from         smart they start from (default: a smart 250-420 m from the target, then 300-700 m)
+; trader_trade          trade file for the traders (the base job's file belongs to the old owner)
+; requires       operations that must have succeeded first (chains)
+; retake         true = only while the enemy (op.enemy) holds every target (taking a captured place back)
+; requires_info  info portion the player must have (story progress, e.g. bar_deactivate_radar_done)
+; allies / defender_squad / defender_count   defense: communities that also hold the target, our own squad sent there
+; waves          defense in waves "squad:count, squad:count" (the enemy of each wave is its squad's faction);
+;                a wave that has not been beaten in 15 real minutes gives up; news text st_zop_<id>_wave<N> from wave 2 on
+; wave_spawn_N   the same for wave N only (e.g. wave_spawn_4: the Monolith comes from elsewhere)
+; wave_spawn     x,y,z@level_vertex@game_vertex - a fixed spot on the target's level where the defense waves
+;                appear (default: a smart 180-450 m from the target); the PDA mark goes to the smart next to it
+; occupy_squad / occupy_count   the enemy digs in at every target when the operation starts
+; evict          true = everybody else living at the targets moves out when the operation starts
+; counter_squad / counter_count / counter_delay_seconds / counter_target
+;                after the last target: a countdown (real seconds, default 180), then a counterattack on
+;                counter_target (default: the last target); beaten, or not arrived in 10 real minutes = truce
+;                (texts st_zop_<id>_counter / _truce)
+; requires_days  game days that must pass after the required operations
+; release_allies true = our squads go back to the simulation when the operation succeeds
+; props          section@x,y,z@yaw objects placed on the services_home level when the operation succeeds
+;                (a chair for the mechanic; placeable_* sections go through Hideout Furniture)
+; peace_with     communities our faction makes peace with (at least neutral) when the operation starts
+; peace_on_success  communities that become our friends when the operation succeeds
+; success_spawn  squads that come to the first target when the operation succeeds (a trader and his guard)
+; start_news / success_news   text ids (comma separated) sent as news when the operation starts / succeeds
+; reinforce_count / reinforce_at / reinforce_max / reinforce_squad
+;                our fighters down to reinforce_at (3) or fewer -> reinforce_count squads of reinforce_squad
+;                (default: ally_squad / defender_squad) come, at most reinforce_max (3) times per phase
+;                (the assault, the counterattack and the defense count separately)
+; restore        story_squad:smart pairs sent (back) there when the operation succeeds
+; blocks         operations that become unavailable after this one succeeds
+; reward_money, goodwill, cooldown_days
+;
+; texts per operation: st_zop_<id>_name / _offer / _muster / _won / _failed, assault: _go / _next
+; (+ _counter / _truce), defense: _attack (+ _wave2 ..), services: _services_go / _services_here
+
+[zop_ops]
+list = duty_yanov, freedom_yanov, csky_marsh, army_valley, freedom_garbage, freedom_yanov_retake, freedom_rostok, csky_factory, csky_rostok, csky_jupiter
+
+[duty_yanov]
+actor_faction  = dolg
+giver          = bar_dolg_leader
+type           = assault
+targets        = jup_a6
+enemy          = freedom
+ally_squad     = zop_dolg_assault
+ally_count     = 2
+radius         = 90
+evacuate       = jup_a6_freedom_leader_squad:mil_smart_terrain_7_7, jup_a6_freedom_trader_ashot_squad:mil_smart_terrain_7_7
+capture        = true
+garrison_squad = zop_dolg_garrison
+garrison_count = 2
+services       = zop_dolg_services
+services_escort = zop_dolg_garrison
+services_delay_hours = 3
+trader_trade   = items\trade\trade_duty.ltx
+blocks         = freedom_yanov
+reward_money   = 40000
+goodwill       = 150
+cooldown_days  = 7
+
+[freedom_yanov]
+actor_faction  = freedom
+giver          = jup_a6_freedom_leader
+type           = defense
+targets        = jup_a6
+enemy          = dolg
+attacker_squad = zop_dolg_assault
+attacker_count = 3
+delay_hours    = 2
+radius         = 90
+reward_money   = 25000
+goodwill       = 150
+cooldown_days  = 5
+
+[csky_marsh]
+actor_faction  = csky
+giver          = mar_smart_terrain_base_stalker_leader_marsh
+type           = assault
+targets        = mar_smart_terrain_8_11, mar_smart_terrain_11_11
+enemy          = renegade
+ally_squad     = zop_csky_assault
+ally_count     = 2
+radius         = 70
+capture        = true
+garrison_squad = zop_csky_garrison
+garrison_count = 1
+reward_money   = 20000
+goodwill       = 150
+requires_info  = cs_story_task0_ambush_renegade_done3
+cooldown_days  = 5
+
+[army_valley]
+actor_faction  = army
+giver          = agr_smart_terrain_1_6_near_2_military_colonel_kovalski
+type           = assault
+targets        = val_smart_terrain_8_6, val_smart_terrain_7_3
+enemy          = bandit
+ally_squad     = zop_army_assault
+ally_count     = 2
+radius         = 70
+evacuate       = val_smart_terrain_7_3_bandit_mechanic_stalker_squad:val_smart_terrain_7_5
+capture        = true
+garrison_squad = zop_army_garrison
+garrison_count = 1
+reward_money   = 30000
+goodwill       = 150
+cooldown_days  = 5
+
+; ------------------------------------------------------------------ Freedom chain
+; 1. Duty checkpoint on the Garbage (the road to Rostok)
+[freedom_garbage]
+actor_faction  = freedom
+giver          = mil_smart_terrain_7_7_freedom_leader_stalker
+type           = assault
+targets        = gar_smart_terrain_5_2
+enemy          = dolg
+ally_squad     = zop_freedom_assault
+ally_count     = 2
+radius         = 70
+capture        = true
+garrison_squad = zop_freedom_garrison
+garrison_count = 2
+services       = zop_freedom_services
+services_escort = zop_freedom_garrison
+services_delay_hours = 3
+trader_trade   = items\trade\trade_freedom.ltx
+reward_money   = 30000
+goodwill       = 150
+cooldown_days  = 5
+
+; 2. Yanov back from Duty (only while Duty holds it); Loki and Ashot come home
+[freedom_yanov_retake]
+actor_faction  = freedom
+giver          = jup_a6_freedom_leader
+type           = assault
+targets        = jup_a6
+enemy          = dolg
+retake         = true
+ally_squad     = zop_freedom_assault
+ally_count     = 3
+radius         = 90
+capture        = true
+garrison_squad = zop_freedom_garrison
+garrison_count = 2
+restore        = jup_a6_freedom_leader_squad:jup_a6, jup_a6_freedom_trader_ashot_squad:jup_a6
+reward_money   = 40000
+goodwill       = 150
+cooldown_days  = 5
+
+; 3. Rostok - Duty's headquarters. Duty's story NPCs retreat to Skadovsk instead of dying.
+[freedom_rostok]
+actor_faction  = freedom
+giver          = mil_smart_terrain_7_7_freedom_leader_stalker
+type           = assault
+targets        = bar_zastava, bar_zastava_2, bar_dolg_general, bar_dolg_bunker
+enemy          = dolg
+requires       = freedom_garbage
+ally_squad     = zop_freedom_assault
+ally_count     = 3
+; two sides at once: the main group comes up from the Garbage onto the south checkpoint,
+; the second group comes down from the north-west onto the north checkpoint
+muster         = bar_zastava_dogs_lair
+flank_muster   = bar_zastava_dogs_lair_2
+flank_target   = bar_zastava_2
+flank_count    = 2
+radius         = 60
+evacuate       = bar_dolg_leader_squad:zat_stalker_base_smart, bar_dolg_general_petrenko_stalker_squad:zat_stalker_base_smart, bar_dolg_general_zoneguard_stalker_squad:zat_stalker_base_smart, bar_zastava_2_commander_squad:zat_stalker_base_smart, bar_duty_security_squad_leader_squad:zat_stalker_base_smart, bar_dolg_medic_squad:zat_stalker_base_smart, bar_visitors_stalker_mechanic_squad:zat_stalker_base_smart
+capture        = true
+garrison_squad = zop_freedom_garrison
+garrison_count = 4
+services       = zop_freedom_hq_services:bar_dolg_general, zop_freedom_commander_squad:bar_dolg_bunker, zop_freedom_mechanic_squad:bar_visitors
+services_home  = bar_dolg_general
+services_escort = zop_freedom_garrison
+services_delay_hours = 4
+trader_trade   = items\trade\trade_freedom.ltx
+blocks         = duty_yanov
+reward_money   = 75000
+goodwill       = 250
+cooldown_days  = 7
+
+; ------------------------------------------------------------------------------------------
+; Clear Sky chain: Marsh -> Agroprom factory (main base) -> the scientists' bunker on Yantar
+; (operation id csky_rostok) -> Jupiter checkpoint
+; ------------------------------------------------------------------------------------------
+; The small factory on Agroprom (gate, courtyard, building): full of soldiers when we come;
+; after it falls the army counterattacks, and once beaten offers a truce. Clear Sky's main base.
+[csky_factory]
+actor_faction  = csky
+giver          = mar_smart_terrain_base_stalker_leader_marsh
+type           = assault
+targets        = agr_smart_terrain_4_4_near_3, agr_smart_terrain_4_4_near_1, agr_smart_terrain_4_4_near_2, agr_smart_terrain_4_4
+enemy          = army
+requires       = csky_marsh
+evict          = true
+occupy_squad   = zop_army_occupy
+occupy_count   = 2
+ally_squad     = zop_csky_assault
+ally_count     = 4
+radius         = 50
+capture        = true
+garrison_squad = zop_csky_garrison
+garrison_count = 1
+counter_squad  = zop_army_counter
+counter_count  = 4
+counter_delay_seconds = 300
+counter_target = agr_smart_terrain_4_4
+services       = zop_csky_mechanic_squad, zop_csky_arsenal_squad, zop_csky_barman_squad, zop_csky_viking_squad
+services_home  = agr_smart_terrain_4_4
+services_escort = zop_csky_garrison
+services_delay_hours = 2
+trader_trade   = items\trade\trade_csky_spore.ltx
+props          = placeable_chair@0.34,2.50,6.46@-75, placeable_chair@-6.25,7.50,4.70@134, placeable_table1@-5.60,7.50,4.08@134, placeable_lamp1@-5.60,8.35,4.08@134
+reinforce_count = 2
+reinforce_at   = 3
+reinforce_max  = 1
+reward_money   = 60000
+goodwill       = 300
+cooldown_days  = 5
+
+; Four days after the factory the scientists on Yantar call for help: a strange group of the dead
+; is coming at their bunker, and the Monolith follows. Viking sends a rapid response group; the
+; bunker stays the scientists', we only help them hold it. Afterwards the scientists are our friends.
+; (the id csky_rostok is kept so that saves taken with this operation stay valid; the Clear Sky
+; trader Kompas it used to bring to Rostok is no longer sent by any operation)
+[csky_rostok]
+actor_faction  = csky
+giver          = zop_csky_viking
+type           = defense
+targets        = yan_smart_terrain_6_4
+enemy          = zombied
+requires       = csky_factory
+requires_days  = 4
+; three waves of 20 of the strongest dead, then six Monolith squads of veterans, masters and legends
+waves          = zop_zombied_elite:4, zop_zombied_elite:4, zop_zombied_elite:4, zop_monolith_elite:6
+; the waves come out by the campfire with the pipe, 95 m from the bunker
+wave_spawn     = 94.98,-9.31,-224.67@110933@2200
+; the Monolith (wave 4) comes from further out, from the side of the Wild Territory exit
+wave_spawn_4   = 170.10,4.85,-252.00@148376@2200
+delay_hours    = 1
+radius         = 70
+allies         = ecolog
+defender_squad = zop_csky_assault
+defender_count = 4
+reinforce_count = 2
+reinforce_at   = 3
+reinforce_max  = 1
+start_news     = st_zop_csky_rostok_alarm, st_zop_csky_rostok_order
+success_news   = st_zop_csky_rostok_thanks
+peace_on_success = ecolog
+; afterwards Kompas, the Clear Sky trader, and his guard stay by the bunker (working with the scientists)
+success_spawn  = zop_csky_rostok_trader_squad, zop_csky_garrison
+reward_money   = 50000
+goodwill       = 250
+cooldown_days  = 3
+
+; Viking gives it five days after the bunker: the Jupiter checkpoint, held by a mass of Monolith
+; veterans; five minutes after it falls they counterattack. Then Clear Sky's northern base:
+; Kholodny in charge, a medic, a trader, a mechanic and a barman. Only Kholodny has a post so far
+; (configs\scripts\jupiter\zop_csky_jupiter_posts.ltx); the other four take the smart's ordinary jobs
+; until their places are marked.
+[csky_jupiter]
+actor_faction  = csky
+giver          = zop_csky_viking
+type           = assault
+targets        = jup_a10_smart_terrain
+enemy          = monolith
+requires       = csky_rostok
+requires_days  = 5
+evict          = true
+occupy_squad   = zop_monolith_pro
+occupy_count   = 4
+ally_squad     = zop_csky_assault
+ally_count     = 5
+radius         = 60
+capture        = true
+garrison_squad = zop_csky_garrison
+garrison_count = 2
+counter_squad  = zop_monolith_pro
+counter_count  = 4
+counter_delay_seconds = 300
+services       = zop_csky_kholodny_squad, zop_csky_medic_squad, zop_csky_salazar_squad, zop_csky_kruger_squad, zop_csky_barman_squad
+services_escort = zop_csky_garrison
+services_delay_hours = 3
+trader_trade   = items\trade\trade_csky_spore.ltx
+reinforce_count = 2
+reinforce_at   = 3
+reinforce_max  = 1
+; the mechanic's corner: the portable workbench with tools and a chair behind it (the chair's seat is
+; at 7.00,-190.40 - the mechanic's post, zop_csky_jupiter_posts.ltx; both face east, into the room)
+props          = placeable_chair@7.17,24.62,-190.40@0, placeable_workshop@7.90,24.62,-190.40@90
+reward_money   = 90000
+goodwill       = 400
+cooldown_days  = 5

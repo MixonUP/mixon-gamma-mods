@@ -1,0 +1,23 @@
+; Zone Operations (Mixon): csky_rostok - Kompas, the Clear Sky trader, sits by the scientists' bunker
+; (exclusive job, see smart\mod_yan_smart_terrain_6_4_zop.ltx)
+
+[logic@zop_csky_yantar_kompas]
+suitable = {=check_npc_name(zop_csky_rostok_trader)} true
+prior = 50
+active = beh@zop_csky_yantar_kompas
+trade = items\trade\trade_csky_spore.ltx
+level_spot = trader
+
+[beh@zop_csky_yantar_kompas]
+behavior_state = beh_cover
+target = lvid:82578
+wait_anim = sit_ass
+meet = meet@zop_csky_yantar
+
+[meet@zop_csky_yantar]
+; he stays seated when the player comes: no talk animation, no greeting
+close_anim = nil
+far_anim = nil
+close_snd_hello = nil
+close_snd_bye = nil
+use = true

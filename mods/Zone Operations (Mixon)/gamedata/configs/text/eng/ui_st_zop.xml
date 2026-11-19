@@ -1,0 +1,1313 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_zop_task_title">
+		<text>Operation</text>
+	</string>
+	<string id="st_zop_dlg_ask">
+		<text>Got serious work? Not for one man - for a squad.</text>
+	</string>
+	<string id="st_zop_dlg_accept">
+		<text>I'm in. Where do we muster?</text>
+	</string>
+	<string id="st_zop_dlg_decline">
+		<text>Not now.</text>
+	</string>
+	<string id="st_zop_descr_muster">
+		<text>Stage: muster.
+Go to the muster point - %s. The squads join you when you get there.</text>
+	</string>
+	<string id="st_zop_descr_assault">
+		<text>Stage: assault.
+Target: %s (%d of %d).
+Enemies at the target: %d. It counts once the area is clear and you are close.</text>
+	</string>
+	<string id="st_zop_descr_wait">
+		<text>Stage: prepare the defense.
+Take positions at %s. The attack is coming soon.</text>
+	</string>
+	<string id="st_zop_descr_defend">
+		<text>Stage: defense.
+Hold %s. Attackers left: %d.</text>
+	</string>
+	<string id="ui_mcm_zop_title">
+		<text>Zone Operations (Mixon)</text>
+	</string>
+	<string id="ui_mcm_zop_enabled">
+		<text>Enable operations</text>
+	</string>
+	<string id="ui_mcm_zop_enabled_desc">
+		<text>Faction commanders offer operations in dialogue.</text>
+	</string>
+	<string id="ui_mcm_zop_reward_mult">
+		<text>Reward multiplier</text>
+	</string>
+	<string id="ui_mcm_zop_reward_mult_desc">
+		<text>Multiplies the money reward for operations.</text>
+	</string>
+	<string id="ui_mcm_zop_extra_squads">
+		<text>Extra squads</text>
+	</string>
+	<string id="ui_mcm_zop_extra_squads_desc">
+		<text>Squads added to allies in an assault and to attackers in a defense.</text>
+	</string>
+	<string id="st_zop_duty_yanov_name">
+		<text>Operation Yanov</text>
+	</string>
+	<string id="st_zop_duty_yanov_offer">
+		<text>Freedom sits on Yanov like it's home. Enough. I'll give you two veteran squads, you lead them. Loki and his trader are already pulling out to the Warehouses - they smell trouble. Clear the station and Yanov is ours, Duty will hold it. Forty thousand and my respect.</text>
+	</string>
+	<string id="st_zop_duty_yanov_muster">
+		<text>Duty: the squads are moving to Jupiter. Muster point - %s. They won't start without you.</text>
+	</string>
+	<string id="st_zop_duty_yanov_go">
+		<text>Duty: everyone is here. Forward, to %s! Clear the station.</text>
+	</string>
+	<string id="st_zop_duty_yanov_next">
+		<text>Duty: sector clear. Next target - %s.</text>
+	</string>
+	<string id="st_zop_duty_yanov_won">
+		<text>Duty: Yanov is ours! The garrison takes its posts. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_duty_yanov_failed">
+		<text>Duty: the operation failed. Fall back. We'll try again when we regroup.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_name">
+		<text>Defense of Yanov</text>
+	</string>
+	<string id="st_zop_freedom_yanov_offer">
+		<text>Listen, brother. Our guys near the Bar heard it - Duty is gathering men for Yanov. They think we got lazy here. They'll be here in a couple of hours. Shall we greet them? Twenty-five thousand and a bottle from my stash.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_muster">
+		<text>Freedom: Duty will reach Yanov in about %d h. Take your positions.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_attack">
+		<text>Freedom: Duty is attacking Yanov! Everyone, to arms!</text>
+	</string>
+	<string id="st_zop_freedom_yanov_won">
+		<text>Freedom: we held! Duty fell back. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_failed">
+		<text>Freedom: we couldn't hold Yanov... Falling back to the Warehouses.</text>
+	</string>
+	<string id="st_zop_csky_marsh_name">
+		<text>Swamp Cleanup</text>
+	</string>
+	<string id="st_zop_csky_marsh_offer">
+		<text>The renegades are back in the swamps. They rob our guides and shoot people in the back. Take two squads and go through their camps one by one. Twenty thousand, and the swamps are ours again.</text>
+	</string>
+	<string id="st_zop_csky_marsh_muster">
+		<text>Clear Sky: the squads are moving out. Muster point - %s.</text>
+	</string>
+	<string id="st_zop_csky_marsh_go">
+		<text>Clear Sky: here we go. First camp - %s.</text>
+	</string>
+	<string id="st_zop_csky_marsh_next">
+		<text>Clear Sky: camp cleared. Next one - %s.</text>
+	</string>
+	<string id="st_zop_csky_marsh_won">
+		<text>Clear Sky: the renegades are gone, our posts are set. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_csky_marsh_failed">
+		<text>Clear Sky: the cleanup failed. Back to base.</text>
+	</string>
+	<string id="st_zop_army_valley_name">
+		<text>Operation Valley</text>
+	</string>
+	<string id="st_zop_army_valley_offer">
+		<text>The bandits in Dark Valley have lost all fear. Orders are: clear their forward positions. I give you two sections, you are in command. Thirty thousand on completion. Questions? No questions.</text>
+	</string>
+	<string id="st_zop_army_valley_muster">
+		<text>Military: the sections are moving. Muster point - %s.</text>
+	</string>
+	<string id="st_zop_army_valley_go">
+		<text>Military: begin the operation. First target - %s.</text>
+	</string>
+	<string id="st_zop_army_valley_next">
+		<text>Military: position cleared. Next target - %s.</text>
+	</string>
+	<string id="st_zop_army_valley_won">
+		<text>Military: operation complete, the positions are ours. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_army_valley_failed">
+		<text>Military: the operation failed. Withdraw.</text>
+	</string>
+	<string id="st_zop_near">
+		<text>%d m from %s</text>
+	</string>
+	<string id="st_zop_duty_yanov_services_go">
+		<text>Duty: a convoy with the commandant, a quartermaster and a mechanic has set out for %s.</text>
+	</string>
+	<string id="st_zop_duty_yanov_services_here">
+		<text>Duty: Colonel Mixon, the quartermaster and the mechanic have arrived at %s. The commandant has work for stalkers.</text>
+	</string>
+	<string id="st_zop_dolg_commander_name">
+		<text>Colonel Mixon</text>
+	</string>
+	<string id="st_zop_dolg_commander_bio">
+		<text>A Duty legend, commandant of the Yanov garrison. Formerly lead engineer of a Moscow institute of space instrumentation.</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_name">
+		<text>Freedom's Remnants</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_text">
+		<text>Drive out the Freedom squad dug in near Yanov.</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_about">
+		<text>Loki left, but not all of his men. One squad dug in right under the garrison's nose, waiting for their friends. They will wait in vain. Go and finish it.</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_finish">
+		<text>Clean work. Freedom doesn't even have spotters on Jupiter now. Take your pay.</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_name">
+		<text>Mutant Hunt</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_text">
+		<text>Exterminate the mutant pack near Yanov.</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_about">
+		<text>A pack has made a den near the station. My men can't sleep for the howling. Destroy it - that is what Duty is for.</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_finish">
+		<text>One pack fewer. Good. The Zone did not get our men tonight.</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_name">
+		<text>Wanted by Duty</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_text">
+		<text>Colonel Mixon has ordered me to find and eliminate a target.</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_about">
+		<text>There is a man walking the Zone who has earned a bullet from Duty. Find him and close his account.</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_finish">
+		<text>The order is carried out. Duty does not forget those who help it.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_name">
+		<text>%s for the Colonel</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_text">
+		<text>Colonel Mixon needs a rare weapon: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_about">
+		<text>I need a sample of a rare weapon. Not for a collection: I take such things apart and learn how they were made. A Gauss rifle, silent sniper rifles, assault rifles Duty's stores never see. Find one and I'll pay like for an artifact.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_fetch_about">
+		<text>Look for this: %s. A working piece, not scrap.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_fetch_finish">
+		<text>Now that's a thing. I've never held one of these. The money is yours - and thank you, stalker.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_name">
+		<text>%s for HQ</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_text">
+		<text>Colonel Mixon wants %s for Duty headquarters.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_about">
+		<text>Headquarters wants samples from the north. The scientists on Rostok pay for them, and so do we.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_fetch_about">
+		<text>Find me %s. Don't take it from my men - find it in the anomalies.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_fetch_finish">
+		<text>That is a fine specimen. HQ will be pleased. Take your reward.</text>
+	</string>
+	<string id="st_zop_mx_start">
+		<text>Colonel, sir, may I have a word?</text>
+	</string>
+	<string id="st_zop_mx_menu">
+		<text>Go ahead. Keep it short, stalker: I have a garrison to run and Jupiter outside the walls.</text>
+	</string>
+	<string id="st_zop_mx_q_who">
+		<text>Tell me about yourself, Colonel.</text>
+	</string>
+	<string id="st_zop_mx_a_who1">
+		<text>I'm not a soldier, stalker. I'm an engineer. Aviation institute with honours, then a closed research institute in Moscow - space instrumentation. Satellite sensors, navigation systems for aircraft. At twenty-six I ran my own department and had a higher clearance than my director. They called me a genius. I just never went home until the device worked.</text>
+	</string>
+	<string id="st_zop_mx_q_who2">
+		<text>How did an institute engineer end up in the Zone?</text>
+	</string>
+	<string id="st_zop_mx_a_who2">
+		<text>In two thousand six, after the second blast, our institute got an order: adapt orbital gravimeters to find anomalies. A satellite sees a gravity well from three hundred kilometres up - so why can't a handheld device see it from thirty metres? You can't test a drawing on paper - you need a proving ground. The Zone became the proving ground. They dropped our group at the Garbage: five scientists, two soldiers and me with crates of equipment.</text>
+	</string>
+	<string id="st_zop_mx_q_who3">
+		<text>And what happened?</text>
+	</string>
+	<string id="st_zop_mx_a_who3">
+		<text>An emission. Back then we didn't know how they begin. We hid in an old garage, and it turned out to be a trap, not a shelter. Only a sergeant and I survived - because I went down to the basement to fix the generator. A Duty patrol pulled us out. I did finish the detector. Its prototype still hangs on my belt.</text>
+	</string>
+	<string id="st_zop_mx_q_name">
+		<text>Why did you stay with Duty?</text>
+	</string>
+	<string id="st_zop_mx_a_name">
+		<text>Because the institute sent a letter: project closed, funding cut, come back. And Duty said: stay, we need a man who understands how this filth works. I stayed. Built the fortifications at Rostok, put up the radio relays, set emission sensors on the checkpoints, calculated routes for the supply helicopters. The ranks came on their own - for the men who came back alive. And 'Mixon' is from the institute days: give me any junk and I'll build a working device out of it.</text>
+	</string>
+	<string id="st_zop_mx_q_sit">
+		<text>What is the situation at Yanov?</text>
+	</string>
+	<string id="st_zop_mx_a_sit">
+		<text>We took the station from Freedom. Loki and his men went to the Army Warehouses, to Lukash - sooner or later they will try to come back. The Jupiter plant is full of mutants, zombies wander near Kopachy, and from the north the Monolith is probing the road. The scientists in the bunker nearby we need alive: their instruments and my sensors together are the best intelligence on Jupiter. Want to help - ask about work.</text>
+	</string>
+	<string id="st_zop_mx_q_why">
+		<text>Why does Duty need Yanov?</text>
+	</string>
+	<string id="st_zop_mx_a_why">
+		<text>Yanov is the last big junction before Pripyat. From here you see everything: the road north, the plant, Kopachy, the tunnel. Whoever holds the station decides what gets out to the people and what stays in the Zone. Duty swore to protect the world from the Zone. Freedom traded artifacts here. We stand here.</text>
+	</string>
+	<string id="st_zop_mx_q_zone">
+		<text>What is really going on in the Zone?</text>
+	</string>
+	<string id="st_zop_mx_a_zone1">
+		<text>First there was the plant - eighty-six. Then in two thousand six it blew a second time, and the Zone was born: anomalies, mutants, emissions. Then came the stalkers, after them the money, after the money the guns. The army holds the perimeter, but the Zone keeps growing. Every emission redraws the map.</text>
+	</string>
+	<string id="st_zop_mx_q_zone2">
+		<text>And the center? They say someone made it.</text>
+	</string>
+	<string id="st_zop_mx_a_zone2">
+		<text>They say. There was one, Strelok - he reached the plant and shut down the Brain Scorcher. They say behind the sarcophagus sat a group of scientists fused with the Zone - the C-Consciousness. The Monolith prays to their Stone, though there may be no stone at all. Later the army tried to break through with helicopters - Operation Fairway - and half the machines went down right here, on Jupiter. I did not see it. But I have seen the wrecks.</text>
+	</string>
+	<string id="st_zop_mx_q_mon">
+		<text>Is the Monolith a threat to Yanov?</text>
+	</string>
+	<string id="st_zop_mx_a_mon">
+		<text>The Monolith does not bargain and does not retreat. They walk until they die and fear neither bullets nor emissions. When the Scorcher went dark the road north opened - for us and for them. That is why the towers run double shifts. And that is why I need stalkers who don't ask too many questions.</text>
+	</string>
+	<string id="st_zop_mx_bye">
+		<text>I have to go, Colonel.</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_name">
+		<text>Convoy Interception</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_text">
+		<text>Intercept an enemy convoy on Jupiter and kill the escort before it reaches its destination.</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_about">
+		<text>My sensors picked up a convoy. Loaded: medicine, electronics, ammo. It goes through our land, so it's our cargo. Intercept them on the way - whatever you find on the bodies, keep.</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_finish">
+		<text>The convoy never arrived - someone will be short of ammo tonight. Good work.</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_name">
+		<text>Ambush</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_text">
+		<text>Meet an enemy strike group on its way to Yanov and destroy it before it reaches the station.</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_about">
+		<text>A strike group is coming at us from the far side of Jupiter. If they reach the station, there will be a fight in our yard. I want the fight in theirs. Pick the spot, meet them and put them all down.</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_finish">
+		<text>They never saw Yanov. That's what I call defense.</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_name">
+		<text>Mercenaries on Jupiter</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_text">
+		<text>Destroy the mercenary group in the marked area.</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_about">
+		<text>Mercenaries work for whoever pays. And right now someone pays to get Duty off Yanov. I found their camp - go and cancel their contract.</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_finish">
+		<text>Contract terminated. Their employer will have to hire new men.</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_name">
+		<text>Monolith at the Gates</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_text">
+		<text>Destroy the Monolith squad in the marked area.</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_about">
+		<text>Since the Scorcher went dark, the Monolith has been moving south. One of their squads dug in near us. There's no talking to them - they can only be stopped.</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_finish">
+		<text>Fanatics don't retreat, but they die like anyone else. You did a big thing for Duty.</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_name">
+		<text>Sin</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_text">
+		<text>Find the Sin camp on Jupiter and wipe out every cultist.</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_about">
+		<text>Sin are cultists who pray to the Zone. They lead people into anomalies and call it a blessing. A squad of them is close. Duty doesn't tolerate their kind.</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_finish">
+		<text>One cult fewer. The Zone will do without their prayers.</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_name">
+		<text>Bandit Raid</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_text">
+		<text>Break up the gang in the marked area.</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_about">
+		<text>Bandits smelled the change of power at Yanov and decided they can rob stalkers on the roads. Explain to them that they can't.</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_finish">
+		<text>The roads are clean again. Stalkers will remember who cleaned them.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_name">
+		<text>%s: Blueprints</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_text">
+		<text>Colonel Mixon is looking for technical documents: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_about">
+		<text>Scientists and stalkers hide papers in stashes that are worth a fortune: schematics, manuals, reports on artifact behaviour. The most valuable lie in rich stashes - the ones marked yellow. I need those blueprints: with them I'll build at Yanov what so far existed only on paper.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_fetch_about">
+		<text>Find me this: %s. Look in the rich stashes.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_fetch_finish">
+		<text>What a find. I won't sleep tonight - I'll be reading. Take your reward, you earned it.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_name">
+		<text>Rare Mechanisms</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_text">
+		<text>Colonel Mixon needs rare mechanisms: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_about">
+		<text>Hydraulics, life-support systems, firing mechanisms - things Duty's stores don't have and never will. I'll build from them what will save soldiers' lives.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_fetch_about">
+		<text>Bring: %s. Intact, no rust.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_fetch_finish">
+		<text>Good parts. I already see where they go. Here.</text>
+	</string>
+	<string id="st_zop_raid_convoy_news">
+		<text>Mixon: a convoy (%s) is moving from %s to %s. Intercept it on the way.</text>
+	</string>
+	<string id="st_zop_raid_ambush_news">
+		<text>Mixon: a strike group (%s) is moving from %s to %s. Meet it before the station.</text>
+	</string>
+	<string id="st_zop_raid_beaten">
+		<text>Mixon: someone beat you to it - the group was wiped out without you. Task failed.</text>
+	</string>
+	<string id="st_zop_raid_camp_news">
+		<text>Mixon: scouts spotted a camp (%s) near %s. Wipe it out.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_name">
+		<text>Operation Checkpoint</text>
+	</string>
+	<string id="st_zop_freedom_garbage_offer">
+		<text>Duty blocked the road to Rostok with their checkpoint on the Garbage and decides who walks and who doesn't. Freedom doesn't live like that. I'll give you two squads - lead them. Knock Duty off the checkpoint and put our people there. Thirty thousand and a barrel of the best beer in the warehouses.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_muster">
+		<text>Freedom: the squads are moving to the Garbage. Muster point - %s. They won't start without you.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_go">
+		<text>Freedom: everyone's here. Go, to %s! Take the checkpoint down.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_next">
+		<text>Freedom: sector clear. Next - %s.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_won">
+		<text>Freedom: the checkpoint is ours! The road to Rostok is open. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_failed">
+		<text>Freedom: it didn't work. Fall back, we'll regroup and return.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_services_go">
+		<text>Freedom: a trader and a mechanic set out for %s under escort.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_services_here">
+		<text>Freedom: the trader and the mechanic are in place, %s. The checkpoint is open for friends.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_name">
+		<text>Operation Homecoming</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_offer">
+		<text>Bro, they're sitting on my Yanov. My station, my bar counter. Duty thinks that once they hang a flag it's forever. Three squads and we go home. Ashot and I will come back as soon as it's clean. Forty thousand - and Yanov is free again.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_muster">
+		<text>Freedom: the squads are heading to Jupiter. Muster point - %s. They're waiting for you.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_go">
+		<text>Freedom: let's go! %s is our station, we take it back.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_next">
+		<text>Freedom: clear. Next target - %s.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_won">
+		<text>Freedom: Yanov is ours again! Loki and Ashot are coming home. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_failed">
+		<text>Freedom: Duty held the station. Fall back, bro. It's not over.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_name">
+		<text>Operation Rostok</text>
+	</string>
+	<string id="st_zop_freedom_rostok_offer">
+		<text>The checkpoint is ours - now the big one. Rostok. Duty's headquarters, their heart. Take Rostok and Duty becomes one faction among many instead of the Zone's warden. Voronin and his staff will leave for Zaton - we are not butchers. Three squads, four points: both checkpoints, Petrenko's HQ, Voronin's bunker. Seventy-five thousand - and your name will be remembered.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_muster">
+		<text>Freedom: we're going to Rostok. Muster point - %s. This will be a big fight.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_go">
+		<text>Freedom: forward! First target - %s.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_next">
+		<text>Freedom: the point is ours. Next - %s.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_won">
+		<text>Freedom: Rostok is ours! Duty's flag is down, their staff left for Zaton. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_failed">
+		<text>Freedom: Duty fought us off. Fall back to the checkpoint. Rostok can wait.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_services_go">
+		<text>Freedom: a trader, a medic, a mechanic and commander Yastreb set out for %s under escort.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_services_here">
+		<text>Freedom: our people are in place, %s. Rostok is free now.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_name">
+		<text>Duty Patrol</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_text">
+		<text>Drive off the Duty squad near Yanov.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_about">
+		<text>Duty is hanging around the station again, bro. Marching in formation, looking sideways, getting in people's way. Go explain to them that Jupiter is free land.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_finish">
+		<text>There, quiet now. Here, you earned it.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_name">
+		<text>Beasts at the Gates</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_text">
+		<text>Destroy the mutant pack near Yanov.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_about">
+		<text>Mutants started coming to the station. Stalkers are scared to go out for beer, and that's just wrong. Deal with it.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_finish">
+		<text>Nice. Now we can go for beer.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_name">
+		<text>A Job for Freedom</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_text">
+		<text>Loki asked to find and remove a man who is in Freedom's way.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_about">
+		<text>There's a guy who really wants Freedom gone. Make it so he's gone instead. No extra noise.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_finish">
+		<text>Clean. Freedom remembers good deeds, bro.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_name">
+		<text>%s for Freedom</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_text">
+		<text>Loki needs a rare weapon: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_about">
+		<text>Listen, Freedom always had the best iron. And I want it to stay that way. I need a rare gun - something Duty never saw in their stores even in dreams. A Gauss, silent rifles, western guns. I'll pay well.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_fetch_about">
+		<text>Find this: %s. Working, not junk.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_fetch_finish">
+		<text>Now that's a gun. You could take Rostok with this. Here's your money.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_name">
+		<text>Artifact for Sale</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_text">
+		<text>Loki needs an artifact: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_about">
+		<text>Freedom lives by trade, bro. The buyer is waiting for goods and there are none. Bring me an artifact - I won't stay in debt.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_fetch_finish">
+		<text>Oh, a good one. The buyer will be happy. Here's your cut.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_name">
+		<text>Someone Else's Convoy</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_text">
+		<text>Intercept an enemy convoy on Jupiter and kill the escort.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_about">
+		<text>A convoy is going through Jupiter - ammo, medicine, electronics. Not ours. But it should be. Intercept it on the way, keep the cargo.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_finish">
+		<text>The convoy never arrived - someone's empty tonight and we're full.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_name">
+		<text>Ambush on the Road</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_text">
+		<text>Meet an enemy strike group on its way to Yanov and destroy it.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_about">
+		<text>Scouts saw a group heading for Yanov. If they arrive, there'll be blood in our yard. Meet them first.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_finish">
+		<text>They never made it. That's what I call freedom.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_name">
+		<text>Military Patrol</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_text">
+		<text>Destroy the military patrol in the marked area.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_about">
+		<text>A military patrol is sniffing around the roads to Yanov - counting our men, marking our posts. Tomorrow they'll come back with a helicopter. Make sure the report never reaches it.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_finish">
+		<text>No patrol, no report. The colonels will be guessing for a while, bro.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_name">
+		<text>Monolith</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_text">
+		<text>Destroy the Monolith squad in the marked area.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_about">
+		<text>The Monolith is pushing south. There's no talking to fanatics, and freedom means nothing to them. Stop them.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_finish">
+		<text>The fanatics are down. The Zone got a little freer.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_name">
+		<text>Sin Camp</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_text">
+		<text>Find the Sin camp on Jupiter and wipe out every cultist.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_about">
+		<text>Sin isn't freedom, bro. It's a cult that leads people into anomalies. They have a camp on Jupiter. Close it.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_finish">
+		<text>The cult is closed. Easier to breathe without them.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_name">
+		<text>The Army Is Coming</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_text">
+		<text>Destroy the military squad in the marked area.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_about">
+		<text>The army is crawling into the Zone again with its rules and machine guns. Show them this isn't their proving ground.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_finish">
+		<text>The soldiers pulled back. Freedom stands.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_name">
+		<text>%s: Blueprints</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_text">
+		<text>Loki is looking for documents: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_about">
+		<text>Rich stashes - the ones marked yellow - sometimes hold papers worth a fortune. Schematics, manuals, scientists' reports. I need those: to sell or to use.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_fetch_about">
+		<text>Find: %s. Look in the rich stashes.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_fetch_finish">
+		<text>What a find, bro. Here's your reward.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_name">
+		<text>Rare Parts</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_text">
+		<text>Loki needs rare mechanisms: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_about">
+		<text>Our mechanics want rare parts - hydraulics, firing mechanisms, that kind of thing. The warehouses don't have it. Find it.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_fetch_finish">
+		<text>Great. The mechanics will be happy. Here.</text>
+	</string>
+	<string id="st_zop_flank_go">
+		<text>Second group is going in from the other side, onto %s. Hit them at the same time!</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_name">
+		<text>Duty Patrol</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_text">
+		<text>Drive off the Duty squad near Rostok.</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_about">
+		<text>Duty is hanging around the factory again, bro. Marching in formation, looking sideways, getting in people's way. Go explain to them that Rostok is free land.</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_finish">
+		<text>There, quiet now. Here, you earned it.</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_name">
+		<text>Beasts at the Gates</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_text">
+		<text>Destroy the mutant pack near Rostok.</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_about">
+		<text>Mutants started coming to the factory. Stalkers are scared to go out for beer, and that's just wrong. Deal with it.</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_finish">
+		<text>Nice. Now we can go for beer.</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_name">
+		<text>A Job for Freedom</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_text">
+		<text>Yastreb asked to find and remove a man who is in Freedom's way.</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_about">
+		<text>There's a guy who really wants Freedom gone. Make it so he's gone instead. No extra noise.</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_finish">
+		<text>Clean. Freedom remembers good deeds, bro.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_name">
+		<text>%s for Freedom</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_text">
+		<text>Yastreb needs a rare weapon: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_about">
+		<text>Listen, Freedom always had the best iron. And I want it to stay that way. I need a rare gun - something Duty never saw in their stores even in dreams. A Gauss, silent rifles, western guns. I'll pay well.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_fetch_about">
+		<text>Find this: %s. Working, not junk.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_fetch_finish">
+		<text>Now that's a gun. You could take Rostok with this. Here's your money.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_name">
+		<text>Artifact for Sale</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_text">
+		<text>Yastreb needs an artifact: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_about">
+		<text>Freedom lives by trade, bro. The buyer is waiting for goods and there are none. Bring me an artifact - I won't stay in debt.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_fetch_finish">
+		<text>Oh, a good one. The buyer will be happy. Here's your cut.</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_name">
+		<text>Someone Else's Convoy</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_text">
+		<text>Intercept an enemy convoy nearby and kill the escort.</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_about">
+		<text>A convoy is going through the area - ammo, medicine, electronics. Not ours. But it should be. Intercept it on the way, keep the cargo.</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_finish">
+		<text>The convoy never arrived - someone's empty tonight and we're full.</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_name">
+		<text>Ambush on the Road</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_text">
+		<text>Meet an enemy strike group on its way to Rostok and destroy it.</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_about">
+		<text>Scouts saw a group heading for Rostok. If they arrive, there'll be blood in our yard. Meet them first.</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_finish">
+		<text>They never made it. That's what I call freedom.</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_name">
+		<text>Military Patrol</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_text">
+		<text>Destroy the military patrol in the marked area.</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_about">
+		<text>A military patrol is sniffing around the roads to Rostok - counting our men, marking our posts. Tomorrow they'll come back with a helicopter. Make sure the report never reaches it.</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_finish">
+		<text>No patrol, no report. The colonels will be guessing for a while, bro.</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_name">
+		<text>Monolith</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_text">
+		<text>Destroy the Monolith squad in the marked area.</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_about">
+		<text>The Monolith is pushing south. There's no talking to fanatics, and freedom means nothing to them. Stop them.</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_finish">
+		<text>The fanatics are down. The Zone got a little freer.</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_name">
+		<text>Sin Camp</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_text">
+		<text>Find the Sin camp nearby and wipe out every cultist.</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_about">
+		<text>Sin isn't freedom, bro. It's a cult that leads people into anomalies. They have a camp nearby. Close it.</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_finish">
+		<text>The cult is closed. Easier to breathe without them.</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_name">
+		<text>The Army Is Coming</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_text">
+		<text>Destroy the military squad in the marked area.</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_about">
+		<text>The army is crawling into the Zone again with its rules and machine guns. Show them this isn't their proving ground.</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_finish">
+		<text>The soldiers pulled back. Freedom stands.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_name">
+		<text>%s: Blueprints</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_text">
+		<text>Yastreb is looking for documents: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_about">
+		<text>Rich stashes - the ones marked yellow - sometimes hold papers worth a fortune. Schematics, manuals, scientists' reports. I need those: to sell or to use.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_fetch_about">
+		<text>Find: %s. Look in the rich stashes.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_fetch_finish">
+		<text>What a find, bro. Here's your reward.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_name">
+		<text>Rare Parts</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_text">
+		<text>Yastreb needs rare mechanisms: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_about">
+		<text>Our mechanics want rare parts - hydraulics, firing mechanisms, that kind of thing. The warehouses don't have it. Find it.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_fetch_finish">
+		<text>Great. The mechanics will be happy. Here.</text>
+	</string>
+	<string id="st_zop_freedom_commander_name">
+		<text>Yastreb</text>
+	</string>
+	<string id="st_zop_freedom_commander_bio">
+		<text>Freedom field commander, callsign Yastreb (Hawk). Ex-paratrooper who walked out of the army and into the Zone eight years ago. Took Rostok with the strike groups and now holds Duty's old headquarters - not as a fortress, as an open door. Gives work to anyone who'd rather shoot at Duty patrols and Monolith than at loners.</text>
+	</string>
+	<string id="st_zop_csky_commander_name">
+		<text>Kholodny</text>
+	</string>
+	<string id="st_zop_csky_commander_bio">
+		<text>Clear Sky's commander at the Jupiter checkpoint, callsign Kholodny (the Cold One). Calm as ice in any fight; Viking sent him north to hold the way to Pripyat and to keep the expeditions alive.</text>
+	</string>
+	<string id="zop_csky_commander_task_1_name">
+		<text>Renegade Den</text>
+	</string>
+	<string id="zop_csky_commander_task_1_text">
+		<text>Find the renegade camp nearby and wipe it out.</text>
+	</string>
+	<string id="zop_csky_commander_task_1_about">
+		<text>The renegades crawled out of the swamps and set up a camp near the checkpoint. They rob our guides and sell their guns to anyone. Find the camp and finish what we started on the Marsh.</text>
+	</string>
+	<string id="zop_csky_commander_task_1_finish">
+		<text>No more den. The guides can walk the roads again.</text>
+	</string>
+	<string id="zop_csky_commander_task_2_name">
+		<text>Mutant Nest</text>
+	</string>
+	<string id="zop_csky_commander_task_2_text">
+		<text>Destroy the mutant pack near the checkpoint.</text>
+	</string>
+	<string id="zop_csky_commander_task_2_about">
+		<text>A pack has settled right under our windows. The scientists won't go out to the anomalies while it's there. Clear the way.</text>
+	</string>
+	<string id="zop_csky_commander_task_2_finish">
+		<text>Quiet now. The expeditions can go out again.</text>
+	</string>
+	<string id="zop_csky_commander_task_3_name">
+		<text>A Name on the List</text>
+	</string>
+	<string id="zop_csky_commander_task_3_text">
+		<text>Kholodny asked to find and remove a man who is dangerous to Clear Sky.</text>
+	</string>
+	<string id="zop_csky_commander_task_3_about">
+		<text>There's one man who hunts our guides for money. I know his name and roughly where he is. Make sure he doesn't hunt anyone again.</text>
+	</string>
+	<string id="zop_csky_commander_task_3_finish">
+		<text>Done. One less hunter in the Zone.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_name">
+		<text>Samples for the Lab</text>
+	</string>
+	<string id="zop_csky_commander_task_4_text">
+		<text>Kholodny needs an artifact: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_about">
+		<text>Our lab in the checkpoint is finally working, and it's hungry. I need a specific artifact for the measurements - not for sale, for science.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_fetch_finish">
+		<text>That's the one. The geophysicists will be up all night. Here's your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_name">
+		<text>A Rare Gun</text>
+	</string>
+	<string id="zop_csky_commander_task_5_text">
+		<text>Kholodny needs a rare weapon: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_about">
+		<text>Our guides walk where the army doesn't dare - and they need guns to match. Find me something rare: a Gauss, a silent rifle, a good western gun. I pay well.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_fetch_about">
+		<text>Find this: %s. Working, not junk.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_fetch_finish">
+		<text>Now that's a gun. It'll go to our best guide. Here's your money.</text>
+	</string>
+	<string id="zop_csky_commander_task_6_name">
+		<text>Someone Else's Convoy</text>
+	</string>
+	<string id="zop_csky_commander_task_6_text">
+		<text>Intercept an enemy convoy nearby and kill the escort.</text>
+	</string>
+	<string id="zop_csky_commander_task_6_about">
+		<text>A convoy is going through the area - medicine, electronics, ammo. It feeds the people who shoot at our guides. Intercept it on the way and keep the cargo.</text>
+	</string>
+	<string id="zop_csky_commander_task_6_finish">
+		<text>The convoy never arrived. Our medics will be glad of the cargo.</text>
+	</string>
+	<string id="zop_csky_commander_task_7_name">
+		<text>Ambush on the Road</text>
+	</string>
+	<string id="zop_csky_commander_task_7_text">
+		<text>Meet an enemy strike group on its way to the checkpoint and destroy it.</text>
+	</string>
+	<string id="zop_csky_commander_task_7_about">
+		<text>Scouts saw a group heading for the checkpoint. If they arrive, the scientists will be in the crossfire. Meet them first.</text>
+	</string>
+	<string id="zop_csky_commander_task_7_finish">
+		<text>They never made it. The lab keeps working.</text>
+	</string>
+	<string id="zop_csky_commander_task_8_name">
+		<text>Military Patrol</text>
+	</string>
+	<string id="zop_csky_commander_task_8_text">
+		<text>Destroy the military patrol in the marked area.</text>
+	</string>
+	<string id="zop_csky_commander_task_8_about">
+		<text>The army wants its checkpoint back. Their patrol is counting our men and marking our posts. Make sure the report never reaches the colonel.</text>
+	</string>
+	<string id="zop_csky_commander_task_8_finish">
+		<text>No patrol, no report. Kovalski will have to guess.</text>
+	</string>
+	<string id="zop_csky_commander_task_9_name">
+		<text>The Monolith</text>
+	</string>
+	<string id="zop_csky_commander_task_9_text">
+		<text>Destroy the Monolith group in the marked area.</text>
+	</string>
+	<string id="zop_csky_commander_task_9_about">
+		<text>Monolith fighters came down from the north. They don't talk and don't take prisoners - and they walk straight through the anomalies we study. Stop them.</text>
+	</string>
+	<string id="zop_csky_commander_task_9_finish">
+		<text>Done. The anomalies are ours to study again.</text>
+	</string>
+	<string id="zop_csky_commander_task_10_name">
+		<text>Sin</text>
+	</string>
+	<string id="zop_csky_commander_task_10_text">
+		<text>Find the Sin camp nearby and wipe out every cultist.</text>
+	</string>
+	<string id="zop_csky_commander_task_10_about">
+		<text>Sin has a camp nearby. They believe the Zone is a god and kill everyone who studies it. We study it. Go and show them where this ends.</text>
+	</string>
+	<string id="zop_csky_commander_task_10_finish">
+		<text>No more sermons. The Zone goes on without its prophets.</text>
+	</string>
+	<string id="zop_csky_commander_task_11_name">
+		<text>Road Robbers</text>
+	</string>
+	<string id="zop_csky_commander_task_11_text">
+		<text>Destroy the bandit group in the marked area.</text>
+	</string>
+	<string id="zop_csky_commander_task_11_about">
+		<text>Bandits are robbing the loners our guides lead to the checkpoint. A guide whose people get robbed loses trust - and we lose guides. Clear the road.</text>
+	</string>
+	<string id="zop_csky_commander_task_11_finish">
+		<text>The road is clear. The loners will come to us again.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_name">
+		<text>Lost Documents</text>
+	</string>
+	<string id="zop_csky_commander_task_12_text">
+		<text>Kholodny is looking for documents: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_about">
+		<text>The checkpoint was full of research before the army came. Some of it ended up in stashes all over the Zone. I want it back.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_fetch_about">
+		<text>Find: %s. Look in the rich stashes.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_fetch_finish">
+		<text>That's it. Years of work - back where it belongs.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_name">
+		<text>Parts for the Lab</text>
+	</string>
+	<string id="zop_csky_commander_task_13_text">
+		<text>Kholodny needs rare mechanisms: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_about">
+		<text>Our instruments are falling apart. I need rare parts - the kind you only find in stashes or on the dead.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_fetch_finish">
+		<text>Exactly what we needed. The instruments will live another year.</text>
+	</string>
+	<string id="st_zop_counter_soon">
+		<text>The place is ours - but they will be back. Counterattack in about %d min. Take positions!</text>
+	</string>
+	<string id="st_zop_counter_in">
+		<text>Counterattack in %d min.</text>
+	</string>
+	<string id="st_zop_csky_factory_name">
+		<text>Operation Factory</text>
+	</string>
+	<string id="st_zop_csky_factory_offer">
+		<text>The swamps are ours - now we need a real base. The small factory on Agroprom: walls, a yard, a building you can hold. The army has packed it with soldiers. Four squads go with you, gate first, then the yard, then the building. Once it's ours they'll counterattack - hold it, and they'll have to talk. Sixty thousand.</text>
+	</string>
+	<string id="st_zop_csky_factory_muster">
+		<text>Clear Sky: the squads are moving to Agroprom. Muster point - %s.</text>
+	</string>
+	<string id="st_zop_csky_factory_go">
+		<text>Clear Sky: go, to %s! Take the gate.</text>
+	</string>
+	<string id="st_zop_csky_factory_next">
+		<text>Clear Sky: sector clear. Next - %s.</text>
+	</string>
+	<string id="st_zop_csky_factory_counter">
+		<text>Clear Sky: the army is counterattacking the factory! Hold the building!</text>
+	</string>
+	<string id="st_zop_csky_factory_truce">
+		<text>Army (radio): Clear Sky, this is Agroprom command. We're pulling back. We agree to a truce - the factory is yours, stay off our roads.</text>
+	</string>
+	<string id="st_zop_csky_factory_won">
+		<text>Clear Sky: the factory is ours - our main base now. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_csky_factory_failed">
+		<text>Clear Sky: we lost the factory. Fall back to the swamps.</text>
+	</string>
+	<string id="st_zop_csky_factory_services_go">
+		<text>Clear Sky: Viking, Arsenal, a mechanic and a barman set out for %s under escort.</text>
+	</string>
+	<string id="st_zop_csky_factory_services_here">
+		<text>Clear Sky: everyone is in place, %s. The base is working.</text>
+	</string>
+	<string id="st_zop_csky_rostok_name">
+		<text>The Scientists' Bunker</text>
+	</string>
+	<string id="st_zop_csky_rostok_offer">
+		<text>Listen. Sakharov's people on Yantar are calling for help - their sensors picked up something strange: the dead are coming at the bunker in formation, like soldiers. I'm putting together a rapid response group, and you lead it. The bunker is theirs, we only help them hold it. First the dead, and the Monolith never lets a fight like that pass. Fifty thousand.</text>
+	</string>
+	<string id="st_zop_csky_rostok_muster">
+		<text>Clear Sky: the group is on its way to the bunker. They will come in about %d h. Take positions with the scientists!</text>
+	</string>
+	<string id="st_zop_csky_rostok_attack">
+		<text>Clear Sky: the dead are at the bunker! Cover the scientists!</text>
+	</string>
+	<string id="st_zop_csky_rostok_wave2">
+		<text>Clear Sky: the first wave is down - more dead are coming! Hold!</text>
+	</string>
+	<string id="st_zop_csky_rostok_won">
+		<text>Clear Sky: the bunker held, the scientists are alive. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_csky_rostok_failed">
+		<text>Clear Sky: the bunker has fallen... Fall back to the factory.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_name">
+		<text>The Checkpoint</text>
+	</string>
+	<string id="st_zop_csky_jupiter_offer">
+		<text>The checkpoint on Jupiter. Whoever holds it holds the way to Pripyat - and right now that's the Monolith, their best fighters, a lot of them. Five squads go with you. When it falls they will come back within minutes - be ready. Then it's our northern base: Kholodny takes command. Ninety thousand.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_muster">
+		<text>Clear Sky: the squads are moving to Jupiter. Muster point - %s.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_go">
+		<text>Clear Sky: go, to %s! Take the checkpoint.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_next">
+		<text>Clear Sky: sector clear. Next - %s.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_counter">
+		<text>Clear Sky: the Monolith is back! Hold the checkpoint!</text>
+	</string>
+	<string id="st_zop_csky_jupiter_truce">
+		<text>Clear Sky: they broke. The checkpoint stays ours.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_won">
+		<text>Clear Sky: the Jupiter checkpoint is ours - our northern base. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_failed">
+		<text>Clear Sky: the checkpoint is lost. Fall back.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_services_go">
+		<text>Clear Sky: Kholodny, a medic, a trader, a mechanic and a barman set out for %s under escort.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_services_here">
+		<text>Clear Sky: our people are at %s. The north has a Clear Sky base now.</text>
+	</string>
+	<string id="st_zop_csky_viking_name">
+		<text>Viking</text>
+	</string>
+	<string id="st_zop_csky_viking_bio">
+		<text>Clear Sky's boss at the Agroprom factory, callsign Viking. A big quiet man who never wears a helmet - says he wants to see the Zone with his own eyes. Ran Clear Sky's technical side for years; now runs the base, the expeditions and the war.</text>
+	</string>
+	<string id="st_zop_csky_arsenal_name">
+		<text>Arsenal</text>
+	</string>
+	<string id="st_zop_csky_arsenal_bio">
+		<text>Clear Sky's trader at the Agroprom factory, callsign Arsenal. Knows every gun that ever came through the swamps by its serial number. Sits at his table under the lamp and never forgets a debt.</text>
+	</string>
+	<string id="st_zop_csky_rostok_trader_name">
+		<text>Kompas</text>
+	</string>
+	<string id="st_zop_csky_rostok_trader_bio">
+		<text>Clear Sky's trader by the scientists' bunker on Yantar, callsign Kompas. Works with Sakharov's people: weapons, ammo and food for Clear Sky and for everyone who walks north past Yantar.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_name">
+		<text>Special Tools</text>
+	</string>
+	<string id="zop_csky_viking_task_1_text">
+		<text>Viking needs tools: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_about">
+		<text>Our techs are rebuilding the factory's workshop. They need proper tools, not the junk the army left. Bring what's on the list.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_fetch_finish">
+		<text>Now we can work. The workshop thanks you.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_name">
+		<text>Rare Mechanisms</text>
+	</string>
+	<string id="zop_csky_viking_task_2_text">
+		<text>Viking needs rare mechanisms: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_about">
+		<text>Our instruments are old and the Zone eats electronics. I need rare parts - the kind you only find in stashes or on the dead.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_fetch_finish">
+		<text>Exactly what we needed. The instruments will live another year.</text>
+	</string>
+	<string id="zop_csky_viking_task_3_name">
+		<text>Papers from Below</text>
+	</string>
+	<string id="zop_csky_viking_task_3_text">
+		<text>Bring Viking the documents from the NII Agroprom underground.</text>
+	</string>
+	<string id="zop_csky_viking_task_3_about">
+		<text>Under the NII Agroprom there are tunnels, and in them - the research the army never took out. Whoever goes down there first gets it. Make sure it's us.</text>
+	</string>
+	<string id="zop_csky_viking_task_3_finish">
+		<text>That's it. Years of work - back where it belongs.</text>
+	</string>
+	<string id="zop_csky_viking_task_4_name">
+		<text>Mutants at the Walls</text>
+	</string>
+	<string id="zop_csky_viking_task_4_text">
+		<text>Destroy the mutant pack near the factory.</text>
+	</string>
+	<string id="zop_csky_viking_task_4_about">
+		<text>A pack has settled right at our walls. The sentries can't sleep and the expeditions can't go out. Clear it.</text>
+	</string>
+	<string id="zop_csky_viking_task_4_finish">
+		<text>Quiet now. The expeditions can go out again.</text>
+	</string>
+	<string id="zop_csky_viking_task_5_name">
+		<text>The Hunt</text>
+	</string>
+	<string id="zop_csky_viking_task_5_text">
+		<text>Destroy the mutant pack in the marked area.</text>
+	</string>
+	<string id="zop_csky_viking_task_5_about">
+		<text>Our scouts found a big pack on the next level. It will come to us sooner or later - better we come to it first.</text>
+	</string>
+	<string id="zop_csky_viking_task_5_finish">
+		<text>Good hunt. The scouts will sleep tonight.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_name">
+		<text>Lost Research</text>
+	</string>
+	<string id="zop_csky_viking_task_6_text">
+		<text>Viking is looking for research papers: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_about">
+		<text>Some of the Zone's research ended up in stashes all over the place. I want it back for our scientists.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_fetch_about">
+		<text>Find: %s. Look in the rich stashes.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_fetch_finish">
+		<text>That's it. The scientists will be up all night.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_name">
+		<text>Wild Territory</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_text">
+		<text>Destroy the mutant pack in the marked area.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_about">
+		<text>The Wild Territory is full of things that eat travellers. Our road runs past it. Thin them out.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_finish">
+		<text>The road is safer. The scientists say thanks.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_name">
+		<text>Road Robbers</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_text">
+		<text>Destroy the bandit group in the marked area.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_about">
+		<text>Bandits are waiting for our convoys near the Wild Territory. One convoy lost is a week without supplies. Clear them out.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_finish">
+		<text>The convoys will get through now.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_name">
+		<text>Big Supply Run</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_text">
+		<text>Kompas needs supplies: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_about">
+		<text>The group out on the road eats a lot and bleeds a lot. I need supplies, and a lot of them.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_fetch_finish">
+		<text>That will keep the boys going for a while. Here's your pay.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_name">
+		<text>Medicine for the Road</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_text">
+		<text>Kompas needs medicine: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_about">
+		<text>The scientists' expeditions come back torn up. I need medicine - a full crate of it.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_fetch_finish">
+		<text>Good. Fewer graves along the road.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_name">
+		<text>Rations</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_text">
+		<text>Kompas needs food: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_about">
+		<text>Twenty people at the post and every one of them hungry. Food, lots of it.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_fetch_finish">
+		<text>Now we can hold out for a month.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_name">
+		<text>Samples for the Scientists</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_text">
+		<text>Kompas needs an artifact: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_about">
+		<text>The scientists we work with need samples for their measurements. Not for sale - for science.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_fetch_finish">
+		<text>That's the one. The scientists will be happy.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_name">
+		<text>Rare Trophies</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_text">
+		<text>Kompas needs mutant parts: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_about">
+		<text>The scientists study the big ones - chimeras, burers, controllers. They need parts, fresh and whole.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_fetch_finish">
+		<text>Fresh and whole. The scientists will owe us.</text>
+	</string>
+	<string id="st_zop_reinforce">
+		<text>%s: reinforcements are coming - %d squads, to %s. Hold on!</text>
+	</string>
+	<string id="st_zop_mark_attack_from">
+		<text>The attack will come from here</text>
+	</string>
+	<string id="st_zop_mark_attackers">
+		<text>Attackers</text>
+	</string>
+	<string id="st_zop_csky_rostok_alarm">
+		<text>Scientists (radio): Clear Sky, anyone! Our sensors on Yantar show something we've never seen - a group of strange dead, moving together, in formation. They're coming at the bunker. Please!</text>
+	</string>
+	<string id="st_zop_csky_rostok_order">
+		<text>Viking: You heard them. Rapid response group - get ready, move to Yantar, hold the bunker with the scientists. They are under our protection now.</text>
+	</string>
+	<string id="st_zop_csky_rostok_thanks">
+		<text>Scientists (radio): Clear Sky... we don't know how to thank you. Our people are alive because of you. From now on our door is always open for you - samples, data, anything you need.</text>
+	</string>
+	<string id="st_zop_csky_rostok_wave3">
+		<text>Clear Sky: the third wave of the dead! Last push - hold the bunker!</text>
+	</string>
+	<string id="st_zop_csky_rostok_wave4">
+		<text>Clear Sky: the dead are down - and here comes the Monolith! Hold the bunker!</text>
+	</string>
+	<string id="st_zop_csky_salazar_name">
+		<text>Salazar</text>
+	</string>
+	<string id="st_zop_csky_salazar_bio">
+		<text>Clear Sky's trader at the Jupiter checkpoint, callsign Salazar. Came north with Kholodny's group; deals in weapons and supplies for everyone who holds the way to Pripyat.</text>
+	</string>
+	<string id="st_zop_csky_kruger_name">
+		<text>Kruger</text>
+	</string>
+	<string id="st_zop_csky_kruger_bio">
+		<text>Clear Sky's mechanic at the Jupiter checkpoint, callsign Kruger. Came north with Kholodny's group and set up his workbench in the corner; repairs and upgrades weapons and armour for everyone who holds the way to Pripyat.</text>
+	</string>
+</string_table>

@@ -1,0 +1,191 @@
+--[[
+	Zone Operations (Mixon) - spawning squads and steering them with the stock scripted_target.
+	scripted_target is saved by sim_squad_scripted itself, so steered squads survive save/load.
+]]
+
+-- creates a squad of `section` at the smart and sends it to `target` (smart name)
+-- at (optional): { x, y, z, lvid, gvid } - an exact spot instead of the smart's own position
+-- (the squad is still registered with se_at, a smart of the same level)
+-- returns the squad server object or nil
+function squad_at_smart(section, se_at, target, at)
+	if not (section and se_at and ini_sys:section_exist(section)) then
+		return nil
+	end
+	local pos, lvid, gvid = se_at.position, se_at.m_level_vertex_id, se_at.m_game_vertex_id
+	if at then
+		pos, lvid, gvid = vector():set(at.x, at.y, at.z), at.lvid, at.gvid
+	end
+	local ok, se = pcall(alife_create, section, pos, lvid, gvid)
+	if not (ok and se) then
+		printf("![ZOP] cannot create squad %s", tostring(section))
+		return nil
+	end
+	local ok2, err = pcall(function()
+		se:create_npc(se_at, pos, lvid, gvid)
+		-- register with the spawn smart at once, as vanilla simulation_board:create_squad does;
+		-- otherwise a squad spawned at its own target gets no base jobs until on_reach_target
+		SIMBOARD:assign_squad_to_smart(se, se_at.id)
+		local sim = alife()
+		for k in se:squad_members() do
+			local se_npc = k.object or (k.id and sim:object(k.id))
+			if se_npc then
+				SIMBOARD:setup_squad_and_group(se_npc)
+				SendScriptCallback("squad_on_npc_creation", se, se_npc, se_at)
+			end
+		end
+	end)
+	if not ok2 then
+		printf("![ZOP] squad %s members failed: %s", tostring(section), tostring(err))
+	end
+	steer(se, target, true)
+	return se
+end
+
+function steer(se_squad, target, rush)
+	if not se_squad then
+		return
+	end
+	se_squad.scripted_target = target
+	if rush then
+		se_squad.rush = true
+		se_squad.rush_to_target = true
+	end
+	-- forget the old target so specific_update picks the new one at once
+	se_squad.assigned_target_id = nil
+	se_squad.current_target_id = nil
+	se_squad.current_action = 0
+end
+
+-- alife ids are recycled: an id stored earlier must still be a squad (and of the same section,
+-- when it is known) before we touch it
+function valid_squad(squad_id, section)
+	local se = squad_id and alife():object(squad_id)
+	if not (se and se.clsid and se:clsid() == clsid.online_offline_group_s) then
+		return nil
+	end
+	if section and se:section_name() ~= section then
+		return nil
+	end
+	return se
+end
+
+function steer_by_id(squad_id, target, rush)
+	local se = valid_squad(squad_id)
+	if se then
+		steer(se, target, rush)
+		return true
+	end
+	return false
+end
+
+-- sends a story squad (by story id) to another smart; story NPCs leave instead of dying
+function evacuate(story_squad, to_smart)
+	local id = get_story_object_id(story_squad)
+	local se = id and alife():object(id)
+	if not se then
+		return false
+	end
+	steer(se, to_smart, false)
+	return true
+end
+
+-- Sends a squad off the battlefield at once: its members and the squad are moved to the smart
+-- (they "left" while the player was busy), then the squad is told to stay there.
+-- Used for story NPCs that GAMMA makes unkillable by NPCs (grok_additional_storyline_npc_invincible):
+-- caught in a fight they would hold a target forever.
+function send_away(squad_id, to_smart)
+	local sim = alife()
+	local se = valid_squad(squad_id)
+	local se_to = to_smart and zop_census.smart_by_name(to_smart)
+	if not (se and se_to) then
+		return false
+	end
+	local ids = {}
+	for m in se:squad_members() do
+		ids[#ids + 1] = m.id
+	end
+	-- an online NPC stores its old level vertex on net_destroy and forces it on net_spawn:
+	-- forget it (as stock TeleportSquad does), and once more after the NPC went offline
+	local function forget()
+		for _, id in ipairs(ids) do
+			if db.offline_objects and db.offline_objects[id] then
+				db.offline_objects[id].level_vertex_id = nil
+			end
+			if db.spawned_vertex_by_id then
+				db.spawned_vertex_by_id[id] = nil
+			end
+		end
+	end
+	local ok = pcall(function()
+		forget()
+		sim:teleport_object(se.id, se_to.m_game_vertex_id, se_to.m_level_vertex_id, se_to.position)
+		for _, id in ipairs(ids) do
+			sim:teleport_object(id, se_to.m_game_vertex_id, se_to.m_level_vertex_id, se_to.position)
+		end
+	end)
+	pcall(CreateTimeEvent, "zop_send_away", tostring(squad_id), 1, function()
+		pcall(forget)
+		return true
+	end)
+	steer(se, to_smart, false)
+	return ok
+end
+
+-- the smart closest to a fixed spot (pos on the level of game vertex gvid), skip_id left out
+function nearest_smart(pos, gvid, skip_id)
+	if not (pos and gvid and SIMBOARD and SIMBOARD.smarts) then
+		return nil
+	end
+	local gg = game_graph()
+	local lid = gg:vertex(gvid):level_id()
+	local best, best_d
+	for id, v in pairs(SIMBOARD.smarts) do
+		local s = v.smrt
+		if s and id ~= skip_id and gg:vertex(s.m_game_vertex_id):level_id() == lid then
+			local d = s.position:distance_to_sqr(pos)
+			if not best_d or d < best_d then
+				best, best_d = s, d
+			end
+		end
+	end
+	return best
+end
+
+-- a muster point: a smart on the target's level, between min and max metres from it,
+-- not the target itself and not a base
+-- away_pos (optional): only smarts on the far side of the target from this point count
+function muster_smart(se_target, min_d, max_d, away_pos)
+	if not (se_target and SIMBOARD and SIMBOARD.smarts) then
+		return nil
+	end
+	local gg = game_graph()
+	local lid = gg:vertex(se_target.m_game_vertex_id):level_id()
+	local best, best_d
+	for id, v in pairs(SIMBOARD.smarts) do
+		local s = v.smrt
+		if s and id ~= se_target.id and gg:vertex(s.m_game_vertex_id):level_id() == lid then
+			local is_base = s.props and s.props.base and s.props.base > 0
+			local d = s.position:distance_to(se_target.position)
+			local far_side = true
+			if away_pos then
+				local tp = se_target.position
+				local ax, az = away_pos.x - tp.x, away_pos.z - tp.z
+				local sx, sz = s.position.x - tp.x, s.position.z - tp.z
+				far_side = (ax * sx + az * sz) < 0
+			end
+			if not is_base and far_side and d >= min_d and d <= max_d then
+				-- prefer the middle of the band: close enough to walk, far enough not to be seen
+				local score = math.abs(d - (min_d + max_d) / 2)
+				-- a smart with a real map name reads better in the PDA than "jup_sim_21"
+				local ok, title = pcall(smart_terrain.get_smart_terrain_name, s)
+				if ok and title and title ~= s:name() then
+					score = score - 120
+				end
+				if not best_d or score < best_d then
+					best, best_d = s, score
+				end
+			end
+		end
+	end
+	return best
+end

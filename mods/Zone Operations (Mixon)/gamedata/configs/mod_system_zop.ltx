@@ -1,0 +1,63 @@
+; Zone Operations (Mixon) - NPC sections (DLTX: added to system.ltx)
+; Duty commander who takes over Yanov after duty_yanov. His profile is added by modxml_zop.script,
+; his tasks are [zop_dolg_commander_task_N] (Anomaly picks tasks by npc section name).
+[zop_dolg_commander]:stalker
+$spawn            = "respawn\zop_dolg_commander"
+character_profile = zop_dolg_commander
+spec_rank         = legend
+community         = dolg
+
+; Freedom commander who takes over Voronin's bunker after freedom_rostok (tasks: zop_freedom_commander_task_N)
+[zop_freedom_commander]:stalker
+$spawn            = "respawn\zop_freedom_commander"
+character_profile = zop_freedom_commander
+spec_rank         = legend
+community         = freedom
+
+; Clear Sky: Kholodny, in charge of the Jupiter checkpoint after csky_jupiter (tasks zop_csky_commander_task_N)
+[zop_csky_commander]:stalker
+$spawn            = "respawn\zop_csky_commander"
+character_profile = zop_csky_commander
+spec_rank         = legend
+community         = csky
+
+; Clear Sky boss Viking at the Agroprom factory (gives csky_rostok / csky_jupiter, tasks zop_csky_viking_task_N)
+[zop_csky_viking]:stalker
+$spawn            = "respawn\zop_csky_viking"
+character_profile = zop_csky_viking
+spec_rank         = legend
+community         = csky
+
+; Clear Sky trader Kompas at Rostok (weapons and supplies, tasks zop_csky_rostok_trader_task_N).
+; Not sent by any operation now (csky_rostok became the bunker on Yantar); kept for saves that have him.
+[zop_csky_rostok_trader]:stalker
+$spawn            = "respawn\zop_csky_rostok_trader"
+character_profile = zop_csky_rostok_trader
+spec_rank         = veteran
+community         = csky
+
+; Arsenal - Clear Sky's trader at the Agroprom factory (sits at his table, see zop_csky_factory_posts.ltx)
+[zop_csky_arsenal]:stalker
+$spawn            = "respawn\zop_csky_arsenal"
+character_profile = zop_csky_arsenal
+spec_rank         = veteran
+community         = csky
+
+; Monolith legend for the last wave at the scientists' bunker: a Monolith master with the legend rank
+[zop_monolith_legend]:sim_default_monolith_4
+spec_rank         = legend
+
+; Salazar - Clear Sky's trader at the Jupiter checkpoint (post: configs\scripts\jupiter\zop_csky_jupiter_posts.ltx)
+[zop_csky_salazar]:stalker
+$spawn            = "respawn\zop_csky_salazar"
+character_profile = zop_csky_salazar
+spec_rank         = veteran
+community         = csky
+
+; Kruger - Clear Sky's mechanic at the Jupiter checkpoint. The mechanic's services go by the npc section:
+; configs\misc\mod_stalkers_upgrade_info_zop.ltx, the toolkit tasks zop_csky_kruger_mechanic_task_N, infos zop_csky_kruger_mechanic_upgrade_tier_N
+[zop_csky_kruger_mechanic]:stalker
+$spawn            = "respawn\zop_csky_kruger_mechanic"
+character_profile = zop_csky_kruger_mechanic
+spec_rank         = veteran
+community         = csky

@@ -1,0 +1,264 @@
+--[[
+	Zone Operations (Mixon) - registry.
+	Reads configs\misc\zone_ops\zop_operations.ltx once and validates every operation.
+	A broken operation is disabled with a log line instead of breaking the game.
+	Smarts are validated later, at runtime, when SIMBOARD exists (zop_core.validate_runtime).
+]]
+
+local INI_PATH = "misc\\zone_ops\\zop_operations.ltx"
+local KINDS = { assault = true, defense = true }
+
+local ops, order
+
+local function split(s)
+	local t = {}
+	for w in string.gmatch(s or "", "[^,%s]+") do
+		t[#t + 1] = w
+	end
+	return t
+end
+
+local function read_op(ini, id)
+	local function s(k, d)
+		local v = ini:r_string_ex(id, k)
+		if v == nil or v == "" then return d end
+		return v
+	end
+	local function n(k, d)
+		return tonumber(ini:r_string_ex(id, k)) or d
+	end
+	local op = {
+		id             = id,
+		faction        = s("actor_faction"),
+		giver          = s("giver"),
+		kind           = s("type", "assault"),
+		targets        = split(s("targets")),
+		enemy          = s("enemy"),
+		ally_squad     = s("ally_squad"),
+		ally_count     = n("ally_count", 2),
+		-- two-sided assault: a second group hits flank_target from the far side at the same time
+		flank_squad    = s("flank_squad"),
+		flank_count    = n("flank_count", 0),
+		flank_target   = s("flank_target"),
+		-- optional fixed muster smarts (otherwise picked near the target)
+		muster         = s("muster"),
+		flank_muster   = s("flank_muster"),
+		attacker_squad = s("attacker_squad"),
+		attacker_count = n("attacker_count", 2),
+		delay_hours    = n("delay_hours", 2),
+		radius         = n("radius", 80),
+		capture        = s("capture") == "true",
+		garrison_squad = s("garrison_squad"),
+		garrison_count = n("garrison_count", 1),
+		blocks         = split(s("blocks")),
+		reward         = n("reward_money", 0),
+		goodwill       = n("goodwill", 0),
+		cooldown       = n("cooldown_days", 7),
+		evacuate       = {},
+		-- after a capture: service NPCs (stock trader/mechanic squads) walk in with an escort
+		-- "section" or "section:smart" (a service squad walks to its own smart, default: services_home)
+		services       = {},
+		services_at    = {},
+		services_home  = s("services_home"),
+		services_escort = s("services_escort"),
+		services_delay = n("services_delay_hours", 3),
+		services_from  = s("services_from"),
+		trader_trade   = s("trader_trade"),
+		-- chains: operations that must be done first; a retake needs the targets held by the enemy
+		requires       = split(s("requires")),
+		-- info portion the player must have (e.g. bar_deactivate_radar_done: the Brain Scorcher is off)
+		requires_info  = s("requires_info"),
+		-- defense: communities that also hold the target (scientists) and our own reinforcement
+		allies         = split(s("allies")),
+		defender_squad = s("defender_squad"),
+		defender_count = n("defender_count", 0),
+		-- defense in waves: "section:count, section:count" (default: attacker_squad x attacker_count)
+		waves          = {},
+		-- the enemy dug in at the targets before we come (spawned when the operation starts)
+		occupy_squad   = s("occupy_squad"),
+		occupy_count   = n("occupy_count", 0),
+		-- everybody else living at the targets moves out when the operation starts
+		evict          = s("evict") == "true",
+		-- after the last target falls: a counterattack on counter_target after counter_delay real seconds
+		counter_squad  = s("counter_squad"),
+		counter_count  = n("counter_count", 0),
+		counter_delay  = n("counter_delay_seconds", 180),
+		counter_target = s("counter_target"),
+		-- game days that must pass after every `requires` operation succeeded
+		requires_days  = n("requires_days", 0),
+		-- our assault / defense squads go back to the simulation when the operation succeeds
+		release_allies = s("release_allies") == "true",
+		props          = {},
+		-- communities our faction makes peace with when the operation starts (Clear Sky and the scientists)
+		peace_with     = split(s("peace_with")),
+		-- communities that become our friends when the operation succeeds
+		peace_on_success = split(s("peace_on_success")),
+		-- extra news: text ids sent one after another when the operation starts / succeeds
+		start_news     = split(s("start_news")),
+		success_news   = split(s("success_news")),
+		-- squads that come to the (first) target when the operation succeeds: a trader and his guard
+		success_spawn  = split(s("success_spawn")),
+		-- reinforcements: when our fighters drop to reinforce_at or fewer, reinforce_count squads
+		-- of reinforce_squad come (at most reinforce_max times per phase: assault / counter / defend)
+		reinforce_count = n("reinforce_count", 0),
+		reinforce_at   = n("reinforce_at", 3),
+		reinforce_max  = n("reinforce_max", 3),
+		reinforce_squad = s("reinforce_squad"),
+		retake         = s("retake") == "true",
+		restore        = {},
+	}
+	for _, item in ipairs(split(s("waves"))) do
+		local sec, cnt = string.match(item, "^([^:]+):(%d+)$")
+		if sec then
+			op.waves[#op.waves + 1] = { section = sec, count = tonumber(cnt) }
+		end
+	end
+	-- props: section@x,y,z@yaw (degrees), placed at the services home when the operation succeeds
+	-- (the coordinates hold commas themselves, so the list is matched as a whole, not split)
+	for sec, x, y, z, yaw in string.gmatch(s("props") or "", "([%w_]+)@([%-%d%.]+),([%-%d%.]+),([%-%d%.]+)@([%-%d%.]+)") do
+		op.props[#op.props + 1] = { section = sec, x = tonumber(x), y = tonumber(y), z = tonumber(z), yaw = tonumber(yaw) or 0 }
+	end
+	-- wave_spawn: x,y,z@lvid@gvid - a fixed spot where the defense waves appear (default: the
+	-- staging smart). Matched as a whole like props: the coordinates hold commas themselves.
+	do
+		local x, y, z, lv, gv = string.match(s("wave_spawn") or "",
+			"^%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*@%s*(%d+)%s*@%s*(%d+)%s*$")
+		if x then
+			op.wave_spawn = { x = tonumber(x), y = tonumber(y), z = tonumber(z), lvid = tonumber(lv), gvid = tonumber(gv) }
+		elseif s("wave_spawn") then
+			printf("![ZOP] operation %s: wave_spawn must be x,y,z@lvid@gvid, ignored", id)
+		end
+	end
+	-- each wave fights as its squad's faction (zombies first, then the Monolith);
+	-- wave_spawn_N (same format as wave_spawn) gives wave N its own spot
+	for i, w in ipairs(op.waves) do
+		w.enemy = ini_sys:r_string_ex(w.section, "faction")
+		local x, y, z, lv, gv = string.match(s("wave_spawn_" .. i) or "",
+			"^%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*@%s*(%d+)%s*@%s*(%d+)%s*$")
+		if x then
+			w.spawn = { x = tonumber(x), y = tonumber(y), z = tonumber(z), lvid = tonumber(lv), gvid = tonumber(gv) }
+		end
+	end
+	if #op.waves == 0 and op.attacker_squad then
+		op.waves[1] = { section = op.attacker_squad, count = op.attacker_count, enemy = op.enemy }
+	end
+	op.counter_target = op.counter_target or op.targets[#op.targets]
+	op.reinforce_squad = op.reinforce_squad or op.ally_squad or op.defender_squad
+	for _, item in ipairs(split(s("services"))) do
+		local sec, at = string.match(item, "^([^:]+):([^:]+)$")
+		op.services[#op.services + 1] = sec or item
+		op.services_at[#op.services] = at
+	end
+	-- the captured smart that owns the services (one set per operation, not one per target)
+	op.services_home = op.services_home or op.targets[#op.targets]
+	for _, pair in ipairs(split(s("evacuate"))) do
+		local sq, to = string.match(pair, "^([^:]+):([^:]+)$")
+		if sq then
+			op.evacuate[#op.evacuate + 1] = { squad = sq, to = to }
+		end
+	end
+	-- story squads sent (back) home when the operation succeeds
+	for _, pair in ipairs(split(s("restore"))) do
+		local sq, to = string.match(pair, "^([^:]+):([^:]+)$")
+		if sq then
+			op.restore[#op.restore + 1] = { squad = sq, to = to }
+		end
+	end
+	return op
+end
+
+local function check(op)
+	if not (op.faction and op.giver and op.enemy) or #op.targets == 0 then
+		return "actor_faction, giver, enemy and targets are required"
+	end
+	if not KINDS[op.kind] then
+		return "unknown type " .. tostring(op.kind)
+	end
+	if op.kind == "assault" and not op.ally_squad then
+		return "assault needs ally_squad"
+	end
+	if op.kind == "defense" and #op.waves == 0 then
+		return "defense needs attacker_squad"
+	end
+	if op.capture and not op.garrison_squad then
+		return "capture needs garrison_squad"
+	end
+	if op.flank_count > 0 then
+		op.flank_squad = op.flank_squad or op.ally_squad
+		op.flank_target = op.flank_target or op.targets[1]
+		op.flank_index = nil
+		for i, t in ipairs(op.targets) do
+			if t == op.flank_target then
+				op.flank_index = i
+			end
+		end
+		if not op.flank_index then
+			return "flank_target must be one of the targets"
+		end
+	end
+	local squads = { op.ally_squad, op.attacker_squad, op.garrison_squad, op.services_escort, op.flank_squad,
+		op.defender_squad, op.occupy_squad, op.counter_squad }
+	for _, w in ipairs(op.waves) do
+		squads[#squads + 1] = w.section
+	end
+	for _, sq in ipairs(op.services) do
+		squads[#squads + 1] = sq
+	end
+	for _, sq in pairs(squads) do
+		if sq and not ini_sys:section_exist(sq) then
+			return "unknown squad section " .. sq
+		end
+	end
+	return nil
+end
+
+function load()
+	if ops then
+		return ops
+	end
+	ops, order = {}, {}
+	local ok, ini = pcall(ini_file, INI_PATH)
+	if not (ok and ini and ini:section_exist("zop_ops")) then
+		printf("![ZOP] %s not found, no operations", INI_PATH)
+		return ops
+	end
+	for _, id in ipairs(split(ini:r_string_ex("zop_ops", "list"))) do
+		if ini:section_exist(id) then
+			local op = read_op(ini, id)
+			local bad = check(op)
+			if bad then
+				printf("![ZOP] operation %s disabled: %s", id, bad)
+			else
+				ops[id] = op
+				order[#order + 1] = id
+			end
+		else
+			printf("![ZOP] operation %s listed but has no section", id)
+		end
+	end
+	return ops
+end
+
+function get(id)
+	return load()[id]
+end
+
+function list()
+	load()
+	return order
+end
+
+-- operations offered by a commander (story id == character profile id)
+function by_giver(story_id)
+	local out = {}
+	for _, id in ipairs(list()) do
+		if ops[id].giver == story_id then
+			out[#out + 1] = ops[id]
+		end
+	end
+	return out
+end
+
+function is_giver(profile_id)
+	return #by_giver(profile_id) > 0
+end

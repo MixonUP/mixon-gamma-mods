@@ -1,0 +1,78 @@
+--[[
+	Zone Operations (Mixon) - census: who is alive around a smart.
+	Online NPCs are counted by distance; offline squads by the smart they are assigned to.
+	Only the stalker communities matter here, monsters and zombies are ignored.
+]]
+
+function smart_by_name(name)
+	return SIMBOARD and SIMBOARD.smarts_by_names and SIMBOARD.smarts_by_names[name]
+end
+
+function level_of(gvid)
+	local ok, lv = pcall(function()
+		return alife():level_name(game_graph():vertex(gvid):level_id())
+	end)
+	return ok and lv or nil
+end
+
+function actor_near(se_smart, dist)
+	local a = db.actor
+	if not (a and se_smart) then
+		return false
+	end
+	if level_of(se_smart.m_game_vertex_id) ~= level.name() then
+		return false
+	end
+	return a:position():distance_to(se_smart.position) <= dist
+end
+
+-- living members of a community within radius of the smart (online) or assigned to it (offline)
+-- skip (optional): squad ids left out - story squads that are being evacuated
+function count(community, se_smart, radius, skip)
+	if not (community and se_smart) then
+		return 0
+	end
+	local pos, n = se_smart.position, 0
+	for i = 1, #db.OnlineStalkers do
+		local id = db.OnlineStalkers[i]
+		local o = id and level.object_by_id(id)
+		if o and o:alive() and character_community(o) == community and o:position():distance_to(pos) <= radius then
+			local se = skip and alife():object(id)
+			if not (se and se.group_id and skip[se.group_id]) then
+				n = n + 1
+			end
+		end
+	end
+	-- SIMBOARD.smarts[id].squads is keyed by squad id (the value is just a flag)
+	local sb = SIMBOARD.smarts and SIMBOARD.smarts[se_smart.id]
+	if sb and sb.squads then
+		local sim = alife()
+		for sid in pairs(sb.squads) do
+			local sq = sim:object(sid)
+			if sq and not sq.online and not (skip and skip[sid]) then
+				local ok, c, cnt = pcall(function()
+					return sq:get_squad_community(), sq:npc_count()
+				end)
+				if ok and c == community then
+					n = n + (cnt or 0)
+				end
+			end
+		end
+	end
+	return n
+end
+
+-- living members of tracked squads (ids of squad server objects)
+function alive_in_squads(squad_ids)
+	local n = 0
+	for sid in pairs(squad_ids or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			local ok, c = pcall(function() return sq:npc_count() end)
+			if ok and c then
+				n = n + c
+			end
+		end
+	end
+	return n
+end

@@ -1,0 +1,1388 @@
+[zop_task]
+icon = ui_inGame2_Mesta_evakuatsii
+prior = 130
+storyline = false
+title = st_zop_task_title
+title_functor = zop_title
+descr = st_zop_task_title
+descr_functor = zop_descr
+target_functor = zop_target
+dont_send_update_news = true
+
+; ------------------------------------------------------------------------------------------
+; Duty commander at captured Yanov (npc section zop_dolg_commander): raids around Jupiter and the north
+; assault scan mode 1 = same level, 2 = same or nearby levels
+; raids (convoy / ambush / camp) are run by zop_raid.script
+; ------------------------------------------------------------------------------------------
+
+[zop_dolg_commander_task_1]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 85
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_dolg_commander_task_1:1:1:nil:false:true:nil)} true, false
+title = zop_dolg_commander_task_1_name
+descr = zop_dolg_commander_task_1_text
+job_descr = zop_dolg_commander_task_1_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_1_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = freedom
+on_job_descr = %=setup_assault_task(zop_dolg_commander_task_1)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_1) =drx_sl_unregister_task_giver(zop_dolg_commander_task_1) =drx_sl_reset_stored_task(zop_dolg_commander_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =drx_sl_unregister_task_giver(zop_dolg_commander_task_1) =drx_sl_reset_stored_task(zop_dolg_commander_task_1)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_1)} fail
+
+
+[zop_dolg_commander_task_2]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_dolg_commander_task_2:1:1:nil:false:true:nil)} true, false
+title = zop_dolg_commander_task_2_name
+descr = zop_dolg_commander_task_2_text
+job_descr = zop_dolg_commander_task_2_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_2_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(zop_dolg_commander_task_2)%
+on_complete = %=reward_random_money(7000:8500) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_2) =drx_sl_unregister_task_giver(zop_dolg_commander_task_2) =drx_sl_reset_stored_task(zop_dolg_commander_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =drx_sl_unregister_task_giver(zop_dolg_commander_task_2) =drx_sl_reset_stored_task(zop_dolg_commander_task_2)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_2)} fail
+
+
+[zop_dolg_commander_task_3]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 60
+repeat_timeout = 16200
+title = zop_dolg_commander_task_3_name
+descr = zop_dolg_commander_task_3_text
+job_descr = zop_dolg_commander_task_3_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_3_finish
+target_functor = general_bounty_task
+status_functor = bounty_task
+on_job_descr = %=setup_bounty_task(zop_dolg_commander_task_3:false:false:freedom:bandit:killer:greh:monolith)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_3) =drx_sl_unregister_task_giver(zop_dolg_commander_task_3) =drx_sl_reset_stored_task(zop_dolg_commander_task_3)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =drx_sl_unregister_task_giver(zop_dolg_commander_task_3) =drx_sl_reset_stored_task(zop_dolg_commander_task_3)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_3)} fail
+
+
+[zop_dolg_commander_task_4]
+icon = ui_inGame2_Neizvestnoe_oruzhie
+storyline = false
+prior = 70
+repeat_timeout = 32400
+title = zop_dolg_commander_task_4_name
+descr = zop_dolg_commander_task_4_text
+job_descr = zop_dolg_commander_task_4_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_dolg_commander_task_4_fetch_about
+task_complete_descr = zop_dolg_commander_task_4_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_dolg_commander_task_4_fetch:zop_rare_weapons:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_dolg_commander_task_4_fetch:1.6) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_4) =pstor_reset(zop_dolg_commander_task_4_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_4) =drx_sl_reset_stored_task(zop_dolg_commander_task_4)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =pstor_reset(zop_dolg_commander_task_4_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_4) =drx_sl_reset_stored_task(zop_dolg_commander_task_4)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_4)} fail
+
+
+[zop_dolg_commander_task_5]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 65
+repeat_timeout = 21600
+title = zop_dolg_commander_task_5_name
+descr = zop_dolg_commander_task_5_text
+job_descr = zop_dolg_commander_task_5_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_dolg_commander_task_5_fetch_about
+task_complete_descr = zop_dolg_commander_task_5_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_dolg_commander_task_5_fetch:artefacts:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_dolg_commander_task_5_fetch:1.3) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_5) =pstor_reset(zop_dolg_commander_task_5_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_5) =drx_sl_reset_stored_task(zop_dolg_commander_task_5)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =pstor_reset(zop_dolg_commander_task_5_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_5) =drx_sl_reset_stored_task(zop_dolg_commander_task_5)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_5)} fail
+
+
+[zop_dolg_commander_task_6]
+icon = ui_inGame2_Mesta_evakuatsii
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = zop_dolg_commander_task_6_name
+descr = zop_dolg_commander_task_6_text
+job_descr = zop_dolg_commander_task_6_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_6_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_dolg_commander_task_6:convoy:killer:bandit:greh:freedom)%
+on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_6) =zop_raid_cleanup(zop_dolg_commander_task_6) =drx_sl_unregister_task_giver(zop_dolg_commander_task_6) =drx_sl_reset_stored_task(zop_dolg_commander_task_6)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =zop_raid_cleanup(zop_dolg_commander_task_6) =drx_sl_unregister_task_giver(zop_dolg_commander_task_6) =drx_sl_reset_stored_task(zop_dolg_commander_task_6)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_6)} fail
+
+
+[zop_dolg_commander_task_7]
+icon = ui_inGame2_Vibros
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = zop_dolg_commander_task_7_name
+descr = zop_dolg_commander_task_7_text
+job_descr = zop_dolg_commander_task_7_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_7_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_dolg_commander_task_7:ambush:monolith:greh:killer:bandit)%
+on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_7) =zop_raid_cleanup(zop_dolg_commander_task_7) =drx_sl_unregister_task_giver(zop_dolg_commander_task_7) =drx_sl_reset_stored_task(zop_dolg_commander_task_7)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =zop_raid_cleanup(zop_dolg_commander_task_7) =drx_sl_unregister_task_giver(zop_dolg_commander_task_7) =drx_sl_reset_stored_task(zop_dolg_commander_task_7)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_7)} fail
+
+
+[zop_dolg_commander_task_8]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_dolg_commander_task_8:2:1:nil:false:true:nil)} true, false
+title = zop_dolg_commander_task_8_name
+descr = zop_dolg_commander_task_8_text
+job_descr = zop_dolg_commander_task_8_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_8_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = killer
+on_job_descr = %=setup_assault_task(zop_dolg_commander_task_8)%
+on_complete = %=reward_random_money(11000:13000) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_8) =drx_sl_unregister_task_giver(zop_dolg_commander_task_8) =drx_sl_reset_stored_task(zop_dolg_commander_task_8)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =drx_sl_unregister_task_giver(zop_dolg_commander_task_8) =drx_sl_reset_stored_task(zop_dolg_commander_task_8)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_8)} fail
+
+
+[zop_dolg_commander_task_9]
+icon = ui_inGame2_Laboratoriya_X8
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_dolg_commander_task_9:2:1:nil:false:true:nil)} true, false
+title = zop_dolg_commander_task_9_name
+descr = zop_dolg_commander_task_9_text
+job_descr = zop_dolg_commander_task_9_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_9_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monolith
+on_job_descr = %=setup_assault_task(zop_dolg_commander_task_9)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_9) =drx_sl_unregister_task_giver(zop_dolg_commander_task_9) =drx_sl_reset_stored_task(zop_dolg_commander_task_9)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =drx_sl_unregister_task_giver(zop_dolg_commander_task_9) =drx_sl_reset_stored_task(zop_dolg_commander_task_9)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_9)} fail
+
+
+[zop_dolg_commander_task_10]
+icon = ui_inGame2_PD_Lider
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = zop_dolg_commander_task_10_name
+descr = zop_dolg_commander_task_10_text
+job_descr = zop_dolg_commander_task_10_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_10_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_dolg_commander_task_10:camp:greh)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_10) =zop_raid_cleanup(zop_dolg_commander_task_10) =drx_sl_unregister_task_giver(zop_dolg_commander_task_10) =drx_sl_reset_stored_task(zop_dolg_commander_task_10)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =zop_raid_cleanup(zop_dolg_commander_task_10) =drx_sl_unregister_task_giver(zop_dolg_commander_task_10) =drx_sl_reset_stored_task(zop_dolg_commander_task_10)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_10)} fail
+
+
+[zop_dolg_commander_task_11]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_dolg_commander_task_11:1:1:nil:false:true:nil)} true, false
+title = zop_dolg_commander_task_11_name
+descr = zop_dolg_commander_task_11_text
+job_descr = zop_dolg_commander_task_11_about
+stage_complete = 1
+task_complete_descr = zop_dolg_commander_task_11_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = bandit
+on_job_descr = %=setup_assault_task(zop_dolg_commander_task_11)%
+on_complete = %=reward_random_money(8000:10000) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_11) =drx_sl_unregister_task_giver(zop_dolg_commander_task_11) =drx_sl_reset_stored_task(zop_dolg_commander_task_11)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =drx_sl_unregister_task_giver(zop_dolg_commander_task_11) =drx_sl_reset_stored_task(zop_dolg_commander_task_11)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_11)} fail
+
+
+[zop_dolg_commander_task_12]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 43200
+title = zop_dolg_commander_task_12_name
+descr = zop_dolg_commander_task_12_text
+job_descr = zop_dolg_commander_task_12_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_dolg_commander_task_12_fetch_about
+task_complete_descr = zop_dolg_commander_task_12_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_dolg_commander_task_12_fetch:zop_blueprints:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_dolg_commander_task_12_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_12) =pstor_reset(zop_dolg_commander_task_12_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_12) =drx_sl_reset_stored_task(zop_dolg_commander_task_12)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =pstor_reset(zop_dolg_commander_task_12_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_12) =drx_sl_reset_stored_task(zop_dolg_commander_task_12)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_12)} fail
+
+
+[zop_dolg_commander_task_13]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 32400
+title = zop_dolg_commander_task_13_name
+descr = zop_dolg_commander_task_13_text
+job_descr = zop_dolg_commander_task_13_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_dolg_commander_task_13_fetch_about
+task_complete_descr = zop_dolg_commander_task_13_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_dolg_commander_task_13_fetch:zop_rare_mech:1:2)%
+on_complete = %=fetch_reward_and_remove(zop_dolg_commander_task_13_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:dolg) =inc_task_stage(zop_dolg_commander_task_13) =pstor_reset(zop_dolg_commander_task_13_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_13) =drx_sl_reset_stored_task(zop_dolg_commander_task_13)%
+on_fail = %=fail_task_dec_goodwill(25:dolg) =pstor_reset(zop_dolg_commander_task_13_fetch) =drx_sl_unregister_task_giver(zop_dolg_commander_task_13) =drx_sl_reset_stored_task(zop_dolg_commander_task_13)%
+condlist_0 = {!task_giver_alive(zop_dolg_commander_task_13)} fail
+
+
+; ------------------------------------------------------------------------------------------
+; Freedom: Loki at Yanov (npc section jup_a6_freedom_leader) - the mirror of Colonel Mixon
+; (his dm_ordered_task dialogs are added by modxml_zop.script)
+; ------------------------------------------------------------------------------------------
+
+[jup_a6_freedom_leader_task_1]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 85
+repeat_timeout = 16200
+precondition = {=validate_assault_task(jup_a6_freedom_leader_task_1:1:1:nil:false:true:nil)} true, false
+title = jup_a6_freedom_leader_task_1_name
+descr = jup_a6_freedom_leader_task_1_text
+job_descr = jup_a6_freedom_leader_task_1_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_1_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = dolg
+on_job_descr = %=setup_assault_task(jup_a6_freedom_leader_task_1)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_1) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_1) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_1) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_1)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_1)} fail
+
+
+[jup_a6_freedom_leader_task_2]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(jup_a6_freedom_leader_task_2:1:1:nil:false:true:nil)} true, false
+title = jup_a6_freedom_leader_task_2_name
+descr = jup_a6_freedom_leader_task_2_text
+job_descr = jup_a6_freedom_leader_task_2_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_2_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(jup_a6_freedom_leader_task_2)%
+on_complete = %=reward_random_money(7000:8500) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_2) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_2) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_2) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_2)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_2)} fail
+
+
+[jup_a6_freedom_leader_task_3]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 60
+repeat_timeout = 16200
+title = jup_a6_freedom_leader_task_3_name
+descr = jup_a6_freedom_leader_task_3_text
+job_descr = jup_a6_freedom_leader_task_3_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_3_finish
+target_functor = general_bounty_task
+status_functor = bounty_task
+on_job_descr = %=setup_bounty_task(jup_a6_freedom_leader_task_3:false:false:dolg:army:greh:monolith)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_3) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_3) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_3)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_3) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_3)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_3)} fail
+
+
+[jup_a6_freedom_leader_task_4]
+icon = ui_inGame2_Neizvestnoe_oruzhie
+storyline = false
+prior = 70
+repeat_timeout = 32400
+title = jup_a6_freedom_leader_task_4_name
+descr = jup_a6_freedom_leader_task_4_text
+job_descr = jup_a6_freedom_leader_task_4_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = jup_a6_freedom_leader_task_4_fetch_about
+task_complete_descr = jup_a6_freedom_leader_task_4_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(jup_a6_freedom_leader_task_4_fetch:zop_rare_weapons:1:1)%
+on_complete = %=fetch_reward_and_remove(jup_a6_freedom_leader_task_4_fetch:1.6) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_4) =pstor_reset(jup_a6_freedom_leader_task_4_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_4) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_4)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(jup_a6_freedom_leader_task_4_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_4) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_4)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_4)} fail
+
+
+[jup_a6_freedom_leader_task_5]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 65
+repeat_timeout = 21600
+title = jup_a6_freedom_leader_task_5_name
+descr = jup_a6_freedom_leader_task_5_text
+job_descr = jup_a6_freedom_leader_task_5_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = jup_a6_freedom_leader_task_5_fetch_about
+task_complete_descr = jup_a6_freedom_leader_task_5_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(jup_a6_freedom_leader_task_5_fetch:artefacts:1:1)%
+on_complete = %=fetch_reward_and_remove(jup_a6_freedom_leader_task_5_fetch:1.3) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_5) =pstor_reset(jup_a6_freedom_leader_task_5_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_5) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_5)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(jup_a6_freedom_leader_task_5_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_5) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_5)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_5)} fail
+
+
+[jup_a6_freedom_leader_task_6]
+icon = ui_inGame2_Mesta_evakuatsii
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = jup_a6_freedom_leader_task_6_name
+descr = jup_a6_freedom_leader_task_6_text
+job_descr = jup_a6_freedom_leader_task_6_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_6_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(jup_a6_freedom_leader_task_6:convoy:dolg:army:greh)%
+on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_6) =zop_raid_cleanup(jup_a6_freedom_leader_task_6) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_6) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_6)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(jup_a6_freedom_leader_task_6) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_6) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_6)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_6)} fail
+
+
+[jup_a6_freedom_leader_task_7]
+icon = ui_inGame2_Vibros
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = jup_a6_freedom_leader_task_7_name
+descr = jup_a6_freedom_leader_task_7_text
+job_descr = jup_a6_freedom_leader_task_7_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_7_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(jup_a6_freedom_leader_task_7:ambush:dolg:monolith:greh)%
+on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_7) =zop_raid_cleanup(jup_a6_freedom_leader_task_7) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_7) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_7)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(jup_a6_freedom_leader_task_7) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_7) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_7)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_7)} fail
+
+
+[jup_a6_freedom_leader_task_8]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(jup_a6_freedom_leader_task_8:2:1:nil:false:true:nil)} true, false
+title = jup_a6_freedom_leader_task_8_name
+descr = jup_a6_freedom_leader_task_8_text
+job_descr = jup_a6_freedom_leader_task_8_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_8_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = army
+on_job_descr = %=setup_assault_task(jup_a6_freedom_leader_task_8)%
+on_complete = %=reward_random_money(11000:13000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_8) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_8) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_8)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_8) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_8)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_8)} fail
+
+
+[jup_a6_freedom_leader_task_9]
+icon = ui_inGame2_Laboratoriya_X8
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(jup_a6_freedom_leader_task_9:2:1:nil:false:true:nil)} true, false
+title = jup_a6_freedom_leader_task_9_name
+descr = jup_a6_freedom_leader_task_9_text
+job_descr = jup_a6_freedom_leader_task_9_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_9_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monolith
+on_job_descr = %=setup_assault_task(jup_a6_freedom_leader_task_9)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_9) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_9) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_9)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_9) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_9)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_9)} fail
+
+
+[jup_a6_freedom_leader_task_10]
+icon = ui_inGame2_PD_Lider
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = jup_a6_freedom_leader_task_10_name
+descr = jup_a6_freedom_leader_task_10_text
+job_descr = jup_a6_freedom_leader_task_10_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_10_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(jup_a6_freedom_leader_task_10:camp:greh)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_10) =zop_raid_cleanup(jup_a6_freedom_leader_task_10) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_10) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_10)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(jup_a6_freedom_leader_task_10) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_10) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_10)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_10)} fail
+
+
+[jup_a6_freedom_leader_task_11]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(jup_a6_freedom_leader_task_11:2:1:nil:false:true:nil)} true, false
+title = jup_a6_freedom_leader_task_11_name
+descr = jup_a6_freedom_leader_task_11_text
+job_descr = jup_a6_freedom_leader_task_11_about
+stage_complete = 1
+task_complete_descr = jup_a6_freedom_leader_task_11_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = army
+on_job_descr = %=setup_assault_task(jup_a6_freedom_leader_task_11)%
+on_complete = %=reward_random_money(11000:13000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_11) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_11) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_11)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_11) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_11)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_11)} fail
+
+
+[jup_a6_freedom_leader_task_12]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 43200
+title = jup_a6_freedom_leader_task_12_name
+descr = jup_a6_freedom_leader_task_12_text
+job_descr = jup_a6_freedom_leader_task_12_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = jup_a6_freedom_leader_task_12_fetch_about
+task_complete_descr = jup_a6_freedom_leader_task_12_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(jup_a6_freedom_leader_task_12_fetch:zop_blueprints:1:1)%
+on_complete = %=fetch_reward_and_remove(jup_a6_freedom_leader_task_12_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_12) =pstor_reset(jup_a6_freedom_leader_task_12_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_12) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_12)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(jup_a6_freedom_leader_task_12_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_12) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_12)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_12)} fail
+
+
+[jup_a6_freedom_leader_task_13]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 32400
+title = jup_a6_freedom_leader_task_13_name
+descr = jup_a6_freedom_leader_task_13_text
+job_descr = jup_a6_freedom_leader_task_13_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = jup_a6_freedom_leader_task_13_fetch_about
+task_complete_descr = jup_a6_freedom_leader_task_13_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(jup_a6_freedom_leader_task_13_fetch:zop_rare_mech:1:2)%
+on_complete = %=fetch_reward_and_remove(jup_a6_freedom_leader_task_13_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(jup_a6_freedom_leader_task_13) =pstor_reset(jup_a6_freedom_leader_task_13_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_13) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_13)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(jup_a6_freedom_leader_task_13_fetch) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_13) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_13)%
+condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_13)} fail
+
+
+; ------------------------------------------------------------------------------------------
+; Freedom: commander Yastreb at captured Rostok (npc section zop_freedom_commander)
+; ------------------------------------------------------------------------------------------
+
+[zop_freedom_commander_task_1]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 85
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_freedom_commander_task_1:2:1:nil:false:true:nil)} true, false
+title = zop_freedom_commander_task_1_name
+descr = zop_freedom_commander_task_1_text
+job_descr = zop_freedom_commander_task_1_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_1_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = dolg
+on_job_descr = %=setup_assault_task(zop_freedom_commander_task_1)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_1) =drx_sl_unregister_task_giver(zop_freedom_commander_task_1) =drx_sl_reset_stored_task(zop_freedom_commander_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(zop_freedom_commander_task_1) =drx_sl_reset_stored_task(zop_freedom_commander_task_1)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_1)} fail
+
+
+[zop_freedom_commander_task_2]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_freedom_commander_task_2:1:1:nil:false:true:nil)} true, false
+title = zop_freedom_commander_task_2_name
+descr = zop_freedom_commander_task_2_text
+job_descr = zop_freedom_commander_task_2_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_2_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(zop_freedom_commander_task_2)%
+on_complete = %=reward_random_money(7000:8500) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_2) =drx_sl_unregister_task_giver(zop_freedom_commander_task_2) =drx_sl_reset_stored_task(zop_freedom_commander_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(zop_freedom_commander_task_2) =drx_sl_reset_stored_task(zop_freedom_commander_task_2)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_2)} fail
+
+
+[zop_freedom_commander_task_3]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 60
+repeat_timeout = 16200
+title = zop_freedom_commander_task_3_name
+descr = zop_freedom_commander_task_3_text
+job_descr = zop_freedom_commander_task_3_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_3_finish
+target_functor = general_bounty_task
+status_functor = bounty_task
+on_job_descr = %=setup_bounty_task(zop_freedom_commander_task_3:false:false:dolg:army:greh:monolith)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_3) =drx_sl_unregister_task_giver(zop_freedom_commander_task_3) =drx_sl_reset_stored_task(zop_freedom_commander_task_3)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(zop_freedom_commander_task_3) =drx_sl_reset_stored_task(zop_freedom_commander_task_3)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_3)} fail
+
+
+[zop_freedom_commander_task_4]
+icon = ui_inGame2_Neizvestnoe_oruzhie
+storyline = false
+prior = 70
+repeat_timeout = 32400
+title = zop_freedom_commander_task_4_name
+descr = zop_freedom_commander_task_4_text
+job_descr = zop_freedom_commander_task_4_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_freedom_commander_task_4_fetch_about
+task_complete_descr = zop_freedom_commander_task_4_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_freedom_commander_task_4_fetch:zop_rare_weapons:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_freedom_commander_task_4_fetch:1.6) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_4) =pstor_reset(zop_freedom_commander_task_4_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_4) =drx_sl_reset_stored_task(zop_freedom_commander_task_4)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(zop_freedom_commander_task_4_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_4) =drx_sl_reset_stored_task(zop_freedom_commander_task_4)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_4)} fail
+
+
+[zop_freedom_commander_task_5]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 65
+repeat_timeout = 21600
+title = zop_freedom_commander_task_5_name
+descr = zop_freedom_commander_task_5_text
+job_descr = zop_freedom_commander_task_5_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_freedom_commander_task_5_fetch_about
+task_complete_descr = zop_freedom_commander_task_5_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_freedom_commander_task_5_fetch:artefacts:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_freedom_commander_task_5_fetch:1.3) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_5) =pstor_reset(zop_freedom_commander_task_5_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_5) =drx_sl_reset_stored_task(zop_freedom_commander_task_5)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(zop_freedom_commander_task_5_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_5) =drx_sl_reset_stored_task(zop_freedom_commander_task_5)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_5)} fail
+
+
+[zop_freedom_commander_task_6]
+icon = ui_inGame2_Mesta_evakuatsii
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = zop_freedom_commander_task_6_name
+descr = zop_freedom_commander_task_6_text
+job_descr = zop_freedom_commander_task_6_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_6_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_freedom_commander_task_6:convoy:dolg:army:greh)%
+on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_6) =zop_raid_cleanup(zop_freedom_commander_task_6) =drx_sl_unregister_task_giver(zop_freedom_commander_task_6) =drx_sl_reset_stored_task(zop_freedom_commander_task_6)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(zop_freedom_commander_task_6) =drx_sl_unregister_task_giver(zop_freedom_commander_task_6) =drx_sl_reset_stored_task(zop_freedom_commander_task_6)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_6)} fail
+
+
+[zop_freedom_commander_task_7]
+icon = ui_inGame2_Vibros
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = zop_freedom_commander_task_7_name
+descr = zop_freedom_commander_task_7_text
+job_descr = zop_freedom_commander_task_7_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_7_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_freedom_commander_task_7:ambush:dolg:monolith:greh)%
+on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_7) =zop_raid_cleanup(zop_freedom_commander_task_7) =drx_sl_unregister_task_giver(zop_freedom_commander_task_7) =drx_sl_reset_stored_task(zop_freedom_commander_task_7)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(zop_freedom_commander_task_7) =drx_sl_unregister_task_giver(zop_freedom_commander_task_7) =drx_sl_reset_stored_task(zop_freedom_commander_task_7)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_7)} fail
+
+
+[zop_freedom_commander_task_8]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_freedom_commander_task_8:2:1:nil:false:true:nil)} true, false
+title = zop_freedom_commander_task_8_name
+descr = zop_freedom_commander_task_8_text
+job_descr = zop_freedom_commander_task_8_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_8_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = army
+on_job_descr = %=setup_assault_task(zop_freedom_commander_task_8)%
+on_complete = %=reward_random_money(11000:13000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_8) =drx_sl_unregister_task_giver(zop_freedom_commander_task_8) =drx_sl_reset_stored_task(zop_freedom_commander_task_8)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(zop_freedom_commander_task_8) =drx_sl_reset_stored_task(zop_freedom_commander_task_8)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_8)} fail
+
+
+[zop_freedom_commander_task_9]
+icon = ui_inGame2_Laboratoriya_X8
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_freedom_commander_task_9:2:1:nil:false:true:nil)} true, false
+title = zop_freedom_commander_task_9_name
+descr = zop_freedom_commander_task_9_text
+job_descr = zop_freedom_commander_task_9_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_9_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monolith
+on_job_descr = %=setup_assault_task(zop_freedom_commander_task_9)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_9) =drx_sl_unregister_task_giver(zop_freedom_commander_task_9) =drx_sl_reset_stored_task(zop_freedom_commander_task_9)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(zop_freedom_commander_task_9) =drx_sl_reset_stored_task(zop_freedom_commander_task_9)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_9)} fail
+
+
+[zop_freedom_commander_task_10]
+icon = ui_inGame2_PD_Lider
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = zop_freedom_commander_task_10_name
+descr = zop_freedom_commander_task_10_text
+job_descr = zop_freedom_commander_task_10_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_10_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_freedom_commander_task_10:camp:greh)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_10) =zop_raid_cleanup(zop_freedom_commander_task_10) =drx_sl_unregister_task_giver(zop_freedom_commander_task_10) =drx_sl_reset_stored_task(zop_freedom_commander_task_10)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(zop_freedom_commander_task_10) =drx_sl_unregister_task_giver(zop_freedom_commander_task_10) =drx_sl_reset_stored_task(zop_freedom_commander_task_10)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_10)} fail
+
+
+[zop_freedom_commander_task_11]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_freedom_commander_task_11:2:1:nil:false:true:nil)} true, false
+title = zop_freedom_commander_task_11_name
+descr = zop_freedom_commander_task_11_text
+job_descr = zop_freedom_commander_task_11_about
+stage_complete = 1
+task_complete_descr = zop_freedom_commander_task_11_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = army
+on_job_descr = %=setup_assault_task(zop_freedom_commander_task_11)%
+on_complete = %=reward_random_money(11000:13000) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_11) =drx_sl_unregister_task_giver(zop_freedom_commander_task_11) =drx_sl_reset_stored_task(zop_freedom_commander_task_11)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =drx_sl_unregister_task_giver(zop_freedom_commander_task_11) =drx_sl_reset_stored_task(zop_freedom_commander_task_11)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_11)} fail
+
+
+[zop_freedom_commander_task_12]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 43200
+title = zop_freedom_commander_task_12_name
+descr = zop_freedom_commander_task_12_text
+job_descr = zop_freedom_commander_task_12_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_freedom_commander_task_12_fetch_about
+task_complete_descr = zop_freedom_commander_task_12_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_freedom_commander_task_12_fetch:zop_blueprints:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_freedom_commander_task_12_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_12) =pstor_reset(zop_freedom_commander_task_12_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_12) =drx_sl_reset_stored_task(zop_freedom_commander_task_12)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(zop_freedom_commander_task_12_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_12) =drx_sl_reset_stored_task(zop_freedom_commander_task_12)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_12)} fail
+
+
+[zop_freedom_commander_task_13]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 32400
+title = zop_freedom_commander_task_13_name
+descr = zop_freedom_commander_task_13_text
+job_descr = zop_freedom_commander_task_13_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_freedom_commander_task_13_fetch_about
+task_complete_descr = zop_freedom_commander_task_13_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_freedom_commander_task_13_fetch:zop_rare_mech:1:2)%
+on_complete = %=fetch_reward_and_remove(zop_freedom_commander_task_13_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:freedom) =inc_task_stage(zop_freedom_commander_task_13) =pstor_reset(zop_freedom_commander_task_13_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_13) =drx_sl_reset_stored_task(zop_freedom_commander_task_13)%
+on_fail = %=fail_task_dec_goodwill(25:freedom) =pstor_reset(zop_freedom_commander_task_13_fetch) =drx_sl_unregister_task_giver(zop_freedom_commander_task_13) =drx_sl_reset_stored_task(zop_freedom_commander_task_13)%
+condlist_0 = {!task_giver_alive(zop_freedom_commander_task_13)} fail
+
+
+; ------------------------------------------------------------------------------------------
+; Clear Sky: commander Kholodny at the Jupiter checkpoint after csky_jupiter (npc section zop_csky_commander)
+; ------------------------------------------------------------------------------------------
+
+[zop_csky_commander_task_1]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 85
+repeat_timeout = 21600
+title = zop_csky_commander_task_1_name
+descr = zop_csky_commander_task_1_text
+job_descr = zop_csky_commander_task_1_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_1_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_csky_commander_task_1:camp:renegade)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_1) =zop_raid_cleanup(zop_csky_commander_task_1) =drx_sl_unregister_task_giver(zop_csky_commander_task_1) =drx_sl_reset_stored_task(zop_csky_commander_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_1) =drx_sl_unregister_task_giver(zop_csky_commander_task_1) =drx_sl_reset_stored_task(zop_csky_commander_task_1)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_1)} fail
+
+
+[zop_csky_commander_task_2]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_commander_task_2:1:1:nil:false:true:nil)} true, false
+title = zop_csky_commander_task_2_name
+descr = zop_csky_commander_task_2_text
+job_descr = zop_csky_commander_task_2_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_2_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(zop_csky_commander_task_2)%
+on_complete = %=reward_random_money(7000:8500) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_2) =drx_sl_unregister_task_giver(zop_csky_commander_task_2) =drx_sl_reset_stored_task(zop_csky_commander_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_commander_task_2) =drx_sl_reset_stored_task(zop_csky_commander_task_2)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_2)} fail
+
+
+[zop_csky_commander_task_3]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 60
+repeat_timeout = 16200
+title = zop_csky_commander_task_3_name
+descr = zop_csky_commander_task_3_text
+job_descr = zop_csky_commander_task_3_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_3_finish
+target_functor = general_bounty_task
+status_functor = bounty_task
+on_job_descr = %=setup_bounty_task(zop_csky_commander_task_3:false:false:renegade:bandit:army:monolith:greh)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_3) =drx_sl_unregister_task_giver(zop_csky_commander_task_3) =drx_sl_reset_stored_task(zop_csky_commander_task_3)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_commander_task_3) =drx_sl_reset_stored_task(zop_csky_commander_task_3)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_3)} fail
+
+
+[zop_csky_commander_task_4]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = zop_csky_commander_task_4_name
+descr = zop_csky_commander_task_4_text
+job_descr = zop_csky_commander_task_4_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_4_fetch_about
+task_complete_descr = zop_csky_commander_task_4_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_commander_task_4_fetch:artefacts:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_4_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_4) =pstor_reset(zop_csky_commander_task_4_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_4) =drx_sl_reset_stored_task(zop_csky_commander_task_4)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_4_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_4) =drx_sl_reset_stored_task(zop_csky_commander_task_4)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_4)} fail
+
+
+[zop_csky_commander_task_5]
+icon = ui_inGame2_Neizvestnoe_oruzhie
+storyline = false
+prior = 65
+repeat_timeout = 32400
+title = zop_csky_commander_task_5_name
+descr = zop_csky_commander_task_5_text
+job_descr = zop_csky_commander_task_5_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_5_fetch_about
+task_complete_descr = zop_csky_commander_task_5_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_commander_task_5_fetch:zop_rare_weapons:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_5_fetch:1.6) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_5) =pstor_reset(zop_csky_commander_task_5_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_5) =drx_sl_reset_stored_task(zop_csky_commander_task_5)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_5_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_5) =drx_sl_reset_stored_task(zop_csky_commander_task_5)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_5)} fail
+
+
+[zop_csky_commander_task_6]
+icon = ui_inGame2_Mesta_evakuatsii
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = zop_csky_commander_task_6_name
+descr = zop_csky_commander_task_6_text
+job_descr = zop_csky_commander_task_6_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_6_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_csky_commander_task_6:convoy:army:bandit:renegade)%
+on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_6) =zop_raid_cleanup(zop_csky_commander_task_6) =drx_sl_unregister_task_giver(zop_csky_commander_task_6) =drx_sl_reset_stored_task(zop_csky_commander_task_6)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_6) =drx_sl_unregister_task_giver(zop_csky_commander_task_6) =drx_sl_reset_stored_task(zop_csky_commander_task_6)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_6)} fail
+
+
+[zop_csky_commander_task_7]
+icon = ui_inGame2_Vibros
+storyline = false
+prior = 80
+repeat_timeout = 21600
+title = zop_csky_commander_task_7_name
+descr = zop_csky_commander_task_7_text
+job_descr = zop_csky_commander_task_7_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_7_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_csky_commander_task_7:ambush:monolith:greh:renegade)%
+on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_7) =zop_raid_cleanup(zop_csky_commander_task_7) =drx_sl_unregister_task_giver(zop_csky_commander_task_7) =drx_sl_reset_stored_task(zop_csky_commander_task_7)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_7) =drx_sl_unregister_task_giver(zop_csky_commander_task_7) =drx_sl_reset_stored_task(zop_csky_commander_task_7)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_7)} fail
+
+
+[zop_csky_commander_task_8]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_commander_task_8:2:1:nil:false:true:nil)} true, false
+title = zop_csky_commander_task_8_name
+descr = zop_csky_commander_task_8_text
+job_descr = zop_csky_commander_task_8_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_8_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = army
+on_job_descr = %=setup_assault_task(zop_csky_commander_task_8)%
+on_complete = %=reward_random_money(11000:13000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_8) =drx_sl_unregister_task_giver(zop_csky_commander_task_8) =drx_sl_reset_stored_task(zop_csky_commander_task_8)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_commander_task_8) =drx_sl_reset_stored_task(zop_csky_commander_task_8)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_8)} fail
+
+
+[zop_csky_commander_task_9]
+icon = ui_inGame2_Laboratoriya_X8
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_commander_task_9:2:1:nil:false:true:nil)} true, false
+title = zop_csky_commander_task_9_name
+descr = zop_csky_commander_task_9_text
+job_descr = zop_csky_commander_task_9_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_9_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monolith
+on_job_descr = %=setup_assault_task(zop_csky_commander_task_9)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_9) =drx_sl_unregister_task_giver(zop_csky_commander_task_9) =drx_sl_reset_stored_task(zop_csky_commander_task_9)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_commander_task_9) =drx_sl_reset_stored_task(zop_csky_commander_task_9)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_9)} fail
+
+
+[zop_csky_commander_task_10]
+icon = ui_inGame2_PD_Lider
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = zop_csky_commander_task_10_name
+descr = zop_csky_commander_task_10_text
+job_descr = zop_csky_commander_task_10_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_10_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_csky_commander_task_10:camp:greh)%
+on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_10) =zop_raid_cleanup(zop_csky_commander_task_10) =drx_sl_unregister_task_giver(zop_csky_commander_task_10) =drx_sl_reset_stored_task(zop_csky_commander_task_10)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_10) =drx_sl_unregister_task_giver(zop_csky_commander_task_10) =drx_sl_reset_stored_task(zop_csky_commander_task_10)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_10)} fail
+
+
+[zop_csky_commander_task_11]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_commander_task_11:2:1:nil:false:true:nil)} true, false
+title = zop_csky_commander_task_11_name
+descr = zop_csky_commander_task_11_text
+job_descr = zop_csky_commander_task_11_about
+stage_complete = 1
+task_complete_descr = zop_csky_commander_task_11_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = bandit
+on_job_descr = %=setup_assault_task(zop_csky_commander_task_11)%
+on_complete = %=reward_random_money(8000:10000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_11) =drx_sl_unregister_task_giver(zop_csky_commander_task_11) =drx_sl_reset_stored_task(zop_csky_commander_task_11)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_commander_task_11) =drx_sl_reset_stored_task(zop_csky_commander_task_11)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_11)} fail
+
+
+[zop_csky_commander_task_12]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 43200
+title = zop_csky_commander_task_12_name
+descr = zop_csky_commander_task_12_text
+job_descr = zop_csky_commander_task_12_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_12_fetch_about
+task_complete_descr = zop_csky_commander_task_12_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_commander_task_12_fetch:zop_blueprints:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_12_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_12) =pstor_reset(zop_csky_commander_task_12_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_12) =drx_sl_reset_stored_task(zop_csky_commander_task_12)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_12_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_12) =drx_sl_reset_stored_task(zop_csky_commander_task_12)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_12)} fail
+
+
+[zop_csky_commander_task_13]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 32400
+title = zop_csky_commander_task_13_name
+descr = zop_csky_commander_task_13_text
+job_descr = zop_csky_commander_task_13_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_13_fetch_about
+task_complete_descr = zop_csky_commander_task_13_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_commander_task_13_fetch:zop_rare_mech:1:2)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_13_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_13) =pstor_reset(zop_csky_commander_task_13_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_13) =drx_sl_reset_stored_task(zop_csky_commander_task_13)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_13_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_13) =drx_sl_reset_stored_task(zop_csky_commander_task_13)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_13)} fail
+
+
+; ------------------------------------------------------------------------------------------
+; Clear Sky: boss Viking at the Agroprom factory (npc section zop_csky_viking)
+; ------------------------------------------------------------------------------------------
+
+[zop_csky_viking_task_1]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 80
+repeat_timeout = 32400
+title = zop_csky_viking_task_1_name
+descr = zop_csky_viking_task_1_text
+job_descr = zop_csky_viking_task_1_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_viking_task_1_fetch_about
+task_complete_descr = zop_csky_viking_task_1_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_viking_task_1_fetch:zop_tech_tools:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_viking_task_1_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_viking_task_1) =pstor_reset(zop_csky_viking_task_1_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_1) =drx_sl_reset_stored_task(zop_csky_viking_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_viking_task_1_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_1) =drx_sl_reset_stored_task(zop_csky_viking_task_1)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_1)} fail
+
+
+[zop_csky_viking_task_2]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 75
+repeat_timeout = 32400
+title = zop_csky_viking_task_2_name
+descr = zop_csky_viking_task_2_text
+job_descr = zop_csky_viking_task_2_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_viking_task_2_fetch_about
+task_complete_descr = zop_csky_viking_task_2_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_viking_task_2_fetch:zop_rare_mech:1:2)%
+on_complete = %=fetch_reward_and_remove(zop_csky_viking_task_2_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_viking_task_2) =pstor_reset(zop_csky_viking_task_2_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_2) =drx_sl_reset_stored_task(zop_csky_viking_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_viking_task_2_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_2) =drx_sl_reset_stored_task(zop_csky_viking_task_2)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_2)} fail
+
+
+[zop_csky_viking_task_3]
+icon = ui_inGame2_Laboratoriya_X8
+storyline = false
+prior = 85
+repeat_timeout = 43200
+title = zop_csky_viking_task_3_name
+descr = zop_csky_viking_task_3_text
+job_descr = zop_csky_viking_task_3_about
+stage_complete = 1
+task_complete_descr = zop_csky_viking_task_3_finish
+target = {!actor_has_item(drx_agr_u_documents)} agr_space_restrictor_to_agr_ug_1
+status_functor = drx_sl_retrieve_item_task_status
+status_functor_params = drx_agr_u_documents
+on_init = %=spawn_item_at_pos(drx_agr_u_documents)%
+on_complete = %=reward_random_money(15000:18000) =reward_stash(true) =complete_task_inc_goodwill(100:csky) =inc_task_stage(zop_csky_viking_task_3) =remove_item(drx_agr_u_documents) =drx_sl_unregister_task_giver(zop_csky_viking_task_3) =drx_sl_reset_stored_task(zop_csky_viking_task_3)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_viking_task_3) =drx_sl_reset_stored_task(zop_csky_viking_task_3)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_3)} fail
+
+
+[zop_csky_viking_task_4]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_viking_task_4:1:1:nil:false:true:nil)} true, false
+title = zop_csky_viking_task_4_name
+descr = zop_csky_viking_task_4_text
+job_descr = zop_csky_viking_task_4_about
+stage_complete = 1
+task_complete_descr = zop_csky_viking_task_4_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(zop_csky_viking_task_4)%
+on_complete = %=reward_random_money(7000:9000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_viking_task_4) =drx_sl_unregister_task_giver(zop_csky_viking_task_4) =drx_sl_reset_stored_task(zop_csky_viking_task_4)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_viking_task_4) =drx_sl_reset_stored_task(zop_csky_viking_task_4)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_4)} fail
+
+
+[zop_csky_viking_task_5]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 70
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_viking_task_5:2:1:nil:false:true:nil)} true, false
+title = zop_csky_viking_task_5_name
+descr = zop_csky_viking_task_5_text
+job_descr = zop_csky_viking_task_5_about
+stage_complete = 1
+task_complete_descr = zop_csky_viking_task_5_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(zop_csky_viking_task_5)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_viking_task_5) =drx_sl_unregister_task_giver(zop_csky_viking_task_5) =drx_sl_reset_stored_task(zop_csky_viking_task_5)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_viking_task_5) =drx_sl_reset_stored_task(zop_csky_viking_task_5)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_5)} fail
+
+
+[zop_csky_viking_task_6]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 43200
+title = zop_csky_viking_task_6_name
+descr = zop_csky_viking_task_6_text
+job_descr = zop_csky_viking_task_6_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_viking_task_6_fetch_about
+task_complete_descr = zop_csky_viking_task_6_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_viking_task_6_fetch:zop_blueprints:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_viking_task_6_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_viking_task_6) =pstor_reset(zop_csky_viking_task_6_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_6) =drx_sl_reset_stored_task(zop_csky_viking_task_6)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_viking_task_6_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_6) =drx_sl_reset_stored_task(zop_csky_viking_task_6)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_6)} fail
+
+
+; ------------------------------------------------------------------------------------------
+; Clear Sky: the trader Kompas at Rostok (npc section zop_csky_rostok_trader).
+; No operation sends him now (csky_rostok became the bunker on Yantar); the tasks stay for saves that have him.
+; ------------------------------------------------------------------------------------------
+
+[zop_csky_rostok_trader_task_1]
+icon = ui_inGame2_Karti_mestnosti
+storyline = false
+prior = 80
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_rostok_trader_task_1:2:1:nil:false:true:nil)} true, false
+title = zop_csky_rostok_trader_task_1_name
+descr = zop_csky_rostok_trader_task_1_text
+job_descr = zop_csky_rostok_trader_task_1_about
+stage_complete = 1
+task_complete_descr = zop_csky_rostok_trader_task_1_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = monster, monster_predatory_day, monster_predatory_night, monster_vegetarian, monster_zombied_day, monster_zombied_night, monster_special
+on_job_descr = %=setup_assault_task(zop_csky_rostok_trader_task_1)%
+on_complete = %=reward_random_money(8000:10000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_1) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_1) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_1) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_1)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_1)} fail
+
+
+[zop_csky_rostok_trader_task_2]
+icon = ui_inGame2_Odin_vistrel
+storyline = false
+prior = 75
+repeat_timeout = 16200
+precondition = {=validate_assault_task(zop_csky_rostok_trader_task_2:2:1:nil:false:true:nil)} true, false
+title = zop_csky_rostok_trader_task_2_name
+descr = zop_csky_rostok_trader_task_2_text
+job_descr = zop_csky_rostok_trader_task_2_about
+stage_complete = 1
+task_complete_descr = zop_csky_rostok_trader_task_2_finish
+target_functor = assault_task_target_functor
+status_functor = assault_task_status_functor
+status_functor_params = bandit
+on_job_descr = %=setup_assault_task(zop_csky_rostok_trader_task_2)%
+on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_2) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_2) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_2) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_2)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_2)} fail
+
+
+[zop_csky_rostok_trader_task_3]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = zop_csky_rostok_trader_task_3_name
+descr = zop_csky_rostok_trader_task_3_text
+job_descr = zop_csky_rostok_trader_task_3_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_rostok_trader_task_3_fetch_about
+task_complete_descr = zop_csky_rostok_trader_task_3_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_rostok_trader_task_3_fetch:supplies:6:10)%
+on_complete = %=fetch_reward_and_remove(zop_csky_rostok_trader_task_3_fetch:1.3) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_3) =pstor_reset(zop_csky_rostok_trader_task_3_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_3) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_3)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_rostok_trader_task_3_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_3) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_3)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_3)} fail
+
+
+[zop_csky_rostok_trader_task_4]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 70
+repeat_timeout = 21600
+title = zop_csky_rostok_trader_task_4_name
+descr = zop_csky_rostok_trader_task_4_text
+job_descr = zop_csky_rostok_trader_task_4_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_rostok_trader_task_4_fetch_about
+task_complete_descr = zop_csky_rostok_trader_task_4_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_rostok_trader_task_4_fetch:medical_x:5:8)%
+on_complete = %=fetch_reward_and_remove(zop_csky_rostok_trader_task_4_fetch:1.3) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_4) =pstor_reset(zop_csky_rostok_trader_task_4_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_4) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_4)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_rostok_trader_task_4_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_4) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_4)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_4)} fail
+
+
+[zop_csky_rostok_trader_task_5]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 65
+repeat_timeout = 21600
+title = zop_csky_rostok_trader_task_5_name
+descr = zop_csky_rostok_trader_task_5_text
+job_descr = zop_csky_rostok_trader_task_5_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_rostok_trader_task_5_fetch_about
+task_complete_descr = zop_csky_rostok_trader_task_5_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_rostok_trader_task_5_fetch:food_x:8:12)%
+on_complete = %=fetch_reward_and_remove(zop_csky_rostok_trader_task_5_fetch:1.2) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_5) =pstor_reset(zop_csky_rostok_trader_task_5_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_5) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_5)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_rostok_trader_task_5_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_5) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_5)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_5)} fail
+
+
+[zop_csky_rostok_trader_task_6]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 65
+repeat_timeout = 21600
+title = zop_csky_rostok_trader_task_6_name
+descr = zop_csky_rostok_trader_task_6_text
+job_descr = zop_csky_rostok_trader_task_6_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_rostok_trader_task_6_fetch_about
+task_complete_descr = zop_csky_rostok_trader_task_6_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_rostok_trader_task_6_fetch:artefacts:1:2)%
+on_complete = %=fetch_reward_and_remove(zop_csky_rostok_trader_task_6_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_6) =pstor_reset(zop_csky_rostok_trader_task_6_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_6) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_6)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_rostok_trader_task_6_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_6) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_6)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_6)} fail
+
+
+[zop_csky_rostok_trader_task_7]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 60
+repeat_timeout = 32400
+title = zop_csky_rostok_trader_task_7_name
+descr = zop_csky_rostok_trader_task_7_text
+job_descr = zop_csky_rostok_trader_task_7_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_rostok_trader_task_7_fetch_about
+task_complete_descr = zop_csky_rostok_trader_task_7_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_rostok_trader_task_7_fetch:mutant_parts_rare:1:2)%
+on_complete = %=fetch_reward_and_remove(zop_csky_rostok_trader_task_7_fetch:1.4) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_rostok_trader_task_7) =pstor_reset(zop_csky_rostok_trader_task_7_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_7) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_7)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_rostok_trader_task_7_fetch) =drx_sl_unregister_task_giver(zop_csky_rostok_trader_task_7) =drx_sl_reset_stored_task(zop_csky_rostok_trader_task_7)%
+condlist_0 = {!task_giver_alive(zop_csky_rostok_trader_task_7)} fail
+
+; ------------------------------------------------------------------------------------------
+; Kruger, the Clear Sky mechanic at the Jupiter checkpoint (npc section zop_csky_kruger_mechanic):
+; the three toolkit tasks of a mechanic, as sim_default_csky_mechanic_task_N (stock texts)
+; ------------------------------------------------------------------------------------------
+
+[zop_csky_kruger_mechanic_task_1]
+icon = ui_inGame2_Instrumenti
+prior = 10
+storyline = false
+title = sim_default_csky_mechanic_task_1_name
+title_functor = general_fetch_task
+descr = sim_default_csky_mechanic_task_1_text
+descr_functor = general_fetch_task
+job_descr = sim_default_csky_mechanic_task_1_about
+fetch_descr = sim_default_csky_mechanic_task_1_fetch_about
+fetch_func = %=setup_generic_fetch_task(zop_csky_kruger_mechanic_task_1_fetch:1:itm_basickit)%
+stage_complete = 1
+status_functor = actor_has_fetch_item
+target_functor = general_fetch_task
+task_complete_descr = sim_default_csky_mechanic_task_1_fetch_finish
+on_complete = %+zop_csky_kruger_mechanic_upgrade_tier_1 =complete_task_inc_goodwill(50:csky) =fetch_reward_and_remove(zop_csky_kruger_mechanic_task_1_fetch) =inc_task_stage(zop_csky_kruger_mechanic_task_1)%
+precondition = {-zop_csky_kruger_mechanic_upgrade_tier_1} true, false
+condlist_0 = {!task_giver_alive(zop_csky_kruger_mechanic_task_1)} fail
+
+[zop_csky_kruger_mechanic_task_2]
+icon = ui_inGame2_Instrumenti
+prior = 10
+storyline = false
+title = sim_default_csky_mechanic_task_2_name
+title_functor = general_fetch_task
+descr = sim_default_csky_mechanic_task_2_text
+descr_functor = general_fetch_task
+job_descr = sim_default_csky_mechanic_task_2_about
+fetch_descr = sim_default_csky_mechanic_task_2_fetch_about
+fetch_func = %=setup_generic_fetch_task(zop_csky_kruger_mechanic_task_2_fetch:1:itm_advancedkit)%
+stage_complete = 1
+status_functor = actor_has_fetch_item
+target_functor = general_fetch_task
+task_complete_descr = sim_default_csky_mechanic_task_2_fetch_finish
+on_complete = %+zop_csky_kruger_mechanic_upgrade_tier_2 =complete_task_inc_goodwill(50:csky) =fetch_reward_and_remove(zop_csky_kruger_mechanic_task_2_fetch) =inc_task_stage(zop_csky_kruger_mechanic_task_2)%
+precondition = {+zop_csky_kruger_mechanic_upgrade_tier_1 -zop_csky_kruger_mechanic_upgrade_tier_2} true, false
+condlist_0 = {!task_giver_alive(zop_csky_kruger_mechanic_task_2)} fail
+
+[zop_csky_kruger_mechanic_task_3]
+icon = ui_inGame2_Instrumenti
+prior = 10
+storyline = false
+title = sim_default_csky_mechanic_task_3_name
+title_functor = general_fetch_task
+descr = sim_default_csky_mechanic_task_3_text
+descr_functor = general_fetch_task
+job_descr = sim_default_csky_mechanic_task_3_about
+fetch_descr = sim_default_csky_mechanic_task_3_fetch_about
+fetch_func = %=setup_generic_fetch_task(zop_csky_kruger_mechanic_task_3_fetch:1:itm_expertkit)%
+stage_complete = 1
+status_functor = actor_has_fetch_item
+target_functor = general_fetch_task
+task_complete_descr = sim_default_csky_mechanic_task_3_fetch_finish
+on_complete = %+zop_csky_kruger_mechanic_upgrade_tier_3 =complete_task_inc_goodwill(50:csky) =fetch_reward_and_remove(zop_csky_kruger_mechanic_task_3_fetch) =inc_task_stage(zop_csky_kruger_mechanic_task_3)%
+precondition = {+zop_csky_kruger_mechanic_upgrade_tier_2 -zop_csky_kruger_mechanic_upgrade_tier_3} true, false
+condlist_0 = {!task_giver_alive(zop_csky_kruger_mechanic_task_3)} fail

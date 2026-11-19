@@ -1,0 +1,438 @@
+--[[
+	Zone Operations (Mixon) - world: who owns captured smarts.
+	owners[smart_name] = { faction, op, garrison = { [squad_id] = true } }
+	- on_try_respawn: a captured smart never respawns its old inhabitants
+	- every game hour the garrison is topped up while the player is not watching
+	Enemy free squads may still pick the smart as a target and come to fight the garrison:
+	those are the counter-attacks, the stock simulation does them for free.
+
+	Services: some hours after the capture the faction's own trader / mechanic (the stock
+	warfare squads, e.g. dolg_sim_squad_trader) set out from a smart away from the base with an
+	escort and walk in. Base jobs accept them by name (check_npc_trader / check_npc_mechanic),
+	so the trader takes the job the evacuated trader left. The job's trade file belongs to the
+	old owner, so trade_init is wrapped to give our traders the faction's own goods.
+	owners[name].services = { due = <time>, squads = { [squad_id] = section }, arrived = bool }
+]]
+
+local owners = {}
+local last_check = 0
+
+local function now()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+end
+
+function owner(smart_name)
+	local o = owners[smart_name]
+	return o and o.faction
+end
+
+function all()
+	return owners
+end
+
+function capture(smart_name, op)
+	local old = owners[smart_name]
+	if old and old.faction ~= op.faction then
+		-- the place changed hands: the old garrison and services are no longer ours to keep
+		for sid in pairs(old.garrison or {}) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		end
+		for sid in pairs(old.services and old.services.squads or {}) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		end
+		old = nil
+	end
+	owners[smart_name] = {
+		faction = op.faction, op = op.id,
+		garrison = old and old.garrison or {},
+		services = old and old.services or nil,
+	}
+	top_up(smart_name, true)
+	if #op.services > 0 and smart_name == op.services_home and not owners[smart_name].services then
+		-- not armed yet: zop_core arms it when the operation is over (arm_services)
+		owners[smart_name].services = { squads = {} }
+	end
+end
+
+-- adopt existing squads (the assault allies) as part of the garrison
+function adopt(smart_name, squad_ids)
+	local o = owners[smart_name]
+	if not o then
+		return
+	end
+	for sid in pairs(squad_ids or {}) do
+		if zop_spawn.valid_squad(sid) then
+			o.garrison[sid] = true
+			zop_spawn.steer_by_id(sid, smart_name, false)
+		end
+	end
+end
+
+local function garrison_alive(o)
+	local n = 0
+	for sid in pairs(o.garrison) do
+		local sq = zop_spawn.valid_squad(sid)
+		local ok, c = pcall(function() return sq and sq:npc_count() or 0 end)
+		if ok and c and c > 0 then
+			n = n + 1
+		else
+			o.garrison[sid] = nil
+		end
+	end
+	return n
+end
+
+function top_up(smart_name, force)
+	local o = owners[smart_name]
+	local op = o and zop_registry.get(o.op)
+	local se = zop_census.smart_by_name(smart_name)
+	if not (o and op and se and op.garrison_squad) then
+		return
+	end
+	-- never pop squads in front of the player
+	if not force and zop_census.actor_near(se, 200) then
+		return
+	end
+	local need = (op.garrison_count or 1) - garrison_alive(o)
+	for _ = 1, need do
+		local sq = zop_spawn.squad_at_smart(op.garrison_squad, se, smart_name)
+		if sq then
+			o.garrison[sq.id] = true
+		end
+	end
+end
+
+------------------------------------------------------------------ services
+local function tr(id)
+	return game.translate_string(id)
+end
+
+local function news(id, ...)
+	local text = tr(id)
+	if db.actor and text ~= id then
+		pcall(news_manager.send_tip, db.actor, string.format(text, ...), nil, nil, 12000)
+	end
+end
+
+local function smart_title(se)
+	local ok, t = pcall(smart_terrain.get_smart_terrain_name, se)
+	if ok and type(t) == "string" and t ~= "" and t ~= se:name() then return t end
+	-- unnamed smart: say the level instead of gar_smart_terrain_5_2
+	ok, t = pcall(function()
+		return game.translate_string(alife():level_name(game_graph():vertex(se.m_game_vertex_id):level_id()))
+	end)
+	return ok and type(t) == "string" and t ~= "" and t or se:name()
+end
+
+-- squad id -> trade file for the traders of our service squads
+local service_trade = {}
+
+local function index_services()
+	service_trade = {}
+	for _, o in pairs(owners) do
+		local op = zop_registry.get(o.op)
+		if o.services and op and op.trader_trade then
+			for sid in pairs(o.services.squads) do
+				service_trade[sid] = op.trader_trade
+			end
+		end
+	end
+end
+
+-- living service squads, by section (dead or recycled ones are dropped)
+local function services_alive(o)
+	local n, by_section = 0, {}
+	for sid, section in pairs(o.services.squads) do
+		local sq = zop_spawn.valid_squad(sid, section)
+		local ok, c = pcall(function() return sq and sq:npc_count() or 0 end)
+		if ok and c and c > 0 then
+			n = n + 1
+			by_section[section] = true
+		else
+			o.services.squads[sid] = nil
+			if o.services.at then
+				o.services.at[sid] = nil
+			end
+		end
+	end
+	return n, by_section
+end
+
+local function send_services(name, o, op, se, only, at_home)
+	local from = op.services_from and zop_census.smart_by_name(op.services_from)
+	if at_home then
+		-- a successor of a retired squad (see retire_unlisted) appears at the base itself
+		from = se
+	end
+	-- inside the switch distance (450 m) they walk in online when the player waits at the base
+	from = from or zop_spawn.muster_smart(se, 250, 420) or zop_spawn.muster_smart(se, 300, 700) or se
+	-- do not pop them up in front of the player either
+	if from.id ~= se.id and zop_census.actor_near(from, 150) then
+		return false
+	end
+	o.services.at = o.services.at or {}
+	for i, section in ipairs(op.services) do
+		if not only or only[section] then
+			local at = op.services_at[i] or name
+			local sq = zop_spawn.squad_at_smart(section, from, at)
+			if sq then
+				o.services.squads[sq.id] = section
+				o.services.at[sq.id] = at
+			end
+		end
+	end
+	if op.services_escort and not only then
+		local esc = zop_spawn.squad_at_smart(op.services_escort, from, name)
+		if esc then
+			o.garrison[esc.id] = true
+		end
+	end
+	o.services.arrived = false
+	index_services()
+	if not at_home then
+		news("st_zop_" .. op.id .. "_services_go", smart_title(se))
+	end
+	return true
+end
+
+-- The list of an operation's services changed in an update of the mod (the generic mechanic of
+-- csky_jupiter became Kruger): a squad that is no longer listed leaves for good and whoever is
+-- missing appears at the base at once. Toolkits given to the generic mechanic count for Kruger.
+local function retire_unlisted(name, o, op, se, alive)
+	local listed, retired = {}, false
+	for _, section in ipairs(op.services) do
+		listed[section] = true
+	end
+	for sid, section in pairs(o.services.squads) do
+		if not listed[section] then
+			local sq = zop_spawn.valid_squad(sid, section)
+			if sq then
+				pcall(function() sq:remove_squad() end)
+			end
+			o.services.squads[sid] = nil
+			if o.services.at then
+				o.services.at[sid] = nil
+			end
+			retired = true
+			if section == "zop_csky_mechanic_squad" and listed["zop_csky_kruger_squad"] then
+				for i = 1, 3 do
+					if has_alife_info("sim_default_csky_mechanic_upgrade_tier_" .. i) then
+						pcall(give_info, "zop_csky_kruger_mechanic_upgrade_tier_" .. i)
+					end
+				end
+			end
+		end
+	end
+	if not retired then
+		return
+	end
+	local missing = {}
+	for _, section in ipairs(op.services) do
+		if not alive[section] then
+			missing[section] = true
+		end
+	end
+	if next(missing) and send_services(name, o, op, se, missing, true) then
+		for section in pairs(missing) do
+			alive[section] = true
+		end
+	end
+	index_services()
+end
+
+local function services_arrived(o, se)
+	local sim = alife()
+	for sid in pairs(o.services.squads) do
+		local sq = sim:object(sid)
+		local at = o.services.at and o.services.at[sid]
+		local se_at = at and zop_census.smart_by_name(at) or se
+		if not (sq and sq.position and sq.position:distance_to(se_at.position) < 60) then
+			return false
+		end
+	end
+	return next(o.services.squads) ~= nil
+end
+
+function services_update(name, force)
+	local o = owners[name]
+	local op = o and zop_registry.get(o.op)
+	local se = zop_census.smart_by_name(name)
+	if not (o and o.services and op and se and #op.services > 0) then
+		return
+	end
+	-- one set of services per operation, owned by its home smart
+	if op.services_home and name ~= op.services_home then
+		return
+	end
+	local t = now()
+	local n, alive = services_alive(o)
+	if not o.services.sent then
+		-- first time: everyone sets out together, with the escort
+		if o.services.due and (force or t >= o.services.due) then
+			if send_services(name, o, op, se) then
+				o.services.sent = true
+				o.services.due = nil
+			end
+		end
+		return
+	end
+	retire_unlisted(name, o, op, se, alive)
+	-- later: whoever died is replaced a day after, one squad at a time
+	o.services.due_sec = o.services.due_sec or {}
+	local resend = {}
+	for _, section in ipairs(op.services) do
+		if alive[section] then
+			o.services.due_sec[section] = nil
+		elseif not o.services.due_sec[section] then
+			o.services.due_sec[section] = t + 24 * 3600
+		elseif force or t >= o.services.due_sec[section] then
+			resend[section] = true
+		end
+	end
+	if next(resend) and send_services(name, o, op, se, resend) then
+		for section in pairs(resend) do
+			o.services.due_sec[section] = nil
+		end
+		o.services.arrived = false
+	end
+	if n == 0 then
+		return
+	end
+	if not o.services.arrived and services_arrived(o, se) then
+		o.services.arrived = true
+		news("st_zop_" .. op.id .. "_services_here", smart_title(se))
+	end
+end
+
+-- a failed operation gives back what it captured (only places captured by this very operation)
+function release(smart_name, op_id)
+	local o = owners[smart_name]
+	if not (o and o.op == op_id) then
+		return
+	end
+	for sid in pairs(o.garrison or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	end
+	for sid in pairs(o.services and o.services.squads or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	end
+	owners[smart_name] = nil
+	index_services()
+end
+
+-- called by zop_core when an operation succeeded: the services set out services_delay hours later
+function arm_services(op)
+	local o = op and op.services_home and owners[op.services_home]
+	if o and o.services and not o.services.sent and not o.services.due then
+		o.services.due = now() + op.services_delay * 3600
+	end
+end
+
+local orig_trade_init
+local function trade_init_wrapper(npc, cfg)
+	if npc and next(service_trade) then
+		local sq = get_object_squad(npc)
+		local own = sq and service_trade[sq.id]
+		if own and string.find(npc:name(), "_trader") then
+			cfg = own
+		end
+	end
+	return orig_trade_init(npc, cfg)
+end
+
+local function install_trade()
+	if orig_trade_init or not (trade_manager and trade_manager.trade_init) then
+		return
+	end
+	orig_trade_init = trade_manager.trade_init
+	trade_manager.trade_init = trade_init_wrapper
+end
+
+local function on_try_respawn(smart, flags)
+	if smart and owners[smart:name()] then
+		flags.disabled = true
+	end
+end
+
+-- Service NPCs on a post (beh to an exact level vertex) can stop short of it when furniture
+-- (the mechanic's chair) stands on that vertex: within 1.5 m they are put onto it.
+local next_post_fix = 0
+local function fix_posts()
+	local tg = time_global()
+	if tg < next_post_fix then
+		return
+	end
+	next_post_fix = tg + 3000
+	for _, o in pairs(owners) do
+		for sid in pairs(o.services and o.services.squads or {}) do
+			local sq = zop_spawn.valid_squad(sid)
+			if sq then
+				for m in sq:squad_members() do
+					local npc = level.object_by_id(m.id)
+					local st = npc and db.storage[m.id] and db.storage[m.id].beh
+					local lv = st and st.desired_target and st.desired_target.level_vertex_id
+					if lv and npc:alive() and not npc:best_enemy() and npc:level_vertex_id() ~= lv then
+						local p = level.vertex_position(lv)
+						if npc:position():distance_to(p) < 1.5 then
+							pcall(function() npc:set_npc_position(p) end)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+local function actor_on_update()
+	pcall(fix_posts)
+	local t = now()
+	if t - last_check < 3600 then
+		return
+	end
+	last_check = t
+	for name in pairs(owners) do
+		pcall(top_up, name, false)
+		pcall(services_update, name, false)
+	end
+end
+
+local function save_state(m)
+	m.zop_world = { owners = owners }
+end
+
+local function load_state(m)
+	local w = m.zop_world
+	owners = (w and w.owners) or {}
+	for name, o in pairs(owners) do
+		o.garrison = o.garrison or {}
+		local op = zop_registry.get(o.op)
+		local home = not op or op.services_home == name
+		if o.services then
+			o.services.squads = o.services.squads or {}
+			if not home then
+				-- older versions gave every captured target its own set: keep only the home one,
+				-- the others go back to the simulation
+				for sid in pairs(o.services.squads) do
+					pcall(zop_spawn.steer_by_id, sid, nil, false)
+				end
+				o.services = nil
+			elseif o.services.sent == nil and next(o.services.squads) then
+				-- sent by an older version: missing sections are filled in one by one
+				o.services.sent = true
+			end
+		elseif home and op and #op.services > 0 then
+			-- captured before services existed (older version of the mod): send them now
+			o.services = { due = 0, squads = {} }
+		end
+	end
+	index_services()
+end
+
+function on_game_start()
+	install_trade()
+	RegisterScriptCallback("on_try_respawn", on_try_respawn)
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("load_state", load_state)
+end

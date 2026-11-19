@@ -1,0 +1,10 @@
+; Zone Operations (Mixon) - DLTX: once Yanov is Duty's, the Duty commander takes Loki's post.
+; Loki is evacuated by duty_yanov, so only one of them is ever here.
+; Everything below is conditional on the NPC, so Loki himself stays exactly as in vanilla.
+![logic@jup_a6_freedom_leader]
+suitable = {=check_npc_name(jup_a6_freedom_leader)} true, {=check_npc_name(zop_dolg_commander)} true
+
+; Loki's own voice lines would not fit a Duty officer (xr_meet reads these as condlists)
+![meet@stand_base]
+close_snd_hello = {=check_npc_name(zop_dolg_commander)} nil, jup_a6_freedom_leader_greeting
+close_snd_bye = {=check_npc_name(zop_dolg_commander)} nil, jup_a6_freedom_leader_farewell

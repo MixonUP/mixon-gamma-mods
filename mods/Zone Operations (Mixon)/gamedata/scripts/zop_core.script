@@ -1,0 +1,1231 @@
+--[[
+	Zone Operations (Mixon) - core: one active operation at a time, as a state machine.
+
+	assault:  muster -> assault (target 1 .. n) [-> counter_wait -> counter] -> success | fail
+	defense:  wait (delay_hours) -> defend (wave 1 .. n) -> success | fail
+
+	State lives in m_data.zop (save/load). Every step is pcall-guarded: a broken operation
+	fails itself with a log line, it never takes the script engine down.
+	Texts: st_zop_<op>_name / _offer / _muster / _go / _next / _won / _failed / _attack,
+	generic: st_zop_task_title, st_zop_descr_*, st_zop_dlg_*.
+]]
+
+local TICK_MS          = 1000
+local CLEAR_SECONDS    = 10      -- target must stay clear this long (real s)
+local NEAR_TARGET      = 220     -- player must be this close for a target to count as cleared
+local FLANK_NEAR       = 500     -- the flank fight is switched on while the player is this close
+local MUSTER_RADIUS    = 45
+local MUSTER_DAYS      = 3       -- game days to reach the muster point
+local ASSAULT_DAYS     = 2       -- game days for the fight itself
+local DEFENSE_HOURS    = 12      -- attackers give up after this many game hours
+
+local st = { active = nil, done = {}, cooldown = {}, done_at = {} }
+local pending_offer          -- op id remembered between dialog precondition and its script text
+local next_tick = 0
+-- real-time windows (time_global) are runtime only: never saved, a reload simply restarts them
+local clear_since, lost_since
+
+------------------------------------------------------------------ helpers
+local function now()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+end
+
+local function tr(id)
+	return game.translate_string(id)
+end
+
+local function op_text(op, key)
+	return tr("st_zop_" .. op.id .. "_" .. key)
+end
+
+local function mcm(key, def)
+	if ui_mcm and ui_mcm.get then
+		local v = ui_mcm.get("zop/" .. key)
+		if v ~= nil then return v end
+	end
+	return def
+end
+
+local function news(text)
+	if db.actor and text and text ~= "" then
+		pcall(news_manager.send_tip, db.actor, text, nil, nil, 12000)
+	end
+end
+
+local function tm()
+	return task_manager and task_manager.get_task_manager()
+end
+
+local function smart_title(name)
+	local ok, s = pcall(function()
+		return smart_terrain.get_smart_terrain_name(SIMBOARD.smarts_by_names[name])
+	end)
+	if ok and type(s) == "string" and s ~= "" then return s end
+	return name
+end
+
+-- an unnamed smart (gar_smart_terrain_5_2) is shown by its level name ("Garbage")
+local function place_title(name)
+	local t = smart_title(name)
+	if t ~= name then
+		return t
+	end
+	local ok, s = pcall(function()
+		local se = zop_census.smart_by_name(name)
+		return game.translate_string(alife():level_name(game_graph():vertex(se.m_game_vertex_id):level_id()))
+	end)
+	if ok and type(s) == "string" and s ~= "" then return s end
+	return name
+end
+
+-- muster smarts are often unnamed (jup_sim_21): then say how far from the first target they are
+local function muster_title(name, op)
+	local t = smart_title(name)
+	if t ~= name then
+		return t
+	end
+	local se_m, se_t = zop_census.smart_by_name(name), zop_census.smart_by_name(op.targets[1])
+	if se_m and se_t then
+		return string.format(tr("st_zop_near"), math.floor(se_m.position:distance_to(se_t.position)), place_title(op.targets[1]))
+	end
+	return name
+end
+
+local function actor_faction()
+	local ok, c = pcall(get_actor_true_community)
+	return ok and c or nil
+end
+
+local function a()
+	return st.active
+end
+
+local function cur_op()
+	return st.active and zop_registry.get(st.active.op)
+end
+
+------------------------------------------------------------------ availability
+function available(op)
+	if not (op and mcm("enabled", true)) then
+		return false
+	end
+	if st.active then
+		return false
+	end
+	if actor_faction() ~= op.faction then
+		return false
+	end
+	if st.done[op.id] then
+		return false
+	end
+	if st.cooldown[op.id] and now() < st.cooldown[op.id] then
+		return false
+	end
+	for _, req in ipairs(op.requires) do
+		if not st.done[req] then
+			return false
+		end
+	end
+	if op.requires_info and not (db.actor and db.actor:has_info(op.requires_info)) then
+		return false
+	end
+	if op.requires_days > 0 then
+		for _, req in ipairs(op.requires) do
+			local at = st.done_at[req]
+			if at and now() < at + op.requires_days * 86400 then
+				return false
+			end
+		end
+	end
+	for _, t in ipairs(op.targets) do
+		local own = zop_world.owner(t)
+		if op.retake then
+			-- a retake only makes sense while the enemy holds the place
+			if own ~= op.enemy then
+				return false
+			end
+		-- a defense makes no sense once the place has fallen; an assault none once it is ours
+		elseif own and (own ~= op.faction or op.kind == "assault") then
+			return false
+		end
+		if not zop_census.smart_by_name(t) then
+			return false
+		end
+	end
+	return true
+end
+
+------------------------------------------------------------------ lifecycle
+local function return_evacuated(s, op)
+	-- story squads sent away from a target during the assault walk back home
+	for sid in pairs(s.sent_away or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	end
+	if not s.evacuated then
+		return
+	end
+	for _, e in ipairs(op.evacuate) do
+		zop_spawn.evacuate(e.squad, nil)
+	end
+end
+
+-- PDA marks: the point the attack will come from, and every attacking squad
+local MARK = "red_location"
+local function mark(id, text_id)
+	if id then
+		pcall(level.map_add_object_spot_ser, id, MARK, tr(text_id))
+	end
+end
+local function unmark(id)
+	if id then
+		pcall(level.map_remove_object_spot, id, MARK)
+	end
+end
+local function mark_squads(set, text_id)
+	for sid in pairs(set or {}) do
+		mark(sid, text_id)
+	end
+end
+-- wave_spawn of a defense: a fixed spot where its waves appear - used only if it lies on the
+-- target's level (a wrong game vertex would put the squads on another map)
+local function wave_point(op, wave)
+	local ww = wave and op.waves and op.waves[wave]
+	local w = ww and ww.spawn or op.wave_spawn
+	local se_t = w and zop_census.smart_by_name(op.targets[1])
+	if not (se_t and w.x and w.y and w.z and w.lvid and w.gvid) then
+		return nil
+	end
+	local ok, same = pcall(function()
+		local gg = game_graph()
+		return gg:valid_vertex_id(w.gvid) and gg:vertex(w.gvid):level_id() == gg:vertex(se_t.m_game_vertex_id):level_id()
+	end)
+	return ok and same and w or nil
+end
+
+-- where the enemy comes from: with a wave point the smart closest to it (the PDA mark sits there
+-- and the squads are registered with it), otherwise a smart 180-450 m from the target
+local function staging_for(target_name, op)
+	local se_t = zop_census.smart_by_name(target_name)
+	if not se_t then
+		return nil
+	end
+	local w = op and wave_point(op)
+	if w then
+		local ok, se_n = pcall(zop_spawn.nearest_smart, vector():set(w.x, w.y, w.z), w.gvid, se_t.id)
+		if ok and se_n then
+			return se_n
+		end
+	end
+	return zop_spawn.muster_smart(se_t, 180, 450) or zop_spawn.muster_smart(se_t, 100, 800)
+end
+
+-- garrisons this operation put into its own targets
+local function own_garrisons(op)
+	local out = {}
+	for _, t in ipairs(op.targets) do
+		local o = zop_world.all()[t]
+		if o and o.op == op.id and o.garrison then
+			out[#out + 1] = o.garrison
+		end
+	end
+	return out
+end
+
+-- force_online is set every tick on the operation's squads (see actor_on_update); once the
+-- operation is over they must be able to go offline again like everybody else
+local function unforce(set)
+	for sid in pairs(set or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq and sq.force_online then
+			sq.force_online = nil
+			sq.forced_online_status = nil
+		end
+	end
+end
+
+-- Hideout Furniture's workbench has its own dialog with a "Pick up" button that skips the
+-- world-object check (ui_furniture_workshop.UIFurnitureWorkshop:Pickup calls wrapper:pickup()
+-- directly), so the player could pocket the mechanic's workbench and it was gone for good.
+-- World objects (is_world_obj, set in place_props) refuse it here.
+local workshop_pickup
+local function guard_world_furniture()
+	local cls = bind_workshop_furniture and bind_workshop_furniture.hf_workshop_wrapper
+	if workshop_pickup or not (cls and cls.pickup) then
+		return
+	end
+	workshop_pickup = cls.pickup
+	cls.pickup = function(self, ...)
+		local ok, can = pcall(function() return self:is_pickupable() end)
+		if ok and can == false then
+			return false
+		end
+		return workshop_pickup(self, ...)
+	end
+end
+
+-- furniture for the new base (the mechanic's chair and workbench): placed once, on the services home's level
+function place_props(op)
+	st.props = st.props or {}
+	if st.props[op.id] or #op.props == 0 then
+		return
+	end
+	local se_h = zop_census.smart_by_name(op.services_home or op.targets[#op.targets])
+	if not se_h then
+		return
+	end
+	local here = level.name() == alife():level_name(game_graph():vertex(se_h.m_game_vertex_id):level_id())
+	for _, pr in ipairs(op.props) do
+		local pos = vector():set(pr.x, pr.y, pr.z)
+		local lvid = here and level.vertex_id(pos) or se_h.m_level_vertex_id
+		if lvid >= 4294967295 then
+			lvid = se_h.m_level_vertex_id
+		end
+		local rot = vector():set(0, math.rad(pr.yaw), 0)
+		if placeable_furniture and placeable_furniture.create_object and string.find(pr.section, "^placeable_") then
+			-- Hideout Furniture objects: created through its own API (its binders need their data),
+			-- marked as world objects (no pickup), lamps switched on
+			local id = placeable_furniture.create_object(pr.section, pos, rot, lvid, se_h.m_game_vertex_id)
+			if id and hf_obj_manager then
+				hf_obj_manager.update_data(id, { is_world_obj = true, is_on = true })
+			end
+		else
+			local se = alife():create(pr.section, pos, lvid, se_h.m_game_vertex_id)
+			if se then
+				se.angle = rot
+			end
+		end
+	end
+	st.props[op.id] = true
+end
+
+local function finish(success)
+	pcall(zop_battle.stop)
+	clear_since, lost_since = nil, nil
+	local s, op = a(), cur_op()
+	-- state first: whatever happens below, the operation is over exactly once
+	st.active = nil
+	if not (s and op) then
+		pcall(function() tm():set_task_failed("zop_task") end)
+		return
+	end
+	-- (no holes in these lists: ipairs stops at the first nil)
+	for _, set in ipairs({ s.squads or {}, s.defenders or {}, s.attackers or {}, s.flank or {} }) do
+		pcall(unforce, set)
+	end
+	for _, set in ipairs(own_garrisons(op)) do
+		pcall(unforce, set)
+	end
+	unmark(s.counter_from_id)
+	unmark(s.staging_id)
+	for sid in pairs(s.attackers or {}) do
+		unmark(sid)
+	end
+	if op and op.kind == "defense" then
+		for sid in pairs(s.squads or {}) do
+			unmark(sid)
+		end
+	end
+	-- our defenders were only lent for the operation
+	for sid in pairs(s.defenders or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	end
+	-- the counterattack's leftovers, the occupiers and the evicted go back to the simulation
+	for _, set in ipairs({ s.attackers or {}, s.occupiers or {}, s.evicted or {} }) do
+		for sid in pairs(set) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		end
+	end
+	if success then
+		pcall(function() tm():set_task_completed("zop_task") end)
+		local mult = tonumber(mcm("reward_mult", 1)) or 1
+		local money = math.floor(op.reward * mult)
+		if money > 0 then
+			pcall(function() db.actor:give_money(money) end)
+		end
+		if op.goodwill ~= 0 then
+			pcall(relation_registry.change_community_goodwill, op.faction, AC_ID, op.goodwill)
+		end
+		st.done[op.id] = true
+		st.done_at[op.id] = now()
+		-- a successful defense of a place we keep
+		if op.kind == "defense" and op.capture then
+			pcall(zop_world.capture, op.targets[1], op)
+		end
+		if op.release_allies then
+			for sid in pairs(s.squads or {}) do
+				pcall(zop_spawn.steer_by_id, sid, nil, false)
+			end
+		elseif op.kind == "assault" and op.capture then
+			-- reinforcements that came during the counterattack stay as garrison with the others
+			-- (the allies were adopted when the last target fell)
+			pcall(zop_world.adopt, op.targets[#op.targets], s.squads)
+		end
+		-- the services set out only now, when the fighting is over
+		pcall(zop_world.arm_services, op)
+		for _, c in ipairs(op.peace_on_success) do
+			pcall(function()
+				relation_registry.set_community_relation(op.faction, c, 1000)
+				relation_registry.set_community_relation(c, op.faction, 1000)
+			end)
+		end
+		for _, id in ipairs(op.success_news) do
+			pcall(function() news(tr(id)) end)
+		end
+		-- they walk in from a smart nearby and stay (posts are exclusive jobs of that smart)
+		if #op.success_spawn > 0 then
+			pcall(function()
+				local se_t = zop_census.smart_by_name(op.targets[1])
+				local se_from = se_t and (zop_spawn.muster_smart(se_t, 80, 250) or zop_spawn.muster_smart(se_t, 60, 500) or se_t)
+				for _, sec in ipairs(op.success_spawn) do
+					zop_spawn.squad_at_smart(sec, se_from, op.targets[1])
+				end
+			end)
+		end
+		pcall(place_props, op)
+		for _, b in ipairs(op.blocks) do
+			st.done[b] = true
+		end
+		for _, e in ipairs(op.restore) do
+			if not pcall(zop_spawn.evacuate, e.squad, e.to) then
+				printf("![ZOP] %s: restore of %s failed", op.id, e.squad)
+			end
+		end
+		pcall(function() news(string.format(op_text(op, "won"), money)) end)
+	else
+		pcall(function() tm():set_task_failed("zop_task") end)
+		st.cooldown[op.id] = now() + op.cooldown * 86400
+		-- release whoever is left back to the free simulation; story NPCs go home
+		for sid in pairs(s.squads or {}) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		end
+		pcall(return_evacuated, s, op)
+		-- whatever this attempt captured is lost again, so the operation can be tried again
+		if op.capture then
+			for _, t in ipairs(op.targets) do
+				pcall(zop_world.release, t, op.id)
+			end
+		end
+		pcall(function() news(op_text(op, "failed")) end)
+	end
+end
+
+function start(op_id)
+	local op = zop_registry.get(op_id)
+	if not available(op) then
+		return false
+	end
+	local se_t = zop_census.smart_by_name(op.targets[1])
+	local se_m = (op.muster and zop_census.smart_by_name(op.muster))
+		or zop_spawn.muster_smart(se_t, 150, 400) or zop_spawn.muster_smart(se_t, 80, 700)
+	if not se_m then
+		printf("![ZOP] %s: no muster smart near %s", op.id, op.targets[1])
+		return false
+	end
+	-- two-sided assault: the second group gathers on the far side of its target
+	local flank_muster
+	if op.kind == "assault" and op.flank_count > 0 then
+		local se_f = zop_census.smart_by_name(op.flank_target)
+		local se_fm = se_f and ((op.flank_muster and zop_census.smart_by_name(op.flank_muster))
+			or zop_spawn.muster_smart(se_f, 150, 400, se_m.position)
+			or zop_spawn.muster_smart(se_f, 80, 700, se_m.position))
+		if se_fm and se_fm.id ~= se_m.id then
+			flank_muster = se_fm:name()
+		else
+			printf("![ZOP] %s: no flank muster smart near %s, one group only", op.id, op.flank_target)
+		end
+	end
+	st.active = {
+		op = op.id,
+		stage = (op.kind == "assault") and "muster" or "wait",
+		target = 1,
+		muster = se_m:name(),
+		flank_muster = flank_muster,
+		squads = {},
+		flank = {},
+		t0 = now(),
+		attack_at = now() + op.delay_hours * 3600,
+	}
+	-- defense: our own squad takes position at the target at once
+	if op.kind == "defense" and op.defender_squad and op.defender_count > 0 then
+		st.active.defenders = {}
+		local se_d = zop_census.smart_by_name(op.targets[1])
+		for _ = 1, op.defender_count do
+			local sq = se_d and zop_spawn.squad_at_smart(op.defender_squad, se_d, op.targets[1])
+			if sq then
+				st.active.defenders[sq.id] = true
+			end
+		end
+	end
+	-- dynamic faction relations may have turned allies hostile on the way: make peace again
+	for _, c in ipairs(op.peace_with) do
+		pcall(function()
+			if relation_registry.community_relation(op.faction, c) < 300 then
+				relation_registry.set_community_relation(op.faction, c, 300)
+				relation_registry.set_community_relation(c, op.faction, 300)
+			end
+		end)
+	end
+	-- everybody else living at the targets moves out; the enemy digs in
+	for _, tname in ipairs(op.targets) do
+		local se_t = zop_census.smart_by_name(tname)
+		if se_t and op.evict then
+			local away = zop_spawn.muster_smart(se_t, 300, 700) or zop_spawn.muster_smart(se_t, 200, 900)
+			local sb = SIMBOARD.smarts[se_t.id]
+			for sid in pairs(sb and sb.squads or {}) do
+				local sq = alife():object(sid)
+				local c = sq and sq.player_id
+				if c and c ~= op.enemy and c ~= op.faction and away and not get_object_story_id(sid) then
+					pcall(zop_spawn.steer, sq, away:name(), false)
+					st.active.evicted = st.active.evicted or {}
+					st.active.evicted[sid] = true
+				end
+			end
+		end
+		if se_t and op.occupy_squad and op.occupy_count > 0 then
+			st.active.occupiers = st.active.occupiers or {}
+			for _ = 1, op.occupy_count do
+				local ok, sq = pcall(zop_spawn.squad_at_smart, op.occupy_squad, se_t, tname)
+				if ok and sq then
+					st.active.occupiers[sq.id] = true
+				end
+			end
+		end
+	end
+	pcall(function() tm():give_task("zop_task") end)
+	for _, id in ipairs(op.start_news) do
+		news(tr(id))
+	end
+	if op.kind == "assault" then
+		news(string.format(op_text(op, "muster"), muster_title(se_m:name(), op)))
+	else
+		news(string.format(op_text(op, "muster"), op.delay_hours))
+	end
+	return true
+end
+
+-- at (optional): an exact spot { x, y, z, lvid, gvid } on the level of the smart at_name
+local function spawn_wave(op, section, count, at_name, target_name, flank, at)
+	local se_at = zop_census.smart_by_name(at_name)
+	local n = 0
+	for _ = 1, count do
+		local sq = zop_spawn.squad_at_smart(section, se_at, target_name, at)
+		if sq then
+			st.active.squads[sq.id] = true
+			if flank then
+				st.active.flank = st.active.flank or {}
+				st.active.flank[sq.id] = true
+			end
+			n = n + 1
+		end
+	end
+	return n
+end
+
+-- story squads sent away: a story NPC caught in the fight must not hold the target forever
+local function evac_skip(s, op)
+	local skip = {}
+	for sid in pairs(s and s.sent_away or {}) do
+		skip[sid] = true
+	end
+	for _, e in ipairs(op.evacuate) do
+		local id = get_story_object_id(e.squad)
+		if id then
+			skip[id] = true
+		end
+	end
+	return next(skip) and skip or nil
+end
+
+-- Story NPCs of the enemy caught at a target leave for the evacuation smart during the
+-- assault (GAMMA nulls NPC damage on many of them, so they could never be beaten there).
+-- Listed evacuate squads go to their own smart; an unlisted enemy NPC goes to the first one
+-- only if GAMMA protects him (grok_additional_storyline_npc_invincible). Every squad sent is
+-- remembered in s.sent_away and called back if the operation fails.
+local next_send = {}   -- [smart id] = time_global
+local function send_story_away(s, op, se_t)
+	if not (se_t and op.evacuate[1]) or time_global() < (next_send[se_t.id] or 0) then
+		return
+	end
+	next_send[se_t.id] = time_global() + 2000
+	local to_of = {}
+	for _, e in ipairs(op.evacuate) do
+		local id = get_story_object_id(e.squad)
+		if id then
+			to_of[id] = e.to
+		end
+	end
+	local ads = grok_additional_storyline_npc_invincible and grok_additional_storyline_npc_invincible.ads_npcs
+	local r2 = (op.radius * 1.7) ^ 2
+	local sent = {}
+	s.sent_away = s.sent_away or {}
+	for i = 1, #db.OnlineStalkers do
+		local id = db.OnlineStalkers[i]
+		local o = id and level.object_by_id(id)
+		if o and o:alive() and character_community(o) == op.enemy and o:position():distance_to_sqr(se_t.position) <= r2 then
+			local se = alife():object(o:id())
+			local sid = se and se.group_id
+			if sid and sid ~= 65535 and not sent[sid] and not s.sent_away[sid]
+				and (to_of[sid] or (ads and ads[o:section()] == 1)) then
+				sent[sid] = true
+				if zop_spawn.send_away(sid, to_of[sid] or op.evacuate[1].to) then
+					s.sent_away[sid] = true
+					printf("[ZOP] %s: %s left for %s", op.id, o:section(), to_of[sid] or op.evacuate[1].to)
+				end
+			end
+		end
+	end
+end
+
+-- Reinforcements: our side is down to reinforce_at fighters or fewer -> a new group comes from
+-- the muster point (assault) or from a smart near the target (defense, counterattack).
+-- `set` is the table of our squad ids that fight now; the new squads are added to it.
+local next_reinforce = 0
+local function reinforce(s, op, set, target_name)
+	-- one budget per phase: the assault, the counterattack and the defense count separately
+	s.reinforced_by = s.reinforced_by or {}
+	local phase = s.stage
+	if op.reinforce_count <= 0 or not op.reinforce_squad or (s.reinforced_by[phase] or 0) >= op.reinforce_max then
+		return
+	end
+	if time_global() < next_reinforce then
+		return
+	end
+	next_reinforce = time_global() + 30000
+	if zop_census.alive_in_squads(set) > op.reinforce_at then
+		return
+	end
+	local se_t = zop_census.smart_by_name(target_name)
+	-- never next to where the enemy comes from
+	local enemy_from = zop_census.smart_by_name(s.counter_from or s.staging or s.staging_pre or "")
+	local away = enemy_from and enemy_from.position
+	local se_from = s.muster and s.stage == "assault" and zop_census.smart_by_name(s.muster)
+		or (se_t and (zop_spawn.muster_smart(se_t, 150, 400, away) or zop_spawn.muster_smart(se_t, 80, 700, away)
+			or zop_spawn.muster_smart(se_t, 150, 400)))
+	if not (se_t and se_from) then
+		return
+	end
+	local n = 0
+	for _ = 1, op.reinforce_count do
+		local sq = zop_spawn.squad_at_smart(op.reinforce_squad, se_from, target_name)
+		if sq then
+			set[sq.id] = true
+			n = n + 1
+		end
+	end
+	if n > 0 then
+		s.reinforced_by[phase] = (s.reinforced_by[phase] or 0) + 1
+		news(string.format(tr("st_zop_reinforce"), tr(op.faction), n, place_title(target_name)))
+	end
+end
+
+-- squads of the flank group still on their way to (or fighting at) the flank target
+local function flank_squads(s, op)
+	local out = {}
+	if s.flank and op.flank_index and s.target < op.flank_index then
+		for sid in pairs(s.flank) do
+			-- dead or recycled squads drop out, so the flank fight ends with its group
+			if s.squads[sid] and zop_spawn.valid_squad(sid, op.flank_squad) then
+				out[sid] = true
+			end
+		end
+	end
+	return out
+end
+
+------------------------------------------------------------------ stages
+local function step_muster(s, op)
+	if now() - s.t0 > MUSTER_DAYS * 86400 then
+		return finish(false)
+	end
+	local se_m = zop_census.smart_by_name(s.muster)
+	if zop_census.actor_near(se_m, MUSTER_RADIUS) then
+		local count = op.ally_count + (tonumber(mcm("extra_squads", 0)) or 0)
+		if spawn_wave(op, op.ally_squad, count, s.muster, op.targets[1]) == 0 then
+			printf("![ZOP] %s: no ally squad could be spawned", op.id)
+			return finish(false)
+		end
+		-- the second group moves at the same moment, from the other side
+		if s.flank_muster and op.flank_count > 0 then
+			local nf = spawn_wave(op, op.flank_squad, op.flank_count, s.flank_muster, op.flank_target, true)
+			if nf > 0 then
+				news(string.format(tr("st_zop_flank_go"), place_title(op.flank_target)))
+			end
+		end
+		-- story NPCs leave only when the assault really starts (and come back if it fails)
+		for _, e in ipairs(op.evacuate) do
+			if not zop_spawn.evacuate(e.squad, e.to) then
+				printf("![ZOP] %s: evacuation of %s skipped (not found)", op.id, e.squad)
+			end
+		end
+		s.evacuated = true
+		s.stage, s.t1 = "assault", now()
+		clear_since = nil
+		news(string.format(op_text(op, "go"), place_title(op.targets[1])))
+	end
+end
+
+local function step_assault(s, op)
+	if now() - (s.t1 or s.t0) > ASSAULT_DAYS * 86400 then
+		return finish(false)
+	end
+	local tname = op.targets[s.target]
+	local se_t = zop_census.smart_by_name(tname)
+	-- the flank group fights at its own target at the same time
+	local fl = flank_squads(s, op)
+	if next(fl) then
+		local se_f = zop_census.smart_by_name(op.flank_target)
+		if se_f and zop_census.actor_near(se_f, FLANK_NEAR) then
+			send_story_away(s, op, se_f)
+			zop_battle.engage(se_f, op.faction, op.enemy, op.radius * 1.7)
+			zop_battle.reveal(fl, se_f, op.enemy, op.radius)
+		end
+	end
+	reinforce(s, op, s.squads, tname)
+	if not (se_t and zop_census.actor_near(se_t, NEAR_TARGET)) then
+		clear_since = nil
+		return
+	end
+	-- base job logic keeps both sides peaceful; switch the fight on (see zop_battle)
+	send_story_away(s, op, se_t)
+	zop_battle.engage(se_t, op.faction, op.enemy, op.radius * 1.7)
+	local main = {}
+	for sid in pairs(s.squads) do
+		if not fl[sid] then
+			main[sid] = true
+		end
+	end
+	zop_battle.reveal(main, se_t, op.enemy, op.radius)
+	if zop_census.count(op.enemy, se_t, op.radius, evac_skip(s, op)) > 0 then
+		clear_since = nil
+		return
+	end
+	local tg = time_global()
+	clear_since = clear_since or tg
+	if tg - clear_since < CLEAR_SECONDS * 1000 then
+		return
+	end
+	-- target cleared
+	if op.capture then
+		zop_world.capture(tname, op)
+		if s.target == #op.targets then
+			zop_world.adopt(tname, s.squads)
+		end
+	end
+	if s.target < #op.targets then
+		s.target, clear_since = s.target + 1, nil
+		local nxt = op.targets[s.target]
+		-- the flank group keeps its own target until the main group gets there
+		local keep = flank_squads(s, op)
+		for sid in pairs(s.squads) do
+			if not keep[sid] then
+				zop_spawn.steer_by_id(sid, nxt, true)
+			end
+		end
+		news(string.format(op_text(op, "next"), place_title(nxt)))
+	elseif op.counter_squad and op.counter_count > 0 then
+		-- the place is ours - for now: the enemy comes back after a countdown (real seconds,
+		-- counted down by the tick and saved, so a reload keeps the time left)
+		s.stage, s.counter_left, s.counter_said = "counter_wait", op.counter_delay, nil
+		local se_from = staging_for(op.counter_target)
+		if se_from then
+			s.counter_from, s.counter_from_id = se_from:name(), se_from.id
+			mark(se_from.id, "st_zop_mark_attack_from")
+		end
+		news(string.format(tr("st_zop_counter_soon"), math.ceil(op.counter_delay / 60)))
+	else
+		finish(true)
+	end
+end
+
+-- the counterattack on its way (runtime only: a reload restarts the windows)
+local COUNTER_STEER_S  = 20      -- real s between re-steers of a squad still far from the target
+local COUNTER_FAR      = 150     -- metres from the target: farther than this is "not there yet"
+local COUNTER_STUCK_S  = 90      -- real s without progress before a squad is pulled closer
+local COUNTER_PROGRESS = 20      -- metres closer that count as progress
+local COUNTER_PULLS    = 3       -- pulls per squad at most
+local counter_track = {}         -- [squad id] = { d = best distance, since = time_global, pulls }
+
+local function step_counter_wait(s, op)
+	s.counter_left = (s.counter_left or 0) - TICK_MS / 1000
+	if s.counter_left > 0 then
+		-- a reminder on every whole minute left
+		local min = math.ceil(s.counter_left / 60)
+		if min < math.ceil(op.counter_delay / 60) and s.counter_said ~= min then
+			s.counter_said = min
+			news(string.format(tr("st_zop_counter_in"), min))
+		end
+		return
+	end
+	local se_a = s.counter_from and zop_census.smart_by_name(s.counter_from) or staging_for(op.counter_target)
+	if not se_a then
+		printf("![ZOP] %s: no staging smart for the counterattack", op.id)
+		return finish(true)
+	end
+	unmark(s.counter_from_id)
+	s.attackers = {}
+	for _ = 1, op.counter_count do
+		local sq = zop_spawn.squad_at_smart(op.counter_squad, se_a, op.counter_target)
+		if sq then
+			s.attackers[sq.id] = true
+		end
+	end
+	s.stage, s.t1 = "counter", now()
+	lost_since = nil
+	counter_track = {}
+	mark_squads(s.attackers, "st_zop_mark_attackers")
+	news(op_text(op, "counter"))
+end
+
+-- Moves the given online members of a counterattack squad to 105-135 m from the target, on the
+-- side they are on now (they met somebody on the way and fight there, 300 m out, for ever).
+-- k: the squad's number, so squads from one staging point do not land on one spot.
+-- Returns how many were moved.
+local function counter_pull(list, se_t, k)
+	local tp = se_t.position
+	local cx, cy, cz = 0, 0, 0
+	for _, o in ipairs(list) do
+		local p = o:position()
+		cx, cy, cz = cx + p.x, cy + p.y, cz + p.z
+	end
+	cx, cy, cz = cx / #list, cy / #list, cz / #list
+	local base = math.atan2(cx - tp.x, cz - tp.z) + ((k % 4) - 1.5) * 0.07
+	local ap = db.actor and db.actor:position()
+	-- a point of the AI map at that bearing and distance: nil if there is no ground there, the
+	-- player stands next to it or the NPC's restrictors keep him out
+	local function spot(ang, dist, o)
+		local pos = vector():set(tp.x + math.sin(ang) * dist, cy, tp.z + math.cos(ang) * dist)
+		local lvid = level.vertex_id(pos)
+		if not lvid or lvid >= 4294967295 then
+			return nil
+		end
+		local vp = level.vertex_position(lvid)
+		if ap and vp:distance_to_sqr(ap) < 40 * 40 then
+			return nil
+		end
+		local ok, acc = pcall(function() return o:accessible(lvid) end)
+		if ok and acc == false then
+			return nil
+		end
+		return vp
+	end
+	local f_ang, f_dist
+	for _, da in ipairs({ 0, 0.2, -0.2, 0.4, -0.4, 0.7, -0.7 }) do
+		for _, dist in ipairs({ 120, 112, 128 }) do
+			if spot(base + da, dist, list[1]) then
+				f_ang, f_dist = base + da, dist
+				break
+			end
+		end
+		if f_ang then
+			break
+		end
+	end
+	if not f_ang then
+		return 0
+	end
+	local n = 0
+	for i, o in ipairs(list) do
+		-- a loose group: 3 m apart, rows of five
+		local vp = spot(f_ang + ((i - 1) % 5 - 2) * 0.025, f_dist + math.floor((i - 1) / 5) * 4 - 4, o)
+			or spot(f_ang, f_dist, o)
+		if vp then
+			local be = o:best_enemy()
+			if pcall(function() o:set_npc_position(vp) end) then
+				n = n + 1
+				-- whoever held him up out there is forgotten, or he walks straight back
+				if be and be:id() ~= AC_ID then
+					pcall(function() o:enable_memory_object(be, false) end)
+				end
+			end
+		end
+	end
+	return n
+end
+
+-- Every 5 s: a squad farther than COUNTER_FAR from the target is steered at it again (steer_now,
+-- every COUNTER_STEER_S); if its farthest member has not come COUNTER_PROGRESS metres closer for
+-- COUNTER_STUCK_S, the members still far out are pulled in (see counter_pull).
+local function counter_push(s, op, se_t, steer_now)
+	local tg, tp = time_global(), se_t.position
+	local k = 0
+	for sid in pairs(s.attackers or {}) do
+		k = k + 1
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			local far, d = {}, nil
+			for m in sq:squad_members() do
+				local o = level.object_by_id(m.id)
+				if o and o:alive() then
+					local dm = o:position():distance_to(tp)
+					if dm > COUNTER_FAR then
+						far[#far + 1] = o
+					end
+					if not d or dm > d then
+						d = dm
+					end
+				end
+			end
+			-- an offline squad has only its own position
+			d = d or sq.position:distance_to(tp)
+			local t = counter_track[sid] or { pulls = 0 }
+			counter_track[sid] = t
+			if d <= COUNTER_FAR then
+				t.d, t.since = nil, nil
+			else
+				if steer_now then
+					zop_spawn.steer(sq, op.counter_target, true)
+				end
+				if not t.d or d < t.d - COUNTER_PROGRESS then
+					t.d, t.since = d, tg
+				elseif tg - t.since > COUNTER_STUCK_S * 1000 and #far > 0 and t.pulls < COUNTER_PULLS then
+					local ok, n = pcall(counter_pull, far, se_t, k)
+					if not ok then
+						printf("![ZOP] %s: pull of squad %s failed: %s", op.id, tostring(sid), tostring(n))
+					elseif n > 0 then
+						printf("[ZOP] %s: counter squad %s stuck %d m out, %d moved closer", op.id, tostring(sid), math.floor(d), n)
+						t.pulls = t.pulls + 1
+						zop_spawn.steer(sq, op.counter_target, true)
+					end
+					-- moved or not, the next try is a full window away
+					t.d, t.since = nil, nil
+				end
+			end
+		end
+	end
+end
+
+local COUNTER_GIVE_UP = 600     -- real seconds: stragglers that never arrive have given up
+local function step_counter(s, op)
+	local se_t = zop_census.smart_by_name(op.counter_target)
+	reinforce(s, op, s.squads, op.counter_target)
+	s.counter_secs = (s.counter_secs or 0) + TICK_MS / 1000
+	local left = zop_census.alive_in_squads(s.attackers or {})
+	if left == 0 or (s.counter_secs > COUNTER_GIVE_UP and zop_census.count(op.faction, se_t, op.radius) > 0) then
+		-- they gave up: the enemy offers a truce
+		pcall(function() news(op_text(op, "truce")) end)
+		return finish(true)
+	end
+	-- stragglers far out are sent on again every 20 s, and pulled closer if that does not help
+	local secs = math.floor(s.counter_secs)
+	if se_t and secs % 5 == 0 then
+		local ok, err = pcall(counter_push, s, op, se_t, secs % COUNTER_STEER_S == 0)
+		if not ok then
+			printf("![ZOP] %s: counter push failed: %s", op.id, tostring(err))
+		end
+	end
+	if now() - s.t1 > DEFENSE_HOURS * 3600 then
+		return finish(false)
+	end
+	if zop_census.actor_near(se_t, NEAR_TARGET) then
+		-- the whole base fights, not only the building
+		zop_battle.engage(se_t, op.faction, op.enemy, 250)
+		-- no distance cap (as for the defense waves): squads held up 300 m out, fighting somebody
+		-- they met on the way, are shown the defenders and the player and come on
+		zop_battle.reveal(s.attackers, se_t, op.faction, op.radius, nil, { busy = true, actor = true })
+		-- our garrison and allies at the base must see them coming too, or they just stroll around
+		zop_battle.reveal_to(op.faction, se_t, 250, s.attackers)
+	end
+	if zop_census.actor_near(se_t, NEAR_TARGET) and zop_census.count(op.faction, se_t, op.radius) == 0 then
+		lost_since = lost_since or time_global()
+		if time_global() - lost_since > CLEAR_SECONDS * 1000 then
+			return finish(false)
+		end
+	else
+		lost_since = nil
+	end
+end
+
+local function same_level(a_name, b_name)
+	local a, b = zop_census.smart_by_name(a_name), zop_census.smart_by_name(b_name)
+	local gg = game_graph()
+	return a and b and gg:vertex(a.m_game_vertex_id):level_id() == gg:vertex(b.m_game_vertex_id):level_id()
+end
+
+local function step_wait(s, op)
+	-- a save taken before the operation's target changed: pick the staging point again and
+	-- send our defenders to the right place
+	if s.staging_pre and not same_level(s.staging_pre, op.targets[1]) then
+		unmark(s.staging_id)
+		s.staging_pre, s.staging_id = nil, nil
+	end
+	-- ... or before the operation got its wave point: the mark moves to the smart next to it
+	if s.staging_pre and wave_point(op) then
+		local se_n = staging_for(op.targets[1], op)
+		if se_n and se_n:name() ~= s.staging_pre then
+			unmark(s.staging_id)
+			s.staging_pre, s.staging_id = nil, nil
+		end
+	end
+	for sid in pairs(s.defenders or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq and sq.scripted_target ~= op.targets[1] then
+			zop_spawn.steer(sq, op.targets[1], true)
+		end
+	end
+	if not s.staging_pre then
+		-- show at once where they will come from
+		local se_p = staging_for(op.targets[1], op)
+		if se_p then
+			s.staging_pre, s.staging_id = se_p:name(), se_p.id
+			mark(se_p.id, "st_zop_mark_attack_from")
+		end
+	end
+	if now() < s.attack_at then
+		return
+	end
+	local se_a = s.staging_pre and zop_census.smart_by_name(s.staging_pre) or staging_for(op.targets[1], op)
+	if not se_a then
+		printf("![ZOP] %s: no staging smart for attackers", op.id)
+		return finish(false)
+	end
+	local w = op.waves[1]
+	local count = w.count + (tonumber(mcm("extra_squads", 0)) or 0)
+	if spawn_wave(op, w.section, count, se_a:name(), op.targets[1], nil, wave_point(op, 1)) == 0 then
+		return finish(false)
+	end
+	s.stage, s.t1, s.staging, s.wave = "defend", now(), se_a:name(), 1
+	s.enemy = w.enemy
+	mark_squads(s.squads, "st_zop_mark_attackers")
+	news(op_text(op, "attack"))
+end
+
+local function step_defend(s, op)
+	local left = zop_census.alive_in_squads(s.squads)
+	if left == 0 then
+		local nw = op.waves[(s.wave or 1) + 1]
+		if not nw then
+			return finish(true)
+		end
+		-- the next wave comes from the same staging point (or the operation's wave point)
+		s.wave = (s.wave or 1) + 1
+		for sid in pairs(s.squads) do
+			unmark(sid)
+		end
+		s.squads = {}
+		if spawn_wave(op, nw.section, nw.count, s.staging, op.targets[1], nil, wave_point(op, s.wave)) == 0 then
+			return finish(true)
+		end
+		s.t1 = now()
+		s.wave_secs = 0
+		s.enemy = nw.enemy
+		mark_squads(s.squads, "st_zop_mark_attackers")
+		pcall(function() news(op_text(op, "wave" .. s.wave)) end)
+		return
+	end
+	if now() - s.t1 > DEFENSE_HOURS * 3600 then
+		-- the attackers outlasted the defense window: they hold the field
+		return finish(false)
+	end
+	local se_t = zop_census.smart_by_name(op.targets[1])
+	s.defenders = s.defenders or {}
+	reinforce(s, op, s.defenders, op.targets[1])
+	-- a wave that cannot reach the place in 15 real minutes has given up: it counts as beaten
+	s.wave_secs = (s.wave_secs or 0) + TICK_MS / 1000
+	if s.wave_secs > 900 then
+		pcall(unforce, s.squads)
+		for sid in pairs(s.squads) do
+			unmark(sid)
+			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		end
+		s.squads = {}
+	end
+	if zop_census.actor_near(se_t, NEAR_TARGET) then
+		zop_battle.engage(se_t, op.faction, s.enemy or op.enemy, op.radius * 1.7)
+		-- attackers that stop short of the target are shown who holds it
+		-- the attackers are shown the defenders from wherever they are: they come straight at the place
+		-- (one call for us and our allies: reveal is throttled per smart)
+		local sides = { op.faction }
+		for _, c in ipairs(op.allies) do
+			sides[#sides + 1] = c
+		end
+		zop_battle.reveal(s.squads, se_t, sides, op.radius)
+		zop_battle.reveal_to(op.faction, se_t, op.radius * 2, s.squads)
+	end
+	local holders = zop_census.count(op.faction, se_t, op.radius)
+	for _, c in ipairs(op.allies) do
+		holders = holders + zop_census.count(c, se_t, op.radius)
+	end
+	if zop_census.actor_near(se_t, NEAR_TARGET) and holders == 0 then
+		lost_since = lost_since or time_global()
+		if time_global() - lost_since > CLEAR_SECONDS * 1000 then
+			return finish(false)
+		end
+	else
+		lost_since = nil
+	end
+end
+
+local STEPS = { muster = step_muster, assault = step_assault, wait = step_wait, defend = step_defend,
+	counter_wait = step_counter_wait, counter = step_counter }
+
+local function actor_on_update()
+	local tg = time_global()
+	if tg < next_tick then
+		return
+	end
+	next_tick = tg + TICK_MS
+	local s, op = a(), cur_op()
+	if not s then
+		return
+	end
+	if not op then
+		-- the operation was removed from the config: close it and its PDA task
+		pcall(finish, false)
+		return
+	end
+	-- GAMMA keeps squads within excl_dist (75 m) of the player offline - invisible - until he walks
+	-- away; an operation's squads must be there when he is: force_online (not saved, so every tick)
+	-- (the garrisons this operation put into its targets too: they are spawned next to the player
+	-- and have to be there for the counterattack)
+	-- no holes in the list: ipairs stops at the first nil (s.defenders is nil in an assault)
+	local sets = own_garrisons(op)
+	for _, set in ipairs({ s.squads or {}, s.defenders or {}, s.attackers or {}, s.flank or {} }) do
+		sets[#sets + 1] = set
+	end
+	for _, set in ipairs(sets) do
+		for sid in pairs(set) do
+			local sq = zop_spawn.valid_squad(sid)
+			if sq then
+				sq.force_online = true
+				sq.forced_online_status = true
+			end
+		end
+	end
+	-- the minimap draws spots of real NPCs only (a squad is a server object): every online member
+	-- of an attacking squad gets the red mark too
+	local enemy_sets = { s.attackers or {} }
+	if op.kind == "defense" then
+		enemy_sets[#enemy_sets + 1] = s.squads or {}
+	end
+	for _, set in ipairs(enemy_sets) do
+		for sid in pairs(set) do
+			local sq = zop_spawn.valid_squad(sid)
+			if sq then
+				for m in sq:squad_members() do
+					local o = level.object_by_id(m.id)
+					if o and o:alive() and level.map_has_object_spot(m.id, MARK) == 0 then
+						pcall(level.map_add_object_spot, m.id, MARK, tr("st_zop_mark_attackers"))
+					end
+				end
+			end
+		end
+	end
+	local f = STEPS[s.stage]
+	if f then
+		local ok, err = pcall(f, s, op)
+		if not ok then
+			printf("![ZOP] %s stage %s failed: %s", op.id, s.stage, tostring(err))
+			pcall(finish, false)
+		end
+	end
+end
+
+------------------------------------------------------------------ task functors
+local function title_impl()
+	local op = cur_op()
+	return op and op_text(op, "name") or tr("st_zop_task_title")
+end
+
+local function descr_impl()
+	local s, op = a(), cur_op()
+	if not (s and op) then
+		return ""
+	end
+	if s.stage == "muster" then
+		return string.format(tr("st_zop_descr_muster"), muster_title(s.muster, op))
+	elseif s.stage == "assault" then
+		local se_t = zop_census.smart_by_name(op.targets[s.target])
+		return string.format(tr("st_zop_descr_assault"), place_title(op.targets[s.target]), s.target, #op.targets,
+			zop_census.count(op.enemy, se_t, op.radius, evac_skip(s, op)))
+	elseif s.stage == "wait" then
+		return string.format(tr("st_zop_descr_wait"), place_title(op.targets[1]))
+	elseif s.stage == "counter_wait" then
+		return string.format(tr("st_zop_counter_in"), math.max(1, math.ceil((s.counter_left or 0) / 60)))
+	elseif s.stage == "counter" then
+		return op_text(op, "counter")
+	elseif s.stage == "defend" then
+		return string.format(tr("st_zop_descr_defend"), place_title(op.targets[1]), zop_census.alive_in_squads(s.squads))
+	end
+	return ""
+end
+
+local function target_impl()
+	local s, op = a(), cur_op()
+	if not (s and op) then
+		return nil
+	end
+	local name = (s.stage == "muster") and s.muster or op.targets[s.target or 1]
+	local se = zop_census.smart_by_name(name)
+	return se and se.id
+end
+
+------------------------------------------------------------------ dialogs
+local function npc_story_id(a1, a2)
+	local npc = dialogs.who_is_npc(a1, a2)
+	return npc and (get_object_story_id(npc:id()) or npc:section())
+end
+
+function dlg_can_offer(a1, a2)
+	pending_offer = nil
+	local sid = npc_story_id(a1, a2)
+	for _, op in ipairs(zop_registry.by_giver(sid)) do
+		if available(op) then
+			pending_offer = op.id
+			return true
+		end
+	end
+	return false
+end
+
+function dlg_offer_text()
+	local op = pending_offer and zop_registry.get(pending_offer)
+	return op and op_text(op, "offer") or ""
+end
+
+function dlg_accept(a1, a2)
+	if pending_offer then
+		start(pending_offer)
+	end
+end
+
+------------------------------------------------------------------ save / debug
+local function save_state(m)
+	m.zop = st
+end
+
+local function load_state(m)
+	st = m.zop or { done = {}, cooldown = {} }
+	st.done = st.done or {}
+	st.cooldown = st.cooldown or {}
+	st.done_at = st.done_at or {}
+end
+
+-- debug entry points for the bridge / console
+function debug_state()
+	return st
+end
+
+function debug_start(op_id)
+	st.cooldown[op_id] = nil
+	st.done[op_id] = nil
+	return start(op_id)
+end
+
+function debug_abort()
+	if st.active then
+		finish(false)
+	end
+end
+
+function on_game_start()
+	pcall(guard_world_furniture)
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("load_state", load_state)
+	if task_functor then
+		task_functor.zop_title = title_impl
+		task_functor.zop_descr = descr_impl
+		task_functor.zop_target = target_impl
+	end
+end

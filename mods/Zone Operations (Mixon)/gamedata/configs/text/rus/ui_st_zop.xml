@@ -1,0 +1,1313 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+	<string id="st_zop_task_title">
+		<text>Операция</text>
+	</string>
+	<string id="st_zop_dlg_ask">
+		<text>Есть серьёзная работа? Не на одного — на отряд.</text>
+	</string>
+	<string id="st_zop_dlg_accept">
+		<text>Берусь. Где сбор?</text>
+	</string>
+	<string id="st_zop_dlg_decline">
+		<text>Не сейчас.</text>
+	</string>
+	<string id="st_zop_descr_muster">
+		<text>Этап: сбор.
+Иди к точке сбора — %s. Отряды подойдут, когда ты будешь на месте.</text>
+	</string>
+	<string id="st_zop_descr_assault">
+		<text>Этап: штурм.
+Цель: %s (%d из %d).
+Врагов у цели: %d. Цель засчитается, когда район будет чист и ты будешь рядом.</text>
+	</string>
+	<string id="st_zop_descr_wait">
+		<text>Этап: подготовка обороны.
+Занимай позиции у %s. Атака скоро.</text>
+	</string>
+	<string id="st_zop_descr_defend">
+		<text>Этап: оборона.
+Удержи %s. Атакующих осталось: %d.</text>
+	</string>
+	<string id="ui_mcm_zop_title">
+		<text>Операции Зоны (Mixon)</text>
+	</string>
+	<string id="ui_mcm_zop_enabled">
+		<text>Включить операции</text>
+	</string>
+	<string id="ui_mcm_zop_enabled_desc">
+		<text>Командиры группировок предлагают операции в диалоге.</text>
+	</string>
+	<string id="ui_mcm_zop_reward_mult">
+		<text>Множитель награды</text>
+	</string>
+	<string id="ui_mcm_zop_reward_mult_desc">
+		<text>Умножает денежную награду за операции.</text>
+	</string>
+	<string id="ui_mcm_zop_extra_squads">
+		<text>Дополнительные отряды</text>
+	</string>
+	<string id="ui_mcm_zop_extra_squads_desc">
+		<text>Сколько отрядов добавить к союзникам при штурме и к атакующим при обороне.</text>
+	</string>
+	<string id="st_zop_duty_yanov_name">
+		<text>Операция «Янов»</text>
+	</string>
+	<string id="st_zop_duty_yanov_offer">
+		<text>Свобода сидит на Янове, как у себя дома. Хватит. Дам два отряда ветеранов, поведёшь их сам. Локи и его торгаш уже снимаются к складам — разведка говорит, они почуяли неладное. Зачистишь станцию — Янов наш, Долг его удержит. Сорок тысяч и моё уважение.</text>
+	</string>
+	<string id="st_zop_duty_yanov_muster">
+		<text>Долг: отряды выдвигаются на Юпитер. Точка сбора — %s. Без тебя не начнут.</text>
+	</string>
+	<string id="st_zop_duty_yanov_go">
+		<text>Долг: все на месте. Вперёд, на %s! Чистим станцию.</text>
+	</string>
+	<string id="st_zop_duty_yanov_next">
+		<text>Долг: сектор чист. Следующая цель — %s.</text>
+	</string>
+	<string id="st_zop_duty_yanov_won">
+		<text>Долг: Янов наш! Гарнизон заступает на посты. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_duty_yanov_failed">
+		<text>Долг: операция сорвана. Отходим. Повторим, когда соберём силы.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_name">
+		<text>Оборона Янова</text>
+	</string>
+	<string id="st_zop_freedom_yanov_offer">
+		<text>Слушай, брат. Наши у Бара слышали — Долг собирает людей на Янов. Думают, мы тут расслабились. Через пару часов будут здесь. Встретим? Двадцать пять тысяч и бутылка из моих запасов.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_muster">
+		<text>Свобода: Долг будет у Янова примерно через %d ч. Занимай позиции.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_attack">
+		<text>Свобода: Долг идёт на Янов! Все к оружию!</text>
+	</string>
+	<string id="st_zop_freedom_yanov_won">
+		<text>Свобода: отбились! Долг откатился. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_failed">
+		<text>Свобода: Янов не удержали... Уходим к складам.</text>
+	</string>
+	<string id="st_zop_csky_marsh_name">
+		<text>Чистка Болот</text>
+	</string>
+	<string id="st_zop_csky_marsh_offer">
+		<text>Ренегаты снова расплодились на Болотах. Грабят наших проводников, стреляют в спину. Возьмёшь два звена и пройдёшь по их лагерям, один за другим. Двадцать тысяч, и Болота снова наши.</text>
+	</string>
+	<string id="st_zop_csky_marsh_muster">
+		<text>Чистое небо: звенья выходят. Точка сбора — %s.</text>
+	</string>
+	<string id="st_zop_csky_marsh_go">
+		<text>Чистое небо: начинаем. Первый лагерь — %s.</text>
+	</string>
+	<string id="st_zop_csky_marsh_next">
+		<text>Чистое небо: лагерь зачищен. Следующий — %s.</text>
+	</string>
+	<string id="st_zop_csky_marsh_won">
+		<text>Чистое небо: ренегатов выбили, посты заняты. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_csky_marsh_failed">
+		<text>Чистое небо: зачистка сорвана. Отходим на базу.</text>
+	</string>
+	<string id="st_zop_army_valley_name">
+		<text>Спецоперация «Долина»</text>
+	</string>
+	<string id="st_zop_army_valley_offer">
+		<text>Бандиты в Тёмной долине совсем страх потеряли. Есть приказ: зачистить их передовые точки. Даю два отделения, командуешь ты. Тридцать тысяч по выполнении. Вопросы есть? Вопросов нет.</text>
+	</string>
+	<string id="st_zop_army_valley_muster">
+		<text>Военные: отделения выдвигаются. Точка сбора — %s.</text>
+	</string>
+	<string id="st_zop_army_valley_go">
+		<text>Военные: начать операцию. Первая цель — %s.</text>
+	</string>
+	<string id="st_zop_army_valley_next">
+		<text>Военные: точка зачищена. Следующая цель — %s.</text>
+	</string>
+	<string id="st_zop_army_valley_won">
+		<text>Военные: операция выполнена, точки под нашим контролем. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_army_valley_failed">
+		<text>Военные: операция сорвана. Отход.</text>
+	</string>
+	<string id="st_zop_near">
+		<text>в %d м от: %s</text>
+	</string>
+	<string id="st_zop_duty_yanov_services_go">
+		<text>Долг: к %s вышел конвой с комендантом, интендантом и механиком.</text>
+	</string>
+	<string id="st_zop_duty_yanov_services_here">
+		<text>Долг: полковник Миксон, интендант и механик прибыли на %s. У коменданта есть работа для сталкеров.</text>
+	</string>
+	<string id="st_zop_dolg_commander_name">
+		<text>Полковник Миксон</text>
+	</string>
+	<string id="st_zop_dolg_commander_bio">
+		<text>Легенда Долга, комендант гарнизона на Янове. Бывший ведущий инженер московского НИИ космического приборостроения.</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_name">
+		<text>Остатки Свободы</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_text">
+		<text>Выбить отряд Свободы, который засел рядом с Яновом.</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_about">
+		<text>Локи ушёл, но не все его люди. Один отряд окопался под самым носом у гарнизона и ждёт своих. Не дождутся. Иди и закончи это.</text>
+	</string>
+	<string id="zop_dolg_commander_task_1_finish">
+		<text>Чисто сработал. Теперь у Свободы на Юпитере нет даже наблюдателей. Держи оплату.</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_name">
+		<text>Охота на мутантов</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_text">
+		<text>Уничтожить стаю мутантов у Янова.</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_about">
+		<text>Рядом со станцией завелась стая. Бойцы от воя не спят. Уничтожь её - на то Долг и стоит.</text>
+	</string>
+	<string id="zop_dolg_commander_task_2_finish">
+		<text>Одной стаей меньше. Хорошо. Этой ночью Зона наших не получит.</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_name">
+		<text>В розыске у Долга</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_text">
+		<text>Полковник Миксон приказал найти и ликвидировать цель.</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_about">
+		<text>Ходит по Зоне один человек, который заслужил пулю от Долга. Найди его и закрой счёт.</text>
+	</string>
+	<string id="zop_dolg_commander_task_3_finish">
+		<text>Приказ выполнен. Долг не забывает тех, кто ему помогает.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_name">
+		<text>%s для полковника</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_text">
+		<text>Полковнику Миксону нужно редкое оружие: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_about">
+		<text>Мне нужен образец редкого оружия. Не для коллекции: я разбираю такие вещи и понимаю, как их делали. Гаусс-пушка, бесшумные снайперки, штурмовые винтовки, которых на складах Долга не бывает. Найдёшь - заплачу как за артефакт.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_fetch_about">
+		<text>Ищи вот это: %s. Рабочий экземпляр, не металлолом.</text>
+	</string>
+	<string id="zop_dolg_commander_task_4_fetch_finish">
+		<text>Вот это вещь. Такой я ещё не держал в руках. Деньги твои - и спасибо, сталкер.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_name">
+		<text>%s для штаба</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_text">
+		<text>Полковник Миксон хочет получить для штаба Долга: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_about">
+		<text>Штаб просит образцы с севера. Учёные на Ростке за них платят, и мы тоже.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_fetch_about">
+		<text>Найди мне: %s. У моих бойцов не отбирай - ищи в аномалиях.</text>
+	</string>
+	<string id="zop_dolg_commander_task_5_fetch_finish">
+		<text>Отличный образец. Штаб будет доволен. Держи награду.</text>
+	</string>
+	<string id="st_zop_mx_start">
+		<text>Товарищ полковник, разрешите обратиться?</text>
+	</string>
+	<string id="st_zop_mx_menu">
+		<text>Разрешаю. Только по делу, сталкер: у меня гарнизон, а за стенами Юпитер.</text>
+	</string>
+	<string id="st_zop_mx_q_who">
+		<text>Расскажите о себе, товарищ полковник.</text>
+	</string>
+	<string id="st_zop_mx_a_who1">
+		<text>Я не военный, сталкер. Я инженер. МАИ с красным дипломом, потом закрытый НИИ в Москве - космическое приборостроение. Датчики для спутников, системы навигации для авиации. В двадцать шесть лет у меня был свой отдел и допуск выше, чем у моего директора. Говорили - гений. Я просто не уходил домой, пока прибор не начинал работать.</text>
+	</string>
+	<string id="st_zop_mx_q_who2">
+		<text>Как инженер из НИИ попал в Зону?</text>
+	</string>
+	<string id="st_zop_mx_a_who2">
+		<text>В две тысячи шестом, после второго взрыва, нашему НИИ дали заказ: приспособить орбитальные гравиметры к поиску аномалий. Спутник видит гравитационную яму с высоты в триста километров - так почему прибор в руке не увидит её за тридцать метров? Чертёж на бумаге не проверишь - нужен полигон. Полигоном стала Зона. Нашу группу забросили на Свалку: пятеро учёных, двое военных и я с ящиками приборов.</text>
+	</string>
+	<string id="st_zop_mx_q_who3">
+		<text>И что случилось?</text>
+	</string>
+	<string id="st_zop_mx_a_who3">
+		<text>Выброс. Мы не знали тогда, как он начинается. Укрылись в старом гараже, а он оказался не укрытием, а ловушкой. Выжил я и один сержант - потому что я полез чинить генератор в подвале. Нас вытащил патруль Долга. Детектор я всё-таки доделал. Его прототип до сих пор висит у меня на поясе.</text>
+	</string>
+	<string id="st_zop_mx_q_name">
+		<text>Почему вы остались в Долге?</text>
+	</string>
+	<string id="st_zop_mx_a_name">
+		<text>Потому что из НИИ пришло письмо: проект закрыт, финансирование снято, возвращайтесь. А Долг сказал: оставайся, нам нужен человек, который понимает, как работает эта дрянь. Я остался. Строил укрепления на Ростке, поднимал связь и ретрансляторы, ставил датчики выбросов на блокпосты, считал траектории для вертолётов снабжения. Звания пришли сами - за людей, которые вернулись живыми. А 'Миксон' - это ещё с института: из любого хлама соберу рабочий прибор.</text>
+	</string>
+	<string id="st_zop_mx_q_sit">
+		<text>Какая обстановка на Янове?</text>
+	</string>
+	<string id="st_zop_mx_a_sit">
+		<text>Станцию мы взяли у Свободы. Локи и его люди ушли к Военным складам, к Лукашу, - и рано или поздно попробуют вернуться. На заводе Юпитер мутанты, у Копачей бродят зомбированные, а с севера Монолит прощупывает дорогу. Учёные в бункере рядом нам нужны живыми: их приборы и мои датчики - вместе это лучшая разведка на Юпитере. Хочешь помочь - спроси про работу.</text>
+	</string>
+	<string id="st_zop_mx_q_why">
+		<text>Зачем Долгу Янов?</text>
+	</string>
+	<string id="st_zop_mx_a_why">
+		<text>Янов - последний большой узел перед Припятью. Отсюда видно всё: дорогу на север, завод, Копачи, тоннель. Кто держит станцию - тот решает, что пройдёт к людям, а что останется в Зоне. Долг поклялся защищать мир от Зоны. Свобода здесь торговала артефактами. Мы здесь стоим.</text>
+	</string>
+	<string id="st_zop_mx_q_zone">
+		<text>Что вообще творится в Зоне?</text>
+	</string>
+	<string id="st_zop_mx_a_zone1">
+		<text>Сначала была станция - восемьдесят шестой год. Потом в две тысячи шестом рвануло второй раз, и родилась Зона: аномалии, мутанты, выбросы. Потом пришли сталкеры, за ними - деньги, за деньгами - стволы. Военные держат периметр, но Зона растёт. Каждый выброс перекраивает карту.</text>
+	</string>
+	<string id="st_zop_mx_q_zone2">
+		<text>А что в центре? Говорят, кто-то дошёл.</text>
+	</string>
+	<string id="st_zop_mx_a_zone2">
+		<text>Говорят. Был такой Стрелок - дошёл до ЧАЭС, отключил Выжигатель мозгов. Говорят, за саркофагом сидела группа учёных, сросшихся с Зоной, - О-Сознание. Монолит молится на их Камень, хотя камня там, может, и нет. Потом армия пыталась прорваться вертолётами - операция 'Фарватер', - и половина машин легла прямо здесь, на Юпитере. Я этого не видел. Но видел обломки.</text>
+	</string>
+	<string id="st_zop_mx_q_mon">
+		<text>Монолит опасен для Янова?</text>
+	</string>
+	<string id="st_zop_mx_a_mon">
+		<text>Монолит не торгуется и не отступает. Они идут, пока живы, и не боятся ни пуль, ни выброса. Когда Выжигатель погас, дорога на север открылась - для нас и для них. Поэтому на вышках двойные смены. И поэтому мне нужны сталкеры, которые не задают лишних вопросов.</text>
+	</string>
+	<string id="st_zop_mx_bye">
+		<text>Мне пора, товарищ полковник.</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_name">
+		<text>Перехват конвоя</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_text">
+		<text>Перехватить вражеский конвой на Юпитере и уничтожить охрану, пока он не дошёл до цели.</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_about">
+		<text>Мои датчики засекли конвой. Идут гружёные: медикаменты, электроника, патроны. Идут через нашу землю, значит, это наш груз. Перехвати их по дороге - что найдёшь на телах, оставь себе.</text>
+	</string>
+	<string id="zop_dolg_commander_task_6_finish">
+		<text>Конвой не дошёл - значит, кто-то этой ночью останется без патронов. Хорошая работа.</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_name">
+		<text>Засада</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_text">
+		<text>Встретить вражеский ударный отряд на подходе к Янову и уничтожить его, пока он не дошёл до станции.</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_about">
+		<text>С дальнего края Юпитера к нам идёт ударная группа. Если они дойдут до станции - будет бой у нас во дворе. Я хочу, чтобы бой был у них. Выбери место, встреть и положи всех.</text>
+	</string>
+	<string id="zop_dolg_commander_task_7_finish">
+		<text>Они так и не увидели Янов. Вот это я называю обороной.</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_name">
+		<text>Наёмники на Юпитере</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_text">
+		<text>Уничтожить группу наёмников в отмеченном районе.</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_about">
+		<text>Наёмники работают на тех, кто платит. А платят сейчас за то, чтобы Долга на Янове не было. Нашёл их стоянку - иди и отмени их контракт.</text>
+	</string>
+	<string id="zop_dolg_commander_task_8_finish">
+		<text>Контракт расторгнут. Нанимателю придётся искать новых людей.</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_name">
+		<text>Монолит у ворот</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_text">
+		<text>Уничтожить отряд Монолита в отмеченном районе.</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_about">
+		<text>С тех пор как погас Выжигатель, Монолит ходит на юг. Их отряд закрепился рядом с нами. С ними не договориться - их можно только остановить.</text>
+	</string>
+	<string id="zop_dolg_commander_task_9_finish">
+		<text>Фанатики не отступают, но умирают так же, как все. Ты сделал большое дело для Долга.</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_name">
+		<text>Грех</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_text">
+		<text>Найти лагерь Греха на Юпитере и уничтожить всех сектантов.</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_about">
+		<text>Грех - сектанты, которые молятся Зоне. Они уводят людей в аномалии и называют это благословением. Их отряд рядом. Долг таких не терпит.</text>
+	</string>
+	<string id="zop_dolg_commander_task_10_finish">
+		<text>Одной сектой меньше. Зона обойдётся без их молитв.</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_name">
+		<text>Бандитский налёт</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_text">
+		<text>Разогнать банду в отмеченном районе.</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_about">
+		<text>Бандиты почуяли, что на Янове сменилась власть, и решили, что можно грабить сталкеров на дорогах. Объясни им, что нельзя.</text>
+	</string>
+	<string id="zop_dolg_commander_task_11_finish">
+		<text>Дороги снова чистые. Сталкеры будут помнить, кто их почистил.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_name">
+		<text>%s: чертежи</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_text">
+		<text>Полковник Миксон ищет техническую документацию: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_about">
+		<text>Учёные и сталкеры прячут в тайниках бумаги, которым цены нет: схемы, методички, отчёты о поведении артефактов. Самые ценные лежат в богатых тайниках - тех, что отмечены жёлтым. Мне нужны эти чертежи: с ними я поставлю на Янов то, что до сих пор было только на бумаге.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_fetch_about">
+		<text>Найди мне это: %s. Ищи в богатых тайниках.</text>
+	</string>
+	<string id="zop_dolg_commander_task_12_fetch_finish">
+		<text>Вот это находка. Ночь не буду спать - буду читать. Держи награду, ты её заслужил.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_name">
+		<text>Редкие механизмы</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_text">
+		<text>Полковнику Миксону нужны редкие механизмы: %s.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_about">
+		<text>Гидравлика, системы жизнеобеспечения, ударно-спусковые механизмы - то, чего на складах Долга нет и не будет. Я соберу из них то, что спасёт жизни бойцам.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_fetch_about">
+		<text>Принеси: %s. Целые, без ржавчины.</text>
+	</string>
+	<string id="zop_dolg_commander_task_13_fetch_finish">
+		<text>Хорошие детали. Уже вижу, куда их поставить. Держи.</text>
+	</string>
+	<string id="st_zop_raid_convoy_news">
+		<text>Миксон: конвой (%s) выдвинулся от %s к %s. Перехвати его в пути.</text>
+	</string>
+	<string id="st_zop_raid_ambush_news">
+		<text>Миксон: ударная группа (%s) идёт от %s к %s. Встреть её до станции.</text>
+	</string>
+	<string id="st_zop_raid_beaten">
+		<text>Миксон: кто-то опередил тебя - группу положили без твоего участия. Задание провалено.</text>
+	</string>
+	<string id="st_zop_raid_camp_news">
+		<text>Миксон: разведка засекла лагерь (%s) у %s. Уничтожь их.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_name">
+		<text>Операция «Застава»</text>
+	</string>
+	<string id="st_zop_freedom_garbage_offer">
+		<text>Долг перекрыл дорогу на Росток своей заставой на Свалке и решает, кому ходить, а кому нет. Свобода так не живёт. Даю два отряда - веди. Сбей с заставы долговцев, поставь там наших. Тридцать тысяч и бочка лучшего пива на складах.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_muster">
+		<text>Свобода: отряды выдвигаются на Свалку. Точка сбора - %s. Без тебя не начнут.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_go">
+		<text>Свобода: все на месте. Вперёд, на %s! Сносим заставу.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_next">
+		<text>Свобода: сектор чист. Дальше - %s.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_won">
+		<text>Свобода: застава наша! Дорога на Росток открыта. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_failed">
+		<text>Свобода: не вышло. Отходим, соберёмся - вернёмся.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_services_go">
+		<text>Свобода: к %s вышли торговец и механик под охраной.</text>
+	</string>
+	<string id="st_zop_freedom_garbage_services_here">
+		<text>Свобода: торговец и механик на месте, %s. Застава открыта для своих.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_name">
+		<text>Операция «Возвращение»</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_offer">
+		<text>Брат, они сидят на моём Янове. На моей станции, у моей стойки. Долг думает, что если повесил флаг - это навсегда. Три отряда, и мы идём домой. Я и Ашот вернёмся, как только там будет чисто. Сорок тысяч - и Янов снова свободный.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_muster">
+		<text>Свобода: отряды идут на Юпитер. Точка сбора - %s. Ждут тебя.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_go">
+		<text>Свобода: пошли! %s - наша станция, забираем.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_next">
+		<text>Свобода: чисто. Следующая цель - %s.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_won">
+		<text>Свобода: Янов снова наш! Локи и Ашот возвращаются домой. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_freedom_yanov_retake_failed">
+		<text>Свобода: Долг удержал станцию. Отходим, брат. Ещё не конец.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_name">
+		<text>Операция «Росток»</text>
+	</string>
+	<string id="st_zop_freedom_rostok_offer">
+		<text>Застава наша - теперь главное. Росток. Штаб Долга, их сердце. Возьмём Росток - и Долг станет одной из группировок, а не надзирателем над всей Зоной. Воронин и его штаб уйдут на Затон, мы не мясники. Три отряда, четыре точки: обе заставы, штаб Петренко, бункер Воронина. Семьдесят пять тысяч - и твоё имя будут помнить.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_muster">
+		<text>Свобода: идём на Росток. Точка сбора - %s. Это будет большой бой.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_go">
+		<text>Свобода: вперёд! Первая цель - %s.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_next">
+		<text>Свобода: точка наша. Дальше - %s.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_won">
+		<text>Свобода: Росток наш! Флаг Долга снят, штаб ушёл на Затон. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_failed">
+		<text>Свобода: Долг отбился. Отходим к заставе. Росток подождёт.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_services_go">
+		<text>Свобода: торговец, медик, механик и командир Ястреб выдвинулись к %s под охраной.</text>
+	</string>
+	<string id="st_zop_freedom_rostok_services_here">
+		<text>Свобода: наши люди на месте, %s. Теперь Росток свободен.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_name">
+		<text>Долговский патруль</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_text">
+		<text>Разогнать отряд Долга рядом с Яновом.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_about">
+		<text>Долговцы опять крутятся у станции, брат. Ходят строем, смотрят косо, мешают людям жить. Сходи, объясни им, что Юпитер - свободная земля.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_1_finish">
+		<text>Ну вот, тихо стало. Держи, заслужил.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_name">
+		<text>Зверьё у ворот</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_text">
+		<text>Уничтожить стаю мутантов возле Янова.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_about">
+		<text>Мутанты повадились к станции. Сталкеры боятся выходить за пивом, а это уже непорядок. Разберись.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_2_finish">
+		<text>Красава. Теперь можно и за пивом.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_name">
+		<text>Заказ от Свободы</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_text">
+		<text>Локи попросил найти и убрать человека, который мешает Свободе.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_about">
+		<text>Есть один тип, который очень хочет, чтобы Свободы не было. Сделай так, чтобы его не было. Без лишнего шума.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_3_finish">
+		<text>Чисто. Свобода помнит добро, брат.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_name">
+		<text>%s для Свободы</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_text">
+		<text>Локи нужно редкое оружие: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_about">
+		<text>Слушай, у Свободы всегда было лучшее железо. И я хочу, чтобы так и оставалось. Мне нужна редкая пушка - такая, что Долг на своих складах во сне не видел. Гаусс, бесшумки, западные стволы. Заплачу, не обижу.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_fetch_about">
+		<text>Найди вот это: %s. Рабочий, не хлам.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_4_fetch_finish">
+		<text>Вот это ствол. Таким можно и Росток брать. Держи деньги.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_name">
+		<text>Артефакт на продажу</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_text">
+		<text>Локи нужен артефакт: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_about">
+		<text>Свобода живёт торговлей, брат. Покупатель ждёт товар, а товара нет. Принеси мне артефакт - я в долгу не останусь.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_5_fetch_finish">
+		<text>О, хороший. Покупатель будет доволен. Держи твою долю.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_name">
+		<text>Чужой конвой</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_text">
+		<text>Перехватить вражеский конвой на Юпитере и уничтожить охрану.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_about">
+		<text>Через Юпитер идёт конвой - патроны, медицина, электроника. Не наш. А должен быть наш. Перехвати по дороге, груз забирай себе.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_6_finish">
+		<text>Конвой не дошёл - значит, у кого-то вечером пусто, а у нас густо.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_name">
+		<text>Засада на дороге</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_text">
+		<text>Встретить вражескую ударную группу на подходе к Янову и уничтожить её.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_about">
+		<text>Разведка видела группу, которая идёт на Янов. Если дойдут - будет кровь у нас во дворе. Встреть их раньше.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_7_finish">
+		<text>Они так и не дошли. Вот это я понимаю - свобода.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_name">
+		<text>Военный патруль</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_text">
+		<text>Уничтожить военный патруль в отмеченном районе.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_about">
+		<text>Военный патруль вынюхивает на дорогах к Янову - считает наших людей, отмечает посты. Завтра вернутся с вертушкой. Сделай так, чтобы доклад не дошёл.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_8_finish">
+		<text>Нет патруля - нет доклада. Полковникам теперь гадать и гадать, брат.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_name">
+		<text>Монолит</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_text">
+		<text>Уничтожить отряд Монолита в отмеченном районе.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_about">
+		<text>Монолит лезет на юг. С фанатиками не договоришься, а свобода им вообще непонятна. Останови их.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_9_finish">
+		<text>Фанатики полегли. Зона стала чуть свободнее.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_name">
+		<text>Лагерь Греха</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_text">
+		<text>Найти лагерь Греха на Юпитере и уничтожить всех сектантов.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_about">
+		<text>Грех - это не свобода, брат. Это секта, которая ведёт людей в аномалии. У них лагерь на Юпитере. Закрой его.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_10_finish">
+		<text>Секта закрыта. Без них дышится легче.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_name">
+		<text>Военные на подходе</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_text">
+		<text>Уничтожить отряд военных в отмеченном районе.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_about">
+		<text>Армия опять лезет в Зону со своими правилами и пулемётами. Покажи им, что здесь им не полигон.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_11_finish">
+		<text>Военные отошли. Свобода стоит.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_name">
+		<text>%s: чертежи</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_text">
+		<text>Локи ищет документацию: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_about">
+		<text>В богатых тайниках - тех, что отмечены жёлтым - иногда лежат бумаги, которым цены нет. Схемы, методички, отчёты учёных. Мне нужны такие: продам или пущу в дело.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_fetch_about">
+		<text>Найди: %s. Ищи в богатых тайниках.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_12_fetch_finish">
+		<text>Вот это находка, брат. Держи награду.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_name">
+		<text>Редкие детали</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_text">
+		<text>Локи нужны редкие механизмы: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_about">
+		<text>Наши механики просят редкие детали - гидравлику, ударно-спусковые механизмы, всё такое. На складах этого нет. Найди.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="jup_a6_freedom_leader_task_13_fetch_finish">
+		<text>Отлично. Механики будут счастливы. Держи.</text>
+	</string>
+	<string id="st_zop_flank_go">
+		<text>Вторая группа заходит с другой стороны, на %s. Бьём одновременно!</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_name">
+		<text>Долговский патруль</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_text">
+		<text>Разогнать отряд Долга рядом с Ростоком.</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_about">
+		<text>Долговцы опять крутятся у завода, брат. Ходят строем, смотрят косо, мешают людям жить. Сходи, объясни им, что Росток - свободная земля.</text>
+	</string>
+	<string id="zop_freedom_commander_task_1_finish">
+		<text>Ну вот, тихо стало. Держи, заслужил.</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_name">
+		<text>Зверьё у ворот</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_text">
+		<text>Уничтожить стаю мутантов возле Ростока.</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_about">
+		<text>Мутанты повадились к заводу. Сталкеры боятся выходить за пивом, а это уже непорядок. Разберись.</text>
+	</string>
+	<string id="zop_freedom_commander_task_2_finish">
+		<text>Красава. Теперь можно и за пивом.</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_name">
+		<text>Заказ от Свободы</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_text">
+		<text>Ястреб попросил найти и убрать человека, который мешает Свободе.</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_about">
+		<text>Есть один тип, который очень хочет, чтобы Свободы не было. Сделай так, чтобы его не было. Без лишнего шума.</text>
+	</string>
+	<string id="zop_freedom_commander_task_3_finish">
+		<text>Чисто. Свобода помнит добро, брат.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_name">
+		<text>%s для Свободы</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_text">
+		<text>Ястребу нужно редкое оружие: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_about">
+		<text>Слушай, у Свободы всегда было лучшее железо. И я хочу, чтобы так и оставалось. Мне нужна редкая пушка - такая, что Долг на своих складах во сне не видел. Гаусс, бесшумки, западные стволы. Заплачу, не обижу.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_fetch_about">
+		<text>Найди вот это: %s. Рабочий, не хлам.</text>
+	</string>
+	<string id="zop_freedom_commander_task_4_fetch_finish">
+		<text>Вот это ствол. Таким можно и Росток брать. Держи деньги.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_name">
+		<text>Артефакт на продажу</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_text">
+		<text>Ястребу нужен артефакт: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_about">
+		<text>Свобода живёт торговлей, брат. Покупатель ждёт товар, а товара нет. Принеси мне артефакт - я в долгу не останусь.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_5_fetch_finish">
+		<text>О, хороший. Покупатель будет доволен. Держи твою долю.</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_name">
+		<text>Чужой конвой</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_text">
+		<text>Перехватить вражеский конвой в округе и уничтожить охрану.</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_about">
+		<text>Через округу идёт конвой - патроны, медицина, электроника. Не наш. А должен быть наш. Перехвати по дороге, груз забирай себе.</text>
+	</string>
+	<string id="zop_freedom_commander_task_6_finish">
+		<text>Конвой не дошёл - значит, у кого-то вечером пусто, а у нас густо.</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_name">
+		<text>Засада на дороге</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_text">
+		<text>Встретить вражескую ударную группу на подходе к Ростоку и уничтожить её.</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_about">
+		<text>Разведка видела группу, которая идёт на Росток. Если дойдут - будет кровь у нас во дворе. Встреть их раньше.</text>
+	</string>
+	<string id="zop_freedom_commander_task_7_finish">
+		<text>Они так и не дошли. Вот это я понимаю - свобода.</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_name">
+		<text>Военный патруль</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_text">
+		<text>Уничтожить военный патруль в отмеченном районе.</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_about">
+		<text>Военный патруль вынюхивает на дорогах к Ростоку - считает наших людей, отмечает посты. Завтра вернутся с вертушкой. Сделай так, чтобы доклад не дошёл.</text>
+	</string>
+	<string id="zop_freedom_commander_task_8_finish">
+		<text>Нет патруля - нет доклада. Полковникам теперь гадать и гадать, брат.</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_name">
+		<text>Монолит</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_text">
+		<text>Уничтожить отряд Монолита в отмеченном районе.</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_about">
+		<text>Монолит лезет на юг. С фанатиками не договоришься, а свобода им вообще непонятна. Останови их.</text>
+	</string>
+	<string id="zop_freedom_commander_task_9_finish">
+		<text>Фанатики полегли. Зона стала чуть свободнее.</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_name">
+		<text>Лагерь Греха</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_text">
+		<text>Найти лагерь Греха в округе и уничтожить всех сектантов.</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_about">
+		<text>Грех - это не свобода, брат. Это секта, которая ведёт людей в аномалии. У них лагерь в округе. Закрой его.</text>
+	</string>
+	<string id="zop_freedom_commander_task_10_finish">
+		<text>Секта закрыта. Без них дышится легче.</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_name">
+		<text>Военные на подходе</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_text">
+		<text>Уничтожить отряд военных в отмеченном районе.</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_about">
+		<text>Армия опять лезет в Зону со своими правилами и пулемётами. Покажи им, что здесь им не полигон.</text>
+	</string>
+	<string id="zop_freedom_commander_task_11_finish">
+		<text>Военные отошли. Свобода стоит.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_name">
+		<text>%s: чертежи</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_text">
+		<text>Ястреб ищет документацию: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_about">
+		<text>В богатых тайниках - тех, что отмечены жёлтым - иногда лежат бумаги, которым цены нет. Схемы, методички, отчёты учёных. Мне нужны такие: продам или пущу в дело.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_fetch_about">
+		<text>Найди: %s. Ищи в богатых тайниках.</text>
+	</string>
+	<string id="zop_freedom_commander_task_12_fetch_finish">
+		<text>Вот это находка, брат. Держи награду.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_name">
+		<text>Редкие детали</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_text">
+		<text>Ястребу нужны редкие механизмы: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_about">
+		<text>Наши механики просят редкие детали - гидравлику, ударно-спусковые механизмы, всё такое. На складах этого нет. Найди.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_freedom_commander_task_13_fetch_finish">
+		<text>Отлично. Механики будут счастливы. Держи.</text>
+	</string>
+	<string id="st_zop_freedom_commander_name">
+		<text>Ястреб</text>
+	</string>
+	<string id="st_zop_freedom_commander_bio">
+		<text>Полевой командир Свободы, позывной Ястреб. Бывший десантник: восемь лет назад ушёл из армии прямо в Зону. Брал Росток со штурмовыми группами и теперь держит бывший штаб Долга — не как крепость, а как открытую дверь. Даёт работу тем, кто скорее будет стрелять по патрулям Долга и Монолиту, чем по одиночкам.</text>
+	</string>
+	<string id="st_zop_csky_commander_name">
+		<text>Холодный</text>
+	</string>
+	<string id="st_zop_csky_commander_bio">
+		<text>Командир Чистого Неба на блокпосту Юпитера, позывной Холодный. Спокоен как лёд в любом бою; Викинг отправил его на север держать дорогу на Припять и беречь экспедиции.</text>
+	</string>
+	<string id="zop_csky_commander_task_1_name">
+		<text>Логово ренегатов</text>
+	</string>
+	<string id="zop_csky_commander_task_1_text">
+		<text>Найти лагерь ренегатов в округе и уничтожить его.</text>
+	</string>
+	<string id="zop_csky_commander_task_1_about">
+		<text>Ренегаты выползли с болот и разбили лагерь рядом с блокпостом. Грабят наших проводников и продают стволы кому попало. Найди лагерь и закончи то, что мы начали на Болотах.</text>
+	</string>
+	<string id="zop_csky_commander_task_1_finish">
+		<text>Логова больше нет. Проводники снова могут ходить по дорогам.</text>
+	</string>
+	<string id="zop_csky_commander_task_2_name">
+		<text>Гнездо мутантов</text>
+	</string>
+	<string id="zop_csky_commander_task_2_text">
+		<text>Уничтожить стаю мутантов возле блокпоста.</text>
+	</string>
+	<string id="zop_csky_commander_task_2_about">
+		<text>Прямо у нас под окнами обосновалась стая. Учёные не выйдут к аномалиям, пока она там. Расчисти дорогу.</text>
+	</string>
+	<string id="zop_csky_commander_task_2_finish">
+		<text>Теперь тихо. Экспедиции снова могут выходить.</text>
+	</string>
+	<string id="zop_csky_commander_task_3_name">
+		<text>Имя в списке</text>
+	</string>
+	<string id="zop_csky_commander_task_3_text">
+		<text>Холодный попросил найти и убрать человека, опасного для Чистого Неба.</text>
+	</string>
+	<string id="zop_csky_commander_task_3_about">
+		<text>Есть один человек, который за деньги охотится на наших проводников. Я знаю имя и примерно где он. Сделай так, чтобы он больше ни на кого не охотился.</text>
+	</string>
+	<string id="zop_csky_commander_task_3_finish">
+		<text>Сделано. Одним охотником в Зоне меньше.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_name">
+		<text>Образцы для лаборатории</text>
+	</string>
+	<string id="zop_csky_commander_task_4_text">
+		<text>Холодному нужен артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_about">
+		<text>Наша лаборатория в блокпосте наконец работает, и она голодная. Для замеров нужен конкретный артефакт - не на продажу, для науки.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_4_fetch_finish">
+		<text>Он самый. Геофизики теперь всю ночь не уснут. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_name">
+		<text>Редкий ствол</text>
+	</string>
+	<string id="zop_csky_commander_task_5_text">
+		<text>Холодному нужно редкое оружие: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_about">
+		<text>Наши проводники ходят туда, куда армия не суётся, - и стволы им нужны под стать. Найди что-нибудь редкое: Гаусс, бесшумную винтовку, хорошую западную пушку. Плачу хорошо.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_fetch_about">
+		<text>Найди: %s. Рабочий, а не хлам.</text>
+	</string>
+	<string id="zop_csky_commander_task_5_fetch_finish">
+		<text>Вот это ствол. Пойдёт нашему лучшему проводнику. Держи деньги.</text>
+	</string>
+	<string id="zop_csky_commander_task_6_name">
+		<text>Чужой конвой</text>
+	</string>
+	<string id="zop_csky_commander_task_6_text">
+		<text>Перехватить вражеский конвой в округе и уничтожить охрану.</text>
+	</string>
+	<string id="zop_csky_commander_task_6_about">
+		<text>Через округу идёт конвой - медицина, электроника, патроны. Он кормит тех, кто стреляет по нашим проводникам. Перехвати по дороге, груз забирай себе.</text>
+	</string>
+	<string id="zop_csky_commander_task_6_finish">
+		<text>Конвой не дошёл. Наши медики будут рады грузу.</text>
+	</string>
+	<string id="zop_csky_commander_task_7_name">
+		<text>Засада на дороге</text>
+	</string>
+	<string id="zop_csky_commander_task_7_text">
+		<text>Встретить вражескую ударную группу на подходе к блокпосту и уничтожить её.</text>
+	</string>
+	<string id="zop_csky_commander_task_7_about">
+		<text>Разведка видела группу, которая идёт на блокпост. Если дойдут - учёные окажутся под перекрёстным огнём. Встреть их раньше.</text>
+	</string>
+	<string id="zop_csky_commander_task_7_finish">
+		<text>Они так и не дошли. Лаборатория продолжает работу.</text>
+	</string>
+	<string id="zop_csky_commander_task_8_name">
+		<text>Военный патруль</text>
+	</string>
+	<string id="zop_csky_commander_task_8_text">
+		<text>Уничтожить военный патруль в отмеченном районе.</text>
+	</string>
+	<string id="zop_csky_commander_task_8_about">
+		<text>Армия хочет вернуть свой блокпост. Их патруль считает наших людей и отмечает посты. Сделай так, чтобы доклад не дошёл до полковника.</text>
+	</string>
+	<string id="zop_csky_commander_task_8_finish">
+		<text>Нет патруля - нет доклада. Ковальскому придётся гадать.</text>
+	</string>
+	<string id="zop_csky_commander_task_9_name">
+		<text>Монолит</text>
+	</string>
+	<string id="zop_csky_commander_task_9_text">
+		<text>Уничтожить группу Монолита в отмеченном районе.</text>
+	</string>
+	<string id="zop_csky_commander_task_9_about">
+		<text>С севера спустились бойцы Монолита. Они не разговаривают и не берут пленных - и ходят прямо через аномалии, которые мы изучаем. Останови их.</text>
+	</string>
+	<string id="zop_csky_commander_task_9_finish">
+		<text>Сделано. Аномалии снова наши - для науки.</text>
+	</string>
+	<string id="zop_csky_commander_task_10_name">
+		<text>Грех</text>
+	</string>
+	<string id="zop_csky_commander_task_10_text">
+		<text>Найти лагерь Греха в округе и уничтожить всех сектантов.</text>
+	</string>
+	<string id="zop_csky_commander_task_10_about">
+		<text>У Греха лагерь неподалёку. Они верят, что Зона - бог, и убивают всех, кто её изучает. А мы изучаем. Сходи покажи им, чем это кончается.</text>
+	</string>
+	<string id="zop_csky_commander_task_10_finish">
+		<text>Проповедей больше не будет. Зона обойдётся без своих пророков.</text>
+	</string>
+	<string id="zop_csky_commander_task_11_name">
+		<text>Дорожные грабители</text>
+	</string>
+	<string id="zop_csky_commander_task_11_text">
+		<text>Уничтожить группу бандитов в отмеченном районе.</text>
+	</string>
+	<string id="zop_csky_commander_task_11_about">
+		<text>Бандиты грабят одиночек, которых наши проводники ведут к блокпосту. Проводник, чьих людей грабят, теряет доверие - а мы теряем проводников. Расчисти дорогу.</text>
+	</string>
+	<string id="zop_csky_commander_task_11_finish">
+		<text>Дорога чистая. Одиночки снова пойдут к нам.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_name">
+		<text>Потерянные документы</text>
+	</string>
+	<string id="zop_csky_commander_task_12_text">
+		<text>Холодный ищет документацию: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_about">
+		<text>До прихода армии блокпост был полон исследований. Часть разошлась по тайникам по всей Зоне. Я хочу вернуть их.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_fetch_about">
+		<text>Найди: %s. Ищи в богатых тайниках.</text>
+	</string>
+	<string id="zop_csky_commander_task_12_fetch_finish">
+		<text>Оно самое. Годы работы - снова там, где им место.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_name">
+		<text>Детали для лаборатории</text>
+	</string>
+	<string id="zop_csky_commander_task_13_text">
+		<text>Холодному нужны редкие механизмы: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_about">
+		<text>Наши приборы разваливаются. Нужны редкие детали - такие находят только в тайниках или на мёртвых.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_13_fetch_finish">
+		<text>Ровно то, что нужно. Приборы проживут ещё год.</text>
+	</string>
+	<string id="st_zop_counter_soon">
+		<text>Место наше - но они вернутся. Контрнаступление примерно через %d мин. Занять позиции!</text>
+	</string>
+	<string id="st_zop_counter_in">
+		<text>Контрнаступление через %d мин.</text>
+	</string>
+	<string id="st_zop_csky_factory_name">
+		<text>Операция «Завод»</text>
+	</string>
+	<string id="st_zop_csky_factory_offer">
+		<text>Болота наши - теперь нужна настоящая база. Малый завод на Агропроме: стены, двор, здание, которое можно удержать. Армия набила его солдатами. С тобой четыре группы: сначала ворота, потом двор, потом здание. Как возьмём - пойдут в контрнаступление. Удержим - им придётся разговаривать. Шестьдесят тысяч.</text>
+	</string>
+	<string id="st_zop_csky_factory_muster">
+		<text>Чистое Небо: группы выдвигаются к Агропрому. Точка сбора - %s.</text>
+	</string>
+	<string id="st_zop_csky_factory_go">
+		<text>Чистое Небо: вперёд, на %s! Берём ворота.</text>
+	</string>
+	<string id="st_zop_csky_factory_next">
+		<text>Чистое Небо: сектор чист. Дальше - %s.</text>
+	</string>
+	<string id="st_zop_csky_factory_counter">
+		<text>Чистое Небо: армия идёт в контрнаступление на завод! Держать здание!</text>
+	</string>
+	<string id="st_zop_csky_factory_truce">
+		<text>Армия (по рации): Чистое Небо, говорит штаб Агропрома. Отходим. Согласны на перемирие - завод ваш, на наши дороги не лезьте.</text>
+	</string>
+	<string id="st_zop_csky_factory_won">
+		<text>Чистое Небо: завод наш - теперь это наша главная база. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_csky_factory_failed">
+		<text>Чистое Небо: завод потерян. Отходим на болота.</text>
+	</string>
+	<string id="st_zop_csky_factory_services_go">
+		<text>Чистое Небо: Викинг, Арсенал, механик и бармен выдвинулись к %s под охраной.</text>
+	</string>
+	<string id="st_zop_csky_factory_services_here">
+		<text>Чистое Небо: все на месте, %s. База заработала.</text>
+	</string>
+	<string id="st_zop_csky_rostok_name">
+		<text>Бункер учёных</text>
+	</string>
+	<string id="st_zop_csky_rostok_offer">
+		<text>Слушай. Люди Сахарова на Янтаре просят помощи - их датчики засекли что-то странное: мертвецы идут на бункер строем, как солдаты. Собираю отряд быстрого реагирования, ты его ведёшь. Бункер их, мы только помогаем удержать. Сначала мертвецы, а Монолит такую драку никогда не пропускает. Пятьдесят тысяч.</text>
+	</string>
+	<string id="st_zop_csky_rostok_muster">
+		<text>Чистое Небо: группа идёт к бункеру. Придут примерно через %d ч. Занять позиции рядом с учёными!</text>
+	</string>
+	<string id="st_zop_csky_rostok_attack">
+		<text>Чистое Небо: мертвецы у бункера! Прикрыть учёных!</text>
+	</string>
+	<string id="st_zop_csky_rostok_wave2">
+		<text>Чистое Небо: первая волна легла - идут ещё мертвецы! Держаться!</text>
+	</string>
+	<string id="st_zop_csky_rostok_won">
+		<text>Чистое Небо: бункер устоял, учёные живы. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_csky_rostok_failed">
+		<text>Чистое Небо: бункер пал... Отходим на завод.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_name">
+		<text>Блокпост</text>
+	</string>
+	<string id="st_zop_csky_jupiter_offer">
+		<text>Блокпост на Юпитере. Кто его держит - держит дорогу на Припять, и сейчас это Монолит, их лучшие бойцы, и много. С тобой пять групп. Как возьмём - через несколько минут они вернутся, будь готов. Потом это наша северная база, командует Холодный. Девяносто тысяч.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_muster">
+		<text>Чистое Небо: группы выдвигаются на Юпитер. Точка сбора - %s.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_go">
+		<text>Чистое Небо: вперёд, на %s! Берём блокпост.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_next">
+		<text>Чистое Небо: сектор чист. Дальше - %s.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_counter">
+		<text>Чистое Небо: Монолит вернулся! Держать блокпост!</text>
+	</string>
+	<string id="st_zop_csky_jupiter_truce">
+		<text>Чистое Небо: они сломались. Блокпост остаётся за нами.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_won">
+		<text>Чистое Небо: блокпост на Юпитере наш - наша северная база. Награда: %d руб.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_failed">
+		<text>Чистое Небо: блокпост потерян. Отходим.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_services_go">
+		<text>Чистое Небо: Холодный, медик, торговец, механик и бармен выдвинулись к %s под охраной.</text>
+	</string>
+	<string id="st_zop_csky_jupiter_services_here">
+		<text>Чистое Небо: наши люди на месте, %s. Теперь на севере есть база Чистого Неба.</text>
+	</string>
+	<string id="st_zop_csky_viking_name">
+		<text>Викинг</text>
+	</string>
+	<string id="st_zop_csky_viking_bio">
+		<text>Босс Чистого Неба на заводе Агропрома, позывной Викинг. Большой молчаливый человек, который никогда не носит шлем - говорит, хочет видеть Зону своими глазами. Годами вёл техническую часть Чистого Неба, теперь ведёт базу, экспедиции и войну.</text>
+	</string>
+	<string id="st_zop_csky_arsenal_name">
+		<text>Арсенал</text>
+	</string>
+	<string id="st_zop_csky_arsenal_bio">
+		<text>Торговец Чистого Неба на заводе Агропрома, позывной Арсенал. Знает каждый ствол, прошедший через болота, по серийному номеру. Сидит за своим столом под лампой и никогда не забывает долгов.</text>
+	</string>
+	<string id="st_zop_csky_rostok_trader_name">
+		<text>Компас</text>
+	</string>
+	<string id="st_zop_csky_rostok_trader_bio">
+		<text>Торговец Чистого Неба у бункера учёных на Янтаре, позывной Компас. Работает с людьми Сахарова: оружие, патроны и еда для Чистого Неба и для всех, кто идёт на север мимо Янтаря.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_name">
+		<text>Особые инструменты</text>
+	</string>
+	<string id="zop_csky_viking_task_1_text">
+		<text>Викингу нужны инструменты: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_about">
+		<text>Наши техники восстанавливают мастерскую завода. Нужны нормальные инструменты, а не хлам, что оставила армия. Принеси по списку.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_1_fetch_finish">
+		<text>Теперь можно работать. Мастерская благодарит.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_name">
+		<text>Редкие механизмы</text>
+	</string>
+	<string id="zop_csky_viking_task_2_text">
+		<text>Викингу нужны редкие механизмы: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_about">
+		<text>Приборы старые, а Зона ест электронику. Нужны редкие детали - такие находят только в тайниках или на мёртвых.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_2_fetch_finish">
+		<text>Ровно то, что нужно. Приборы проживут ещё год.</text>
+	</string>
+	<string id="zop_csky_viking_task_3_name">
+		<text>Бумаги из подземелья</text>
+	</string>
+	<string id="zop_csky_viking_task_3_text">
+		<text>Принести Викингу документы из подземелья НИИ Агропром.</text>
+	</string>
+	<string id="zop_csky_viking_task_3_about">
+		<text>Под НИИ Агропром есть тоннели, а в них - исследования, которые армия так и не вывезла. Кто первым спустится, тот и заберёт. Сделай так, чтобы это были мы.</text>
+	</string>
+	<string id="zop_csky_viking_task_3_finish">
+		<text>Оно самое. Годы работы - снова там, где им место.</text>
+	</string>
+	<string id="zop_csky_viking_task_4_name">
+		<text>Мутанты у стен</text>
+	</string>
+	<string id="zop_csky_viking_task_4_text">
+		<text>Уничтожить стаю мутантов возле завода.</text>
+	</string>
+	<string id="zop_csky_viking_task_4_about">
+		<text>Прямо у наших стен обосновалась стая. Часовые не спят, экспедиции не выходят. Расчисти.</text>
+	</string>
+	<string id="zop_csky_viking_task_4_finish">
+		<text>Теперь тихо. Экспедиции снова могут выходить.</text>
+	</string>
+	<string id="zop_csky_viking_task_5_name">
+		<text>Охота</text>
+	</string>
+	<string id="zop_csky_viking_task_5_text">
+		<text>Уничтожить стаю мутантов в отмеченном районе.</text>
+	</string>
+	<string id="zop_csky_viking_task_5_about">
+		<text>Разведчики нашли большую стаю на соседней локации. Рано или поздно она придёт к нам - лучше мы к ней первыми.</text>
+	</string>
+	<string id="zop_csky_viking_task_5_finish">
+		<text>Хорошая охота. Разведчики сегодня выспятся.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_name">
+		<text>Потерянные исследования</text>
+	</string>
+	<string id="zop_csky_viking_task_6_text">
+		<text>Викинг ищет исследования: %s.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_about">
+		<text>Часть исследований Зоны разошлась по тайникам. Хочу вернуть их нашим учёным.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_fetch_about">
+		<text>Найди: %s. Ищи в богатых тайниках.</text>
+	</string>
+	<string id="zop_csky_viking_task_6_fetch_finish">
+		<text>Оно самое. Учёные теперь всю ночь не уснут.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_name">
+		<text>Дикая территория</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_text">
+		<text>Уничтожить стаю мутантов в отмеченном районе.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_about">
+		<text>Дикая территория кишит тварями, которые жрут путников. Наша дорога идёт мимо. Проредим их.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_1_finish">
+		<text>Дорога стала безопаснее. Учёные благодарят.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_name">
+		<text>Дорожные грабители</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_text">
+		<text>Уничтожить группу бандитов в отмеченном районе.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_about">
+		<text>Бандиты поджидают наши караваны у Дикой территории. Один потерянный караван - неделя без припасов. Убери их.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_2_finish">
+		<text>Теперь караваны пройдут.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_name">
+		<text>Большой завоз</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_text">
+		<text>Компасу нужны припасы: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_about">
+		<text>Группа на дороге много ест и много кровит. Нужны припасы, и много.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_3_fetch_finish">
+		<text>Этого парням надолго хватит. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_name">
+		<text>Медицина для дороги</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_text">
+		<text>Компасу нужны медикаменты: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_about">
+		<text>Экспедиции учёных возвращаются изодранными. Нужны медикаменты - полный ящик.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_4_fetch_finish">
+		<text>Хорошо. Меньше могил вдоль дороги.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_name">
+		<text>Пайки</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_text">
+		<text>Компасу нужна еда: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_about">
+		<text>На посту двадцать человек, и все голодные. Еды, побольше.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_5_fetch_finish">
+		<text>Теперь месяц продержимся.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_name">
+		<text>Образцы для учёных</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_text">
+		<text>Компасу нужен артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_about">
+		<text>Учёным, с которыми мы работаем, нужны образцы для замеров. Не на продажу - для науки.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_6_fetch_finish">
+		<text>Он самый. Учёные будут рады.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_name">
+		<text>Редкие трофеи</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_text">
+		<text>Компасу нужны части мутантов: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_about">
+		<text>Учёные изучают крупных - химер, бюреров, контролёров. Нужны части, свежие и целые.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_rostok_trader_task_7_fetch_finish">
+		<text>Свежие и целые. Учёные будут должны.</text>
+	</string>
+	<string id="st_zop_reinforce">
+		<text>%s: идёт подкрепление - %d групп(ы), к %s. Держитесь!</text>
+	</string>
+	<string id="st_zop_mark_attack_from">
+		<text>Отсюда пойдёт атака</text>
+	</string>
+	<string id="st_zop_mark_attackers">
+		<text>Атакующие</text>
+	</string>
+	<string id="st_zop_csky_rostok_alarm">
+		<text>Учёные (по рации): Чистое Небо, кто-нибудь! Датчики на Янтаре показывают то, чего мы никогда не видели, - отряд странных мертвецов, идут вместе, строем. Идут на бункер. Пожалуйста!</text>
+	</string>
+	<string id="st_zop_csky_rostok_order">
+		<text>Викинг: Слышали? Отряд быстрого реагирования - снаряжаемся, выдвигаемся на Янтарь, держим бункер вместе с учёными. Они теперь под нашей защитой.</text>
+	</string>
+	<string id="st_zop_csky_rostok_thanks">
+		<text>Учёные (по рации): Чистое Небо... мы не знаем, как вас благодарить. Наши люди живы благодаря вам. Теперь наши двери для вас всегда открыты - образцы, данные, всё, что нужно.</text>
+	</string>
+	<string id="st_zop_csky_rostok_wave3">
+		<text>Чистое Небо: третья волна мертвецов! Последний рывок - держим бункер!</text>
+	</string>
+	<string id="st_zop_csky_rostok_wave4">
+		<text>Чистое Небо: мертвецы легли - а вот и Монолит! Держим бункер!</text>
+	</string>
+	<string id="st_zop_csky_salazar_name">
+		<text>Салазар</text>
+	</string>
+	<string id="st_zop_csky_salazar_bio">
+		<text>Торговец Чистого Неба на блокпосту Юпитера, позывной Салазар. Пришёл на север с группой Холодного; торгует оружием и припасами для всех, кто держит дорогу на Припять.</text>
+	</string>
+	<string id="st_zop_csky_kruger_name">
+		<text>Крюгер</text>
+	</string>
+	<string id="st_zop_csky_kruger_bio">
+		<text>Механик Чистого Неба на блокпосту Юпитера, позывной Крюгер. Пришёл на север с группой Холодного и поставил верстак в углу; чинит и улучшает оружие и броню всем, кто держит дорогу на Припять.</text>
+	</string>
+</string_table>

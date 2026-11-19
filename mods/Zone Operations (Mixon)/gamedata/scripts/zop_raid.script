@@ -1,0 +1,296 @@
+--[[
+	Zone Operations (Mixon) - raids for the commander's tasks: convoy interception and ambushes.
+
+	A task section uses:
+		on_init         = %=zop_raid_setup(<task_id>:<kind>:<faction>:<faction>...)%
+		status_functor  = zop_raid_status
+		target_functor  = zop_raid_target
+		on_complete / on_fail also call %=zop_raid_cleanup(<task_id>)%
+	kind:
+		convoy - an enemy squad with cargo walks between two smarts of the level; kill it before it
+		         arrives. The cargo is on the bodies.
+		ambush - an enemy assault group walks from the far side of the level to the commander's
+		         base; meet it on the way and kill it before it reaches the base.
+		camp   - an enemy group holds a smart of the level; wipe it out before the deadline.
+	Stage 0 = hunt, stage 1 = report back to the giver (completed in his dialog, stage_complete = 1).
+	The player must take part: if the group dies and none of its members fell to the player
+	(or the player's companions), someone else got there first and the task fails.
+	State (squad id, route, deadline) is saved; the squad itself is an ordinary alife squad.
+]]
+
+-- our own 4-6 man squads (squad_descr_zop.ltx); stock veteran squads are only 2-3 men
+local SQUADS = {
+	killer   = "zop_raid_killer",
+	bandit   = "zop_raid_bandit",
+	monolith = "zop_raid_monolith",
+	greh     = "zop_raid_greh",
+	freedom  = "zop_raid_freedom",
+	renegade = "zop_raid_renegade",
+	dolg     = "zop_raid_dolg",
+	army     = "zop_raid_army",
+}
+
+-- what a convoy carries (every member gets one of each)
+local CARGO = { "medkit_army", "prt_i_transistors", "prt_i_capacitors", "conserva", "ammo_5.45x39_ap" }
+
+local HOURS   = { convoy = 10, ambush = 8, camp = 24 }
+local ARRIVED = 50      -- metres from the destination = the squad got through
+
+local raids = {}        -- [task_id] = { squad, section, kind, faction, to, deadline, actor_kills }
+
+local function now()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+end
+
+local function tr(id, ...)
+	local t = game.translate_string(id)
+	if select("#", ...) > 0 then
+		local ok, s = pcall(string.format, t, ...)
+		return ok and s or t
+	end
+	return t
+end
+
+local function news(text)
+	if db.actor and text and text ~= "" then
+		pcall(news_manager.send_tip, db.actor, text, nil, nil, 12000)
+	end
+end
+
+local function smart_title(se)
+	local ok, t = pcall(smart_terrain.get_smart_terrain_name, se)
+	if ok and type(t) == "string" and t ~= "" and t ~= se:name() then return t end
+	-- unnamed smart: say the level instead of gar_smart_terrain_5_2
+	ok, t = pcall(function()
+		return game.translate_string(alife():level_name(game_graph():vertex(se.m_game_vertex_id):level_id()))
+	end)
+	return ok and type(t) == "string" and t ~= "" and t or se:name()
+end
+
+local function is_base(s)
+	return s.props and s.props.base and s.props.base > 0
+end
+
+-- smarts of the actor's level that are not bases, as { se, dist_to_actor }
+local function level_smarts()
+	local out = {}
+	local gg = game_graph()
+	local lid = db.actor and gg:vertex(alife():actor().m_game_vertex_id):level_id()
+	if not lid then
+		return out
+	end
+	local apos = db.actor:position()
+	for _, v in pairs(SIMBOARD.smarts) do
+		local s = v.smrt
+		if s and not is_base(s) and gg:vertex(s.m_game_vertex_id):level_id() == lid then
+			out[#out + 1] = { se = s, d = s.position:distance_to(apos) }
+		end
+	end
+	return out
+end
+
+local function pick(list, filter)
+	local ok = {}
+	for _, e in ipairs(list) do
+		if filter(e) then
+			ok[#ok + 1] = e
+		end
+	end
+	return #ok > 0 and ok[math.random(#ok)] or nil
+end
+
+local function pick_faction(factions)
+	local ok = {}
+	for _, f in ipairs(factions) do
+		if SQUADS[f] and ini_sys:section_exist(SQUADS[f]) then
+			ok[#ok + 1] = f
+		end
+	end
+	return #ok > 0 and ok[math.random(#ok)] or nil
+end
+
+-- route: convoy = two ordinary smarts far apart, away from the player;
+--        ambush = far smart -> the giver's base (the smart he stands at)
+local function route(kind, giver)
+	local smarts = level_smarts()
+	if kind == "camp" then
+		local at = pick(smarts, function(e) return e.d > 300 and e.d < 1000 end)
+		return at and at.se, at and at.se
+	end
+	if kind == "ambush" then
+		local base = giver and giver.m_smart_terrain_id and alife():object(giver.m_smart_terrain_id)
+		if not base then
+			return nil
+		end
+		local from = pick(smarts, function(e) return e.d > 450 and e.d < 1100 and e.se.position:distance_to(base.position) > 450 end)
+		return from and from.se, base
+	end
+	local from = pick(smarts, function(e) return e.d > 350 and e.d < 1000 end)
+	if not from then
+		return nil
+	end
+	local to = pick(smarts, function(e) return e.se.id ~= from.se.id and e.se.position:distance_to(from.se.position) > 450 end)
+	return from.se, to and to.se
+end
+
+------------------------------------------------------------------ effects
+-- p[1] task id, p[2] kind, p[3..] factions
+local function setup(actor, npc, p)
+	local task_id, kind = p[1], p[2]
+	if not (task_id and HOURS[kind]) then
+		return
+	end
+	local factions = {}
+	for i = 3, #p do
+		factions[#factions + 1] = p[i]
+	end
+	local faction = pick_faction(factions)
+	-- on_init may get the actor as npc: the giver is whoever the actor is talking to
+	local spk = get_speaker and get_speaker(true)
+	if not spk or spk:id() == AC_ID then
+		spk = npc and npc:id() ~= AC_ID and npc or nil
+	end
+	local giver = spk and alife():object(spk:id())
+	if not (giver and giver.m_smart_terrain_id and giver.m_smart_terrain_id ~= 65535) then
+		-- fall back to the base smart nearest to the actor
+		local best, bd
+		for _, v in pairs(SIMBOARD.smarts) do
+			local s = v.smrt
+			if s and is_base(s) then
+				local d = s.position:distance_to(db.actor:position())
+				if d < 200 and (not bd or d < bd) then
+					best, bd = s, d
+				end
+			end
+		end
+		giver = best and { m_smart_terrain_id = best.id } or giver
+	end
+	local se_from, se_to = route(kind, giver)
+	if not (faction and se_from and se_to) then
+		printf("![ZOP] raid %s: no faction or route (faction=%s)", task_id, tostring(faction))
+		raids[task_id] = nil
+		return
+	end
+	local sq = zop_spawn.squad_at_smart(SQUADS[faction], se_from, se_to:name())
+	if not sq then
+		raids[task_id] = nil
+		return
+	end
+	sq.rush, sq.rush_to_target = false, false
+	if kind == "convoy" then
+		sq.item_on_all = CARGO   -- sim_squad_scripted spawns these on every member at first update
+	end
+	raids[task_id] = {
+		squad = sq.id, section = SQUADS[faction], kind = kind, faction = faction,
+		to = se_to:name(), deadline = now() + HOURS[kind] * 3600,
+	}
+	news(tr("st_zop_raid_" .. kind .. "_news", tr(faction), smart_title(se_from), smart_title(se_to)))
+end
+
+local function cleanup(actor, npc, p)
+	local r = p and p[1] and raids[p[1]]
+	if r then
+		-- survivors go back to the free simulation
+		pcall(zop_spawn.steer_by_id, r.squad, nil, false)
+		raids[p[1]] = nil
+	end
+end
+
+------------------------------------------------------------------ functors
+local function target(task_id, field, p, tsk)
+	if field ~= "target" or not tsk then
+		return nil
+	end
+	if tsk.stage == 1 then
+		return tsk.task_giver_id
+	end
+	local r = raids[task_id]
+	local sq = r and zop_spawn.valid_squad(r.squad, r.section)
+	if sq then
+		local ok, cid = pcall(function() return sq:commander_id() end)
+		return ok and cid or sq.id
+	end
+	return nil
+end
+
+local function status(tsk, task_id)
+	if axr_task_manager.is_task_giver_valid and not axr_task_manager.is_task_giver_valid(tsk) then
+		return "fail"
+	end
+	if tsk.stage == 254 then
+		return "fail"
+	end
+	if tsk.stage ~= 0 then
+		return
+	end
+	local r = raids[task_id]
+	if not r then
+		return "fail"
+	end
+	local sq = zop_spawn.valid_squad(r.squad, r.section)
+	local ok, n = pcall(function() return sq and sq:npc_count() or 0 end)
+	if not ok or n == 0 then
+		if (r.actor_kills or 0) > 0 then
+			tsk.stage = 1      -- all dead and the player was there: report to the colonel
+			return
+		end
+		news(tr("st_zop_raid_beaten"))
+		return "fail"          -- someone else got there first
+	end
+	if now() > r.deadline then
+		return "fail"
+	end
+	local se_to = r.kind ~= "camp" and zop_census.smart_by_name(r.to)
+	if se_to and sq.position:distance_to(se_to.position) < ARRIVED then
+		return "fail"          -- they got through
+	end
+end
+
+------------------------------------------------------------------ who killed them
+local function by_player(who)
+	if not who then
+		return false
+	end
+	local id = who:id()
+	if id == AC_ID then
+		return true
+	end
+	-- the player's companions count too
+	local sq = get_object_squad(who)
+	return sq and axr_companions and axr_companions.companion_squads and axr_companions.companion_squads[sq.id] and true or false
+end
+
+local function npc_on_death_callback(victim, who)
+	if not (victim and next(raids)) then
+		return
+	end
+	local sq = get_object_squad(victim)
+	if not sq then
+		return
+	end
+	for _, r in pairs(raids) do
+		if r.squad == sq.id and by_player(who) then
+			r.actor_kills = (r.actor_kills or 0) + 1
+		end
+	end
+end
+
+------------------------------------------------------------------ save / load
+local function save_state(m)
+	m.zop_raid = raids
+end
+
+local function load_state(m)
+	raids = m.zop_raid or {}
+end
+
+function on_game_start()
+	xr_effects.zop_raid_setup = setup
+	xr_effects.zop_raid_cleanup = cleanup
+	task_functor.zop_raid_target = target
+	task_status_functor.zop_raid_status = status
+	RegisterScriptCallback("npc_on_death_callback", npc_on_death_callback)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("load_state", load_state)
+end
