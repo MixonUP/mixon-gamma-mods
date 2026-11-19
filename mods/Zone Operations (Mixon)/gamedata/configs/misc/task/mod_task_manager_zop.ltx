@@ -1050,6 +1050,266 @@ on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task
 condlist_0 = {!task_giver_alive(zop_csky_commander_task_13)} fail
 
 
+; ---- Kholodny: top tier artefacts, measurements, sorties into the anomaly fields, courier runs to Viking ----
+; Artefact tasks are stock fetch tasks (tasks_fetch.script): one artefact each, because the stock check
+; counts artefacts in lead boxes only as "has at least one". The pay is the artefact's cost x the number
+; in fetch_reward_and_remove (the game then takes 0.4-0.6 of it for artefacts, by the economy setting).
+
+; Heart of the Oasis (af_oasis_heart, tier 5)
+[zop_csky_commander_task_14]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 55
+repeat_timeout = 172800
+title = zop_csky_commander_task_14_name
+descr = zop_csky_commander_task_14_text
+job_descr = zop_csky_commander_task_14_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_14_fetch_about
+task_complete_descr = zop_csky_commander_task_14_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_generic_fetch_task(zop_csky_commander_task_14_fetch:1:af_oasis_heart)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_14_fetch:2.5) =reward_stash(false) =complete_task_inc_goodwill(100:csky) =inc_task_stage(zop_csky_commander_task_14) =pstor_reset(zop_csky_commander_task_14_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_14) =drx_sl_reset_stored_task(zop_csky_commander_task_14)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_14_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_14) =drx_sl_reset_stored_task(zop_csky_commander_task_14)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_14)} fail
+
+
+; Compass (af_compass, tier 5)
+[zop_csky_commander_task_15]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 55
+repeat_timeout = 172800
+title = zop_csky_commander_task_15_name
+descr = zop_csky_commander_task_15_text
+job_descr = zop_csky_commander_task_15_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_15_fetch_about
+task_complete_descr = zop_csky_commander_task_15_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_generic_fetch_task(zop_csky_commander_task_15_fetch:1:af_compass)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_15_fetch:2.5) =reward_stash(false) =complete_task_inc_goodwill(100:csky) =inc_task_stage(zop_csky_commander_task_15) =pstor_reset(zop_csky_commander_task_15_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_15) =drx_sl_reset_stored_task(zop_csky_commander_task_15)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_15_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_15) =drx_sl_reset_stored_task(zop_csky_commander_task_15)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_15)} fail
+
+
+; Volat Emerald (af_monolith, tier 5) - the "Emerald" of GAMMA
+[zop_csky_commander_task_16]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 55
+repeat_timeout = 172800
+title = zop_csky_commander_task_16_name
+descr = zop_csky_commander_task_16_text
+job_descr = zop_csky_commander_task_16_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_16_fetch_about
+task_complete_descr = zop_csky_commander_task_16_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_generic_fetch_task(zop_csky_commander_task_16_fetch:1:af_monolith)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_16_fetch:2.5) =reward_stash(false) =complete_task_inc_goodwill(100:csky) =inc_task_stage(zop_csky_commander_task_16) =pstor_reset(zop_csky_commander_task_16_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_16) =drx_sl_reset_stored_task(zop_csky_commander_task_16)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_16_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_16) =drx_sl_reset_stored_task(zop_csky_commander_task_16)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_16)} fail
+
+
+; a random rare artefact, tier 4 (list zop_af_rare in mod_fetch_list_zop.ltx)
+[zop_csky_commander_task_17]
+icon = ui_inGame2_Kontrakt_s_uchenimi
+storyline = false
+prior = 60
+repeat_timeout = 43200
+title = zop_csky_commander_task_17_name
+descr = zop_csky_commander_task_17_text
+job_descr = zop_csky_commander_task_17_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_17_fetch_about
+task_complete_descr = zop_csky_commander_task_17_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_commander_task_17_fetch:zop_af_rare:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_17_fetch:2.0) =reward_stash(false) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_17) =pstor_reset(zop_csky_commander_task_17_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_17) =drx_sl_reset_stored_task(zop_csky_commander_task_17)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_17_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_17) =drx_sl_reset_stored_task(zop_csky_commander_task_17)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_17)} fail
+
+
+; a sortie for a random tier 3 artefact (list zop_af_sortie)
+[zop_csky_commander_task_18]
+icon = ui_inGame2_Issledovanie_anomaliy
+storyline = false
+prior = 65
+repeat_timeout = 21600
+title = zop_csky_commander_task_18_name
+descr = zop_csky_commander_task_18_text
+job_descr = zop_csky_commander_task_18_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_commander_task_18_fetch_about
+task_complete_descr = zop_csky_commander_task_18_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_fetch_task(zop_csky_commander_task_18_fetch:zop_af_sortie:1:1)%
+on_complete = %=fetch_reward_and_remove(zop_csky_commander_task_18_fetch:1.7) =reward_stash(false) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_commander_task_18) =pstor_reset(zop_csky_commander_task_18_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_18) =drx_sl_reset_stored_task(zop_csky_commander_task_18)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_commander_task_18_fetch) =drx_sl_unregister_task_giver(zop_csky_commander_task_18) =drx_sl_reset_stored_task(zop_csky_commander_task_18)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_18)} fail
+
+
+; Anomaly measurements on this level (stock tasks_measure.script, scan mode 1 = same level)
+[zop_csky_commander_task_19]
+icon = ui_inGame2_PD_Opitniy_stalker
+storyline = false
+prior = 70
+repeat_timeout = 14400
+precondition = {=validate_measure_task(zop_csky_commander_task_19:1:true:detector_anomaly:chemical:acidic:electric:thermal:gravitational)} true, false
+title = zop_csky_commander_task_19_name
+descr = zop_csky_commander_task_19_text
+descr_functor = general_measure_desc
+job_descr = zop_csky_commander_task_19_about
+task_complete_descr = zop_csky_commander_task_19_finish
+stage_complete = 3
+target_functor = general_measure
+status_functor = measure_task
+task_measure_mutants = simulation_lurker,simulation_bloodsucker_1_2,simulation_psysucker,simulation_psy_dog,simulation_snork_2_3,simulation_fracture,simulation_cat,simulation_mix_dogs,simulation_pseudodog
+on_job_descr = %=setup_measure_task(zop_csky_commander_task_19)%
+on_complete = %=reward_random_money(7000:9000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =remove_quest_item(zop_csky_commander_task_19) -zop_csky_commander_task_19_quest_item_received -zop_csky_commander_task_19_measurment_finished -zop_csky_commander_task_19_measurment_enemy =pstor_reset(zop_csky_commander_task_19) =drx_sl_unregister_task_giver(zop_csky_commander_task_19) =drx_sl_reset_stored_task(zop_csky_commander_task_19)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_quest_item(zop_csky_commander_task_19) -zop_csky_commander_task_19_quest_item_received -zop_csky_commander_task_19_measurment_finished -zop_csky_commander_task_19_measurment_enemy =pstor_reset(zop_csky_commander_task_19) =drx_sl_unregister_task_giver(zop_csky_commander_task_19) =drx_sl_reset_stored_task(zop_csky_commander_task_19)%
+on_cancel = %=remove_quest_item(zop_csky_commander_task_19) -zop_csky_commander_task_19_quest_item_received -zop_csky_commander_task_19_measurment_finished -zop_csky_commander_task_19_measurment_enemy =pstor_reset(zop_csky_commander_task_19) =drx_sl_unregister_task_giver(zop_csky_commander_task_19) =drx_sl_reset_stored_task(zop_csky_commander_task_19)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_19)} fail
+
+
+; Anomaly measurements on a neighbouring level (scan mode 3 = nearby levels only)
+[zop_csky_commander_task_20]
+icon = ui_inGame2_PD_Opitniy_stalker
+storyline = false
+prior = 65
+repeat_timeout = 21600
+precondition = {=validate_measure_task(zop_csky_commander_task_20:3:true:detector_anomaly:chemical:acidic:electric:thermal:gravitational)} true, false
+title = zop_csky_commander_task_20_name
+descr = zop_csky_commander_task_20_text
+descr_functor = general_measure_desc
+job_descr = zop_csky_commander_task_20_about
+task_complete_descr = zop_csky_commander_task_20_finish
+stage_complete = 3
+target_functor = general_measure
+status_functor = measure_task
+task_measure_mutants = simulation_lurker,simulation_bloodsucker_1_2,simulation_psysucker,simulation_psy_dog,simulation_snork_2_3,simulation_fracture,simulation_cat,simulation_mix_dogs,simulation_pseudodog
+on_job_descr = %=setup_measure_task(zop_csky_commander_task_20)%
+on_complete = %=reward_random_money(10000:13000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =remove_quest_item(zop_csky_commander_task_20) -zop_csky_commander_task_20_quest_item_received -zop_csky_commander_task_20_measurment_finished -zop_csky_commander_task_20_measurment_enemy =pstor_reset(zop_csky_commander_task_20) =drx_sl_unregister_task_giver(zop_csky_commander_task_20) =drx_sl_reset_stored_task(zop_csky_commander_task_20)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_quest_item(zop_csky_commander_task_20) -zop_csky_commander_task_20_quest_item_received -zop_csky_commander_task_20_measurment_finished -zop_csky_commander_task_20_measurment_enemy =pstor_reset(zop_csky_commander_task_20) =drx_sl_unregister_task_giver(zop_csky_commander_task_20) =drx_sl_reset_stored_task(zop_csky_commander_task_20)%
+on_cancel = %=remove_quest_item(zop_csky_commander_task_20) -zop_csky_commander_task_20_quest_item_received -zop_csky_commander_task_20_measurment_finished -zop_csky_commander_task_20_measurment_enemy =pstor_reset(zop_csky_commander_task_20) =drx_sl_unregister_task_giver(zop_csky_commander_task_20) =drx_sl_reset_stored_task(zop_csky_commander_task_20)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_20)} fail
+
+
+; Sortie: place a scanner in a named anomaly field of Jupiter. The stock status functor and stage texts of
+; tasks_anomaly_scanner.script (Hermann's task); the field pick, the marker and the cleanup are zop_sortie.script:
+; the fields Hermann has marked as done are not skipped and nothing is marked as done, so the sortie repeats.
+; Offered only while the actor carries no scanner (two scanner tasks at once confuse the stock status functor)
+[zop_csky_commander_task_21]
+icon = ui_inGame2_Anomalnaya_aktivnost
+storyline = false
+prior = 70
+repeat_timeout = 21600
+precondition = {!actor_has_item(jup_b32_scanner_device)} true, false
+title = zop_csky_commander_task_21_name
+descr = zop_csky_commander_task_21_text
+job_descr = zop_csky_commander_task_21_about
+task_complete_descr = zop_csky_commander_task_21_finish
+stage_complete = 3
+status_functor = anomaly_scanner_task_status
+target_functor = zop_sortie_target
+descr_functor = anomaly_scanner_task_target
+on_init = %=zop_sortie_pick(zop_csky_commander_task_21)%
+on_complete = %=reward_random_money(8000:10000) =reward_stash(true) =complete_task_inc_goodwill(50:csky) =pstor_reset(zop_csky_commander_task_21) =drx_sl_unregister_task_giver(zop_csky_commander_task_21) =drx_sl_reset_stored_task(zop_csky_commander_task_21)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_sortie_cleanup(zop_csky_commander_task_21) =pstor_reset(zop_csky_commander_task_21) =drx_sl_unregister_task_giver(zop_csky_commander_task_21) =drx_sl_reset_stored_task(zop_csky_commander_task_21)%
+on_cancel = %=zop_sortie_cleanup(zop_csky_commander_task_21) =pstor_reset(zop_csky_commander_task_21) =drx_sl_unregister_task_giver(zop_csky_commander_task_21) =drx_sl_reset_stored_task(zop_csky_commander_task_21)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_21)} fail
+possible_anomalies = jup_b206_anomal_zone, jup_b25_anomal_zone, jup_b209_anomal_zone, jup_b201_anomal_zone, jup_b1_anomal_zone, jup_b211_anomal_zone
+
+
+; Sortie: the same in a named anomaly field of Zaton
+[zop_csky_commander_task_22]
+icon = ui_inGame2_Anomalnaya_aktivnost
+storyline = false
+prior = 60
+repeat_timeout = 32400
+precondition = {!actor_has_item(jup_b32_scanner_device)} true, false
+title = zop_csky_commander_task_22_name
+descr = zop_csky_commander_task_22_text
+job_descr = zop_csky_commander_task_22_about
+task_complete_descr = zop_csky_commander_task_22_finish
+stage_complete = 3
+status_functor = anomaly_scanner_task_status
+target_functor = zop_sortie_target
+descr_functor = anomaly_scanner_task_target
+on_init = %=zop_sortie_pick(zop_csky_commander_task_22)%
+on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =pstor_reset(zop_csky_commander_task_22) =drx_sl_unregister_task_giver(zop_csky_commander_task_22) =drx_sl_reset_stored_task(zop_csky_commander_task_22)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_sortie_cleanup(zop_csky_commander_task_22) =pstor_reset(zop_csky_commander_task_22) =drx_sl_unregister_task_giver(zop_csky_commander_task_22) =drx_sl_reset_stored_task(zop_csky_commander_task_22)%
+on_cancel = %=zop_sortie_cleanup(zop_csky_commander_task_22) =pstor_reset(zop_csky_commander_task_22) =drx_sl_unregister_task_giver(zop_csky_commander_task_22) =drx_sl_reset_stored_task(zop_csky_commander_task_22)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_22)} fail
+possible_anomalies = zat_b54_anomal_zone, zat_b56_anomal_zone, zat_b55_anomal_zone, zat_b39_anomal_zone, zat_b101_anomal_zone, zat_b20_anomal_zone, zat_b53_anomal_zone, zat_b14_anomal_zone
+
+
+; Courier run: a large batch of artefacts to Viking at the Agroprom factory. Stock delivery task
+; (tasks_delivery.script, closed by dm_delivery_dialog at the addressee); zop_courier.script only names the addressee
+; The two runs to one addressee exclude each other: the stock dialog check sees only the first record for an npc
+[zop_csky_commander_task_23]
+icon = ui_inGame2_Osobiy_zakaz
+storyline = false
+prior = 60
+repeat_timeout = 86400
+precondition = {=zop_courier_ready(zop_csky_viking) !has_task(zop_csky_commander_task_24:selected)} true, false
+title = zop_csky_commander_task_23_name
+descr = zop_csky_commander_task_23_text
+descr_functor = general_delivery_desc
+job_descr = zop_csky_commander_task_23_about
+task_complete_descr = zop_csky_commander_task_23_finish
+stage_complete = 2
+target_functor = general_delivery
+status_functor = delivery_task
+on_job_descr = %=zop_courier_setup(zop_csky_commander_task_23:zop_csky_viking:zop_courier_artefacts)%
+on_init = %=zop_courier_setup(zop_csky_commander_task_23:zop_csky_viking:zop_courier_artefacts)%
+on_complete = %=remove_delivery_item(zop_csky_commander_task_23) =reward_random_money(25000:30000) =reward_stash(false) =complete_task_inc_goodwill(100:csky) -zop_csky_commander_task_23_quest_item_received =pstor_reset(zop_csky_commander_task_23) =drx_sl_unregister_task_giver(zop_csky_commander_task_23) =drx_sl_reset_stored_task(zop_csky_commander_task_23)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_delivery_item(zop_csky_commander_task_23) -zop_csky_commander_task_23_quest_item_received =pstor_reset(zop_csky_commander_task_23) =drx_sl_unregister_task_giver(zop_csky_commander_task_23) =drx_sl_reset_stored_task(zop_csky_commander_task_23)%
+on_cancel = %=remove_delivery_item(zop_csky_commander_task_23) -zop_csky_commander_task_23_quest_item_received =pstor_reset(zop_csky_commander_task_23) =drx_sl_unregister_task_giver(zop_csky_commander_task_23) =drx_sl_reset_stored_task(zop_csky_commander_task_23)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_23)} fail
+condlist_1 = {!zop_courier_valid(zop_csky_commander_task_23)} fail
+
+
+; Courier run: the field archive (documents) to Viking
+[zop_csky_commander_task_24]
+icon = ui_inGame2_Osobiy_zakaz
+storyline = false
+prior = 55
+repeat_timeout = 86400
+precondition = {=zop_courier_ready(zop_csky_viking) !has_task(zop_csky_commander_task_23:selected)} true, false
+title = zop_csky_commander_task_24_name
+descr = zop_csky_commander_task_24_text
+descr_functor = general_delivery_desc
+job_descr = zop_csky_commander_task_24_about
+task_complete_descr = zop_csky_commander_task_24_finish
+stage_complete = 2
+target_functor = general_delivery
+status_functor = delivery_task
+on_job_descr = %=zop_courier_setup(zop_csky_commander_task_24:zop_csky_viking:zop_courier_documents)%
+on_init = %=zop_courier_setup(zop_csky_commander_task_24:zop_csky_viking:zop_courier_documents)%
+on_complete = %=remove_delivery_item(zop_csky_commander_task_24) =reward_random_money(20000:25000) =reward_stash(false) =complete_task_inc_goodwill(100:csky) -zop_csky_commander_task_24_quest_item_received =pstor_reset(zop_csky_commander_task_24) =drx_sl_unregister_task_giver(zop_csky_commander_task_24) =drx_sl_reset_stored_task(zop_csky_commander_task_24)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_delivery_item(zop_csky_commander_task_24) -zop_csky_commander_task_24_quest_item_received =pstor_reset(zop_csky_commander_task_24) =drx_sl_unregister_task_giver(zop_csky_commander_task_24) =drx_sl_reset_stored_task(zop_csky_commander_task_24)%
+on_cancel = %=remove_delivery_item(zop_csky_commander_task_24) -zop_csky_commander_task_24_quest_item_received =pstor_reset(zop_csky_commander_task_24) =drx_sl_unregister_task_giver(zop_csky_commander_task_24) =drx_sl_reset_stored_task(zop_csky_commander_task_24)%
+condlist_0 = {!task_giver_alive(zop_csky_commander_task_24)} fail
+condlist_1 = {!zop_courier_valid(zop_csky_commander_task_24)} fail
+
+
 ; ------------------------------------------------------------------------------------------
 ; Clear Sky: boss Viking at the Agroprom factory (npc section zop_csky_viking)
 ; ------------------------------------------------------------------------------------------
@@ -1174,6 +1434,56 @@ fetch_func = %=setup_fetch_task(zop_csky_viking_task_6_fetch:zop_blueprints:1:1)
 on_complete = %=fetch_reward_and_remove(zop_csky_viking_task_6_fetch:1.5) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_viking_task_6) =pstor_reset(zop_csky_viking_task_6_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_6) =drx_sl_reset_stored_task(zop_csky_viking_task_6)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_viking_task_6_fetch) =drx_sl_unregister_task_giver(zop_csky_viking_task_6) =drx_sl_reset_stored_task(zop_csky_viking_task_6)%
 condlist_0 = {!task_giver_alive(zop_csky_viking_task_6)} fail
+
+
+; ---- Viking: courier runs to Kholodny at the Jupiter checkpoint (only while Kholodny is there and alive) ----
+
+; Courier run: supplies for the northern garrison
+[zop_csky_viking_task_7]
+icon = ui_inGame2_Osobiy_zakaz
+storyline = false
+prior = 60
+repeat_timeout = 86400
+precondition = {=zop_courier_ready(zop_csky_commander) !has_task(zop_csky_viking_task_8:selected)} true, false
+title = zop_csky_viking_task_7_name
+descr = zop_csky_viking_task_7_text
+descr_functor = general_delivery_desc
+job_descr = zop_csky_viking_task_7_about
+task_complete_descr = zop_csky_viking_task_7_finish
+stage_complete = 2
+target_functor = general_delivery
+status_functor = delivery_task
+on_job_descr = %=zop_courier_setup(zop_csky_viking_task_7:zop_csky_commander:zop_courier_supplies)%
+on_init = %=zop_courier_setup(zop_csky_viking_task_7:zop_csky_commander:zop_courier_supplies)%
+on_complete = %=remove_delivery_item(zop_csky_viking_task_7) =reward_random_money(22000:27000) =reward_stash(false) =complete_task_inc_goodwill(100:csky) -zop_csky_viking_task_7_quest_item_received =pstor_reset(zop_csky_viking_task_7) =drx_sl_unregister_task_giver(zop_csky_viking_task_7) =drx_sl_reset_stored_task(zop_csky_viking_task_7)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_delivery_item(zop_csky_viking_task_7) -zop_csky_viking_task_7_quest_item_received =pstor_reset(zop_csky_viking_task_7) =drx_sl_unregister_task_giver(zop_csky_viking_task_7) =drx_sl_reset_stored_task(zop_csky_viking_task_7)%
+on_cancel = %=remove_delivery_item(zop_csky_viking_task_7) -zop_csky_viking_task_7_quest_item_received =pstor_reset(zop_csky_viking_task_7) =drx_sl_unregister_task_giver(zop_csky_viking_task_7) =drx_sl_reset_stored_task(zop_csky_viking_task_7)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_7)} fail
+condlist_1 = {!zop_courier_valid(zop_csky_viking_task_7)} fail
+
+
+; Courier run: a crate of weapons and ammunition
+[zop_csky_viking_task_8]
+icon = ui_inGame2_Osobiy_zakaz
+storyline = false
+prior = 55
+repeat_timeout = 86400
+precondition = {=zop_courier_ready(zop_csky_commander) !has_task(zop_csky_viking_task_7:selected)} true, false
+title = zop_csky_viking_task_8_name
+descr = zop_csky_viking_task_8_text
+descr_functor = general_delivery_desc
+job_descr = zop_csky_viking_task_8_about
+task_complete_descr = zop_csky_viking_task_8_finish
+stage_complete = 2
+target_functor = general_delivery
+status_functor = delivery_task
+on_job_descr = %=zop_courier_setup(zop_csky_viking_task_8:zop_csky_commander:zop_courier_weapons)%
+on_init = %=zop_courier_setup(zop_csky_viking_task_8:zop_csky_commander:zop_courier_weapons)%
+on_complete = %=remove_delivery_item(zop_csky_viking_task_8) =reward_random_money(25000:30000) =reward_stash(false) =complete_task_inc_goodwill(100:csky) -zop_csky_viking_task_8_quest_item_received =pstor_reset(zop_csky_viking_task_8) =drx_sl_unregister_task_giver(zop_csky_viking_task_8) =drx_sl_reset_stored_task(zop_csky_viking_task_8)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_delivery_item(zop_csky_viking_task_8) -zop_csky_viking_task_8_quest_item_received =pstor_reset(zop_csky_viking_task_8) =drx_sl_unregister_task_giver(zop_csky_viking_task_8) =drx_sl_reset_stored_task(zop_csky_viking_task_8)%
+on_cancel = %=remove_delivery_item(zop_csky_viking_task_8) -zop_csky_viking_task_8_quest_item_received =pstor_reset(zop_csky_viking_task_8) =drx_sl_unregister_task_giver(zop_csky_viking_task_8) =drx_sl_reset_stored_task(zop_csky_viking_task_8)%
+condlist_0 = {!task_giver_alive(zop_csky_viking_task_8)} fail
+condlist_1 = {!zop_courier_valid(zop_csky_viking_task_8)} fail
 
 
 ; ------------------------------------------------------------------------------------------

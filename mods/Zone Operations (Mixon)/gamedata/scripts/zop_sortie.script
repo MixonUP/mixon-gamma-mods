@@ -1,0 +1,122 @@
+--[[
+	Zone Operations (Mixon) - sorties: carry a scanner into a named anomaly field
+	(zop_csky_commander_task_21 / 22).
+
+	The stock task (tasks_anomaly_scanner.script, Hermann) does the walking part: its status functor
+	anomaly_scanner_task_status and its stage texts are used as they are. Three stock parts do not
+	fit a repeatable task, so they are replaced here:
+
+		on_init        = %=zop_sortie_pick(<task id>)%
+			stock pick_anomaly_scanner_field skips the fields Hermann has marked as done
+			(anomaly_scanner_<field>_done) and gives nothing once all are done. This one picks any
+			field of possible_anomalies (not the same twice in a row), gives the stock scanner and
+			saves the field name where the stock functors look for it.
+		target_functor = zop_sortie_target
+			stock anomaly_scanner_task_target remembers the field id of a task for the whole
+			session, so a repeated sortie would keep the old marker. This one looks the field up
+			by the saved name every time and leaves everything else to the stock functor.
+		on_fail / on_cancel = %=zop_sortie_cleanup(<task id>)%
+			takes the scanner back only while it has not been placed (stage < 3), so the scanner
+			of another task is never taken.
+
+	The tasks are offered only while the actor carries no scanner:
+		precondition = {!actor_has_item(jup_b32_scanner_device)} true, false
+	(the stock status functor needs "no scanner in the inventory" to see that it was placed).
+]]
+
+local SCANNER = "jup_b32_scanner_device"
+
+-- fields whose alife object is named differently (as in the stock script)
+local obj_name_of = {
+	["zat_b56_anomal_zone"] = "zaton_b56_anomal_zone",
+}
+
+local ids = {}        -- [object name] = alife id
+local next_scan = {}  -- [object name] = time_global() until which a miss is not rescanned
+local RESCAN_MS = 5000
+
+local function field_id(name)
+	if type(name) ~= "string" then
+		return
+	end
+	local obj_name = obj_name_of[name] or name
+	local id = ids[obj_name]
+	local se = id and alife_object(id)
+	if se and se:name() == obj_name then
+		return id
+	end
+	ids[obj_name] = nil
+	local tg = time_global()
+	if next_scan[obj_name] and tg < next_scan[obj_name] then
+		return
+	end
+	next_scan[obj_name] = tg + RESCAN_MS
+	local sim = alife()
+	for i = 1, 65534 do
+		local o = sim:object(i)
+		if o and o:name() == obj_name then
+			ids[obj_name] = i
+			next_scan[obj_name] = nil
+			return i
+		end
+	end
+end
+
+local function pick(actor, npc, p)
+	local ok, err = pcall(function()
+		local task_id = p and p[1]
+		if not (task_id and db.actor) then
+			return
+		end
+		local fields = parse_list(task_manager.task_ini, task_id, "possible_anomalies")
+		if #fields == 0 then
+			printf("![ZOP] sortie %s: no possible_anomalies", task_id)
+			return
+		end
+		local last = load_var(db.actor, task_id .. "_last")
+		local field = fields[math.random(#fields)]
+		if #fields > 1 and field == last then
+			for i = 1, #fields do
+				if fields[i] == last then
+					field = fields[i % #fields + 1]
+					break
+				end
+			end
+		end
+		save_var(db.actor, task_id, field)
+		save_var(db.actor, task_id .. "_last", field)
+		dialogs.relocate_item_section(db.actor, SCANNER, "in", 1)
+	end)
+	if not ok then
+		printf("![ZOP] sortie pick failed: %s", tostring(err))
+	end
+end
+
+local function cleanup(actor, npc, p)
+	local ok, err = pcall(function()
+		local tsk = p and p[1] and task_manager.get_task_manager().task_info[p[1]]
+		if tsk and (tsk.stage or 0) < 3 and db.actor and db.actor:object(SCANNER) then
+			xr_effects.remove_item(actor, npc, { SCANNER })
+		end
+	end)
+	if not ok then
+		printf("![ZOP] sortie cleanup failed: %s", tostring(err))
+	end
+end
+
+local function target(task_id, field, p, tsk)
+	if field == "target" and db.actor and tsk and tsk.stage == 1 then
+		local ok, id = pcall(field_id, load_var(db.actor, task_id))
+		return ok and id or nil
+	end
+	local stock = task_functor.anomaly_scanner_task_target
+	if stock then
+		return stock(task_id, field, p, tsk)
+	end
+end
+
+function on_game_start()
+	xr_effects.zop_sortie_pick = pick
+	xr_effects.zop_sortie_cleanup = cleanup
+	task_functor.zop_sortie_target = target
+end

@@ -61,3 +61,67 @@ $spawn            = "respawn\zop_csky_kruger_mechanic"
 character_profile = zop_csky_kruger_mechanic
 spec_rank         = veteran
 community         = csky
+
+; Racuro - Clear Sky's medic at the Jupiter checkpoint (medic services go by the dialogs and the trade file of his post)
+[zop_csky_racuro_medic]:stalker
+$spawn            = "respawn\zop_csky_racuro_medic"
+character_profile = zop_csky_racuro_medic
+spec_rank         = regular
+community         = csky
+
+; Fin - Clear Sky's cook (barman) at the Jupiter checkpoint
+[zop_csky_fin_barman]:stalker
+$spawn            = "respawn\zop_csky_fin_barman"
+character_profile = zop_csky_fin_barman
+spec_rank         = novice
+community         = csky
+
+; Courier cargo for the runs between the two Clear Sky bases: Kholodny (Jupiter) <-> Viking (Agroprom factory).
+; Tasks zop_csky_commander_task_23/24 and zop_csky_viking_task_7/8, see scripts\zop_courier.script.
+; They inherit the stock delivery packages quest_package_N, so the icon is whatever the installed icon pack
+; gives the stock package (GAMMA's GRIP remaps it by section: another texture, another cell and scale).
+; Own story_id (the stock one would be shared with the real package) and no "unpack" (zop_courier.cargo_menu).
+
+; a sealed case with a large batch of artefacts for Viking's lab
+[zop_courier_artefacts]:quest_package_1
+$spawn              = "quest_items\zop_courier_artefacts"
+story_id            = zop_courier_artefacts
+inv_weight          = 14.0
+inv_name            = st_zop_courier_artefacts_name
+inv_name_short      = st_zop_courier_artefacts_name
+description         = st_zop_courier_artefacts_descr
+use1_functor        = zop_courier.cargo_menu
+use1_action_functor = zop_courier.cargo_use
+
+; the checkpoint's field archive: measurement logs and reports
+[zop_courier_documents]:quest_package_4
+$spawn              = "quest_items\zop_courier_documents"
+story_id            = zop_courier_documents
+inv_weight          = 3.0
+inv_name            = st_zop_courier_documents_name
+inv_name_short      = st_zop_courier_documents_name
+description         = st_zop_courier_documents_descr
+use1_functor        = zop_courier.cargo_menu
+use1_action_functor = zop_courier.cargo_use
+
+; supplies for the northern garrison
+[zop_courier_supplies]:quest_package_2
+$spawn              = "quest_items\zop_courier_supplies"
+story_id            = zop_courier_supplies
+inv_weight          = 12.0
+inv_name            = st_zop_courier_supplies_name
+inv_name_short      = st_zop_courier_supplies_name
+description         = st_zop_courier_supplies_descr
+use1_functor        = zop_courier.cargo_menu
+use1_action_functor = zop_courier.cargo_use
+
+; a crate of weapons and ammunition for the northern garrison
+[zop_courier_weapons]:quest_package_1
+$spawn              = "quest_items\zop_courier_weapons"
+story_id            = zop_courier_weapons
+inv_weight          = 16.0
+inv_name            = st_zop_courier_weapons_name
+inv_name_short      = st_zop_courier_weapons_name
+description         = st_zop_courier_weapons_descr
+use1_functor        = zop_courier.cargo_menu
+use1_action_functor = zop_courier.cargo_use

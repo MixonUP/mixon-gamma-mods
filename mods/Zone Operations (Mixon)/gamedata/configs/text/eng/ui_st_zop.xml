@@ -1310,4 +1310,283 @@ Hold %s. Attackers left: %d.</text>
 	<string id="st_zop_csky_kruger_bio">
 		<text>Clear Sky's mechanic at the Jupiter checkpoint, callsign Kruger. Came north with Kholodny's group and set up his workbench in the corner; repairs and upgrades weapons and armour for everyone who holds the way to Pripyat.</text>
 	</string>
+	<string id="st_zop_csky_racuro_name">
+		<text>Racuro</text>
+	</string>
+	<string id="st_zop_csky_racuro_bio">
+		<text>Clear Sky's medic at the Jupiter checkpoint, callsign Racuro. Patches up whoever comes back from the north and sells what keeps the next ones alive.</text>
+	</string>
+	<string id="st_zop_csky_fin_name">
+		<text>Fin</text>
+	</string>
+	<string id="st_zop_csky_fin_bio">
+		<text>Clear Sky's cook at the Jupiter checkpoint, callsign Fin. Keeps the pot on the fire by the wall and trades food and drink to the garrison.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_name">
+		<text>Heart of the Oasis</text>
+	</string>
+	<string id="zop_csky_commander_task_14_text">
+		<text>Kholodny needs a legendary artifact: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_about">
+		<text>There is an artifact our geophysicists have only read about - the Heart of the Oasis. It is born where the Zone hides its quietest places. If one ever falls into your hands, do not take it to a trader. Bring it here, and Clear Sky will pay better than anyone.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_fetch_finish">
+		<text>So it does exist... Careful, put it into the container. You have just given the lab a year of work. Here is your pay, and it is honest pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_name">
+		<text>The Compass</text>
+	</string>
+	<string id="zop_csky_commander_task_15_text">
+		<text>Kholodny needs a legendary artifact: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_about">
+		<text>They say the Compass shows a way through any anomaly field. We do not need the legend, we need the readings: an artifact that feels the gaps between anomalies would rewrite half of our maps. Find one and bring it to me.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_fetch_finish">
+		<text>The Compass. I thought I would never hold one. Our guides will owe you their lives without ever knowing it. Take your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_name">
+		<text>The Emerald</text>
+	</string>
+	<string id="zop_csky_commander_task_16_text">
+		<text>Kholodny needs a legendary artifact: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_about">
+		<text>The Monolith carries green stones from the far north - the Volat Emerald. It dampens the anomalies around it, and nobody outside their sect knows how. I want one on our table. Where you take it from is your business.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_fetch_finish">
+		<text>Green, cold, and the instruments have gone mad already. That is the one. Clear Sky does not forget such things - here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_name">
+		<text>Rare Sample</text>
+	</string>
+	<string id="zop_csky_commander_task_17_text">
+		<text>Kholodny needs a rare artifact: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_about">
+		<text>The lab has moved on from the common samples. Now it wants the rare ones - what the fields give out once in a few emissions. I have a specific request from the geophysicists, and I pay well above the traders.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_fetch_finish">
+		<text>A clean specimen. The geophysicists are already fighting over who gets it first. Here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_name">
+		<text>Sortie into the Fields</text>
+	</string>
+	<string id="zop_csky_commander_task_18_text">
+		<text>Go out into the anomaly fields and bring Kholodny an artifact: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_about">
+		<text>I need a man for a sortie. After the last emission the fields around here have shifted, and the lab wants a fresh artifact from them - a specific kind. Go out, find it, come back alive.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_fetch_about">
+		<text>Bring from the sortie: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_fetch_finish">
+		<text>Back in one piece, and with the goods. A good sortie. Here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_name">
+		<text>Measurements by the Checkpoint</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text">
+		<text>Take measurements at an anomaly near the checkpoint for Kholodny.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_0">
+		<text>Kholodny asked me to take measurements in an anomaly field, but I have lost the $item_1. I need to get it back first.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_1">
+		<text>Kholodny asked me to take measurements at an anomaly not far from the checkpoint.\nI need to get to the marked place.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_2">
+		<text>I am at the anomaly. I need to take the $item_1 in hand and wait until the measurement is complete.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_3">
+		<text>The measurements are taken. I can return to Kholodny with the $item_1 and the readings.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_about">
+		<text>The fields around the checkpoint breathe, and I want to know how. Take our detector, walk up to the anomaly I mark for you, hold the device in your hand and wait until it has recorded everything. Mind your back: the local wildlife likes to come and see what is beeping.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_finish">
+		<text>The readings are clean. One more point on our map of the fields. Here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_name">
+		<text>Field Survey</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text">
+		<text>Take measurements for Kholodny at the anomaly his survey points to.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_0">
+		<text>Kholodny asked me to take measurements in an anomaly field, but I have lost the $item_1. I need to get it back first.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_1">
+		<text>Kholodny asked me to take measurements at an anomaly from his survey list - it may be close by or in a neighbouring area.\nI need to get to the marked place.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_2">
+		<text>I am at the anomaly. I need to take the $item_1 in hand and wait until the measurement is complete.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_3">
+		<text>The measurements are taken. I can return to Kholodny with the $item_1 and the readings.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_about">
+		<text>One point is not science. To see how the fields are linked I need readings from all around - our own fields, Zaton, the Red Forest, wherever the survey list points this time. The walk may be long, so the pay is higher. Take the detector and bring it back with the record.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_finish">
+		<text>Not for nothing: these numbers match ours. The fields are linked after all. Here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_21_name">
+		<text>Sortie: Jupiter Fields</text>
+	</string>
+	<string id="zop_csky_commander_task_21_text">
+		<text>Place Kholodny's scanner in an anomaly field of Jupiter.</text>
+	</string>
+	<string id="zop_csky_commander_task_21_about">
+		<text>A sortie, and not a quiet one. I am giving you a scanner. Carry it into the heart of the anomaly field I mark on your map, set it up there and come back. It will send us the readings by itself for as long as it lives. Fields like that do not let strangers in for free, so watch every step.</text>
+	</string>
+	<string id="zop_csky_commander_task_21_finish">
+		<text>The signal is coming in. The scanner is where it should be. A clean sortie - here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_22_name">
+		<text>Sortie: Zaton Fields</text>
+	</string>
+	<string id="zop_csky_commander_task_22_text">
+		<text>Place Kholodny's scanner in an anomaly field of Zaton.</text>
+	</string>
+	<string id="zop_csky_commander_task_22_about">
+		<text>This sortie is a long one. Zaton has fields that have no equals here: the Claw, the Iron Forest, the Scar. I want our scanner in one of them. Take the device, get to the field I mark, set it up and come back. I pay for the road as well.</text>
+	</string>
+	<string id="zop_csky_commander_task_22_finish">
+		<text>Zaton is on the air. Now we see the swamps there as if they were our own. Here is your pay, you have earned it.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_name">
+		<text>Courier: Artifacts for Viking</text>
+	</string>
+	<string id="zop_csky_commander_task_23_text">
+		<text>Carry the case with the artifacts from Kholodny to Viking at the Agroprom factory.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_text_0">
+		<text>Kholodny has cargo for Viking: the $item_1. I do not have it on me - I need to take it.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_text_1">
+		<text>I am carrying the $item_1 from Kholodny. It must be handed to Viking in person, at the Clear Sky factory on Agroprom.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_about">
+		<text>Over these weeks the checkpoint has gathered a whole case of artifacts, and all of it must go south, to Viking's big lab at the factory. It is heavy, it is worth a fortune, and half the Zone would kill for it. I need a courier I can trust. Hand it to Viking personally - he will pay you on the spot.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_finish">
+		<text>Good work, courier.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_23_0">
+		<text>Viking, a case from the north. Artifacts from $name, the whole batch.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_23_1">
+		<text>From Kholodny? Sealed, and the weight is right. So the northern lab really works. You carried a fortune across the whole Zone and did not open it - I value that. Here is your pay.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_name">
+		<text>Courier: Archive for Viking</text>
+	</string>
+	<string id="zop_csky_commander_task_24_text">
+		<text>Carry the checkpoint's field archive from Kholodny to Viking at the Agroprom factory.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_text_0">
+		<text>Kholodny has cargo for Viking: the $item_1. I do not have it on me - I need to take it.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_text_1">
+		<text>I am carrying the $item_1 from Kholodny. It must be handed to Viking in person, at the Clear Sky factory on Agroprom.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_about">
+		<text>Measurement logs, maps of the fields, reports on the Monolith - a month of our work, on paper and on drives. I will not send this over the radio: too many ears. Take the archive to Viking at the factory and put it into his hands. He pays on delivery.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_finish">
+		<text>Good work, courier.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_24_0">
+		<text>Viking, the archive from the Jupiter checkpoint. $name said to hand it to you only.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_24_1">
+		<text>At last. I have been waiting for these papers longer than for the spring. The scientists will sort them out, and you take your pay - you have earned it.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_name">
+		<text>Courier: Supplies for the North</text>
+	</string>
+	<string id="zop_csky_viking_task_7_text">
+		<text>Carry the crate of supplies from Viking to Kholodny at the Jupiter checkpoint.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_text_0">
+		<text>Viking has cargo for Kholodny: the $item_1. I do not have it on me - I need to take it.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_text_1">
+		<text>I am carrying the $item_1 from Viking. It must be handed to Kholodny in person, at the Clear Sky checkpoint on Jupiter.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_about">
+		<text>Kholodny's people sit at the very edge of the map, and no caravan will go there. Medicine, rations, anti-rad, batteries for the instruments - it is all packed in one crate, and it is heavy. Carry it to the Jupiter checkpoint and hand it to Kholodny. He will pay you there.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_finish">
+		<text>Good work, courier.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_7_0">
+		<text>Kholodny, a crate from the south. Supplies from $name.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_7_1">
+		<text>From Viking? Just in time: we were down to the last pack of anti-rad. The garrison will remember your name. Here is your pay.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_name">
+		<text>Courier: Weapons for the North</text>
+	</string>
+	<string id="zop_csky_viking_task_8_text">
+		<text>Carry the crate of weapons from Viking to Kholodny at the Jupiter checkpoint.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_text_0">
+		<text>Viking has cargo for Kholodny: the $item_1. I do not have it on me - I need to take it.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_text_1">
+		<text>I am carrying the $item_1 from Viking. It must be handed to Kholodny in person, at the Clear Sky checkpoint on Jupiter.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_about">
+		<text>The Monolith tests the checkpoint every week, and Kholodny's barrels are wearing out. Arsenal has put together a crate: rifles, spare parts, ammunition. It weighs like a dead boar, and you must not be caught with it by the military. Carry it north and hand it to Kholodny personally.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_finish">
+		<text>Good work, courier.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_8_0">
+		<text>Kholodny, a crate from the factory. Weapons and ammunition from $name.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_8_1">
+		<text>Now that is a gift. The next Monolith squad is in for a surprise. Thank Viking for me, and take your pay.</text>
+	</string>
+	<string id="st_zop_courier_artefacts_name">
+		<text>Sealed case with artifacts</text>
+	</string>
+	<string id="st_zop_courier_artefacts_descr">
+		<text>A heavy shielded case with Clear Sky seals: a large batch of artifacts collected at the Jupiter checkpoint. Addressed to Viking at the Agroprom factory. Do not open.</text>
+	</string>
+	<string id="st_zop_courier_documents_name">
+		<text>Field archive of the checkpoint</text>
+	</string>
+	<string id="st_zop_courier_documents_descr">
+		<text>A sealed folder and data drives: measurement logs, maps of the anomaly fields and reports of the Jupiter checkpoint. Addressed to Viking at the Agroprom factory.</text>
+	</string>
+	<string id="st_zop_courier_supplies_name">
+		<text>Crate of supplies for the checkpoint</text>
+	</string>
+	<string id="st_zop_courier_supplies_descr">
+		<text>Medicine, rations, anti-rad and batteries for the instruments, packed at the Agroprom factory. Addressed to Kholodny at the Jupiter checkpoint.</text>
+	</string>
+	<string id="st_zop_courier_weapons_name">
+		<text>Crate of weapons for the checkpoint</text>
+	</string>
+	<string id="st_zop_courier_weapons_descr">
+		<text>Rifles, spare parts and ammunition from Arsenal's stock at the Agroprom factory. Addressed to Kholodny at the Jupiter checkpoint. Very heavy.</text>
+	</string>
 </string_table>

@@ -52,8 +52,9 @@ pt1 = 88860000,animpoint_sit_normal | pos:7.00,24.61,-190.40 animpoint:7.00,24.6
 path_end = loop
 meet = meet@zop_csky_jupiter
 
+; Racuro, the medic (npc section zop_csky_racuro_medic)
 [logic@zop_csky_jupiter_medic]
-suitable = {=check_npc_name(csky_medic)} true
+suitable = {=check_npc_name(zop_csky_racuro)} true
 prior = 50
 active = beh@zop_csky_jupiter_medic
 trade = items\trade\trade_generic_medic.ltx
@@ -65,9 +66,9 @@ target = lvid:805324
 wait_anim = guard_na
 meet = meet@zop_csky_jupiter
 
-; the barman sits on the ground
+; Fin, the cook (npc section zop_csky_fin_barman), sits on the ground
 [logic@zop_csky_jupiter_barman]
-suitable = {=check_npc_name(csky_barman)} true
+suitable = {=check_npc_name(zop_csky_fin)} true
 prior = 50
 active = beh@zop_csky_jupiter_barman
 trade = items\trade\trade_generic_barman.ltx

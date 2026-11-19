@@ -155,6 +155,7 @@ local FREEDOM_DESC = [[
 ]]
 
 -- Clear Sky: Kholodny, in charge of the Jupiter checkpoint after csky_jupiter (npc section zop_csky_commander)
+-- dm_delivery_dialog (stock) is in his and Viking's lists: they take the courier cargo of zop_courier.script
 local CSKY_PROFILE = [[
 <character id="zop_csky_commander">
 	<class>zop_csky_commander</class>
@@ -188,6 +189,7 @@ local CSKY_DESC = [[
 	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
 	<actor_dialog>drx_sl_task_completed_dialog</actor_dialog>
 	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>dm_delivery_dialog</actor_dialog>
 	<actor_dialog>actor_break_dialog</actor_dialog>
 </specific_character>
 ]]
@@ -206,6 +208,12 @@ local CSKY2_PROFILE = [[
 </character>
 <character id="zop_csky_arsenal">
 	<class>zop_csky_arsenal</class>
+</character>
+<character id="zop_csky_racuro_medic">
+	<class>zop_csky_racuro_medic</class>
+</character>
+<character id="zop_csky_fin_barman">
+	<class>zop_csky_fin_barman</class>
 </character>
 <character id="zop_csky_rostok_trader">
 	<class>zop_csky_rostok_trader</class>
@@ -239,6 +247,7 @@ local CSKY2_DESC = [[
 	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
 	<actor_dialog>drx_sl_task_completed_dialog</actor_dialog>
 	<actor_dialog>dm_important_documents</actor_dialog>
+	<actor_dialog>dm_delivery_dialog</actor_dialog>
 	<actor_dialog>actor_break_dialog</actor_dialog>
 </specific_character>
 <specific_character id="zop_csky_salazar" team_default="1">
@@ -293,6 +302,57 @@ local CSKY2_DESC = [[
 	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
 	<actor_dialog>dm_tech_repair</actor_dialog>
 	<actor_dialog>dm_encrypted_pda</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_csky_racuro_medic" team_default="1">
+	<name>st_zop_csky_racuro_name</name>
+	<icon>ui_inGame2_csky_3</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_racuro_bio</bio>
+	<class>zop_csky_racuro_medic</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>20000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="1"/>
+	<visual>actors\stalker_nebo\stalker_trader_nebo</visual>
+	<supplies>
+		[spawn] \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_init_medic</actor_dialog>
+	<actor_dialog>dm_medic_general</actor_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_csky_fin_barman" team_default="1">
+	<name>st_zop_csky_fin_name</name>
+	<icon>ui_inGame2_csky_3</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_csky_fin_bio</bio>
+	<class>zop_csky_fin_barman</class>
+	<community>csky</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\csky_1\</snd_config>
+	<rank>5000</rank>
+	<reputation>1500</reputation>
+	<money min="5000" max="8000" infinitive="1"/>
+	<visual>actors\stalker_nebo\stalker_trader_nebo</visual>
+	<supplies>
+		[spawn] \n
+		wpn_pm \n
+		ammo_9x18_fmj = 1 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>dm_init_batender</actor_dialog>
+	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
+	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
 	<actor_dialog>actor_break_dialog</actor_dialog>
 </specific_character>
 <specific_character id="zop_csky_arsenal" team_default="1">

@@ -1,0 +1,163 @@
+--[[
+	Zone Operations (Mixon) - courier runs between the two Clear Sky bases
+	(Kholodny at the Jupiter checkpoint <-> Viking at the Agroprom factory).
+
+	The stock delivery task (tasks_delivery.script) does everything: it hands the package over
+	when the task starts, marks the addressee, fails when the package or the addressee is gone and
+	is closed by the stock dialog dm_delivery_dialog at the addressee. The only thing it cannot do
+	is deliver to a NAMED npc: on_init_delivery_task always picks a random sim_default squad leader.
+	So this file only fills the stock delivery record with a fixed addressee:
+
+		precondition = {=zop_courier_ready(<npc section>)} true, false
+			the addressee exists and is alive (the other base has been set up)
+		on_job_descr = %=zop_courier_setup(<task id>:<npc section>:<item>[:<item>...])%
+		on_init      = %=zop_courier_setup(<task id>:<npc section>:<item>[:<item>...])%
+			writes the record tasks_delivery reads (target_id, item_1_sec, ...). Both hooks: the
+			job description comes first, so the journal text is there from the first moment (the
+			task object reads its description before on_init); the second call keeps the record
+		condlist_N   = {!zop_courier_valid(<task id>)} fail
+			the record could not be written (the addressee died between the offer and the accept)
+
+	The addressee needs <actor_dialog>dm_delivery_dialog</actor_dialog> in his profile
+	(modxml_zop.script). Nothing is saved here: the record lives in the actor's pstor, as stock.
+
+	Two runs to one addressee must not be active together: the stock dialog check stops at the
+	first record that names the npc. The tasks exclude each other with !has_task(<other>:selected),
+	and setup drops the record a courier task left when it was only looked at in the dialog.
+
+	cargo_menu / cargo_use: the cargo boxes inherit the stock quest_package_N (for the icon, which
+	icon packs remap by section), so their stock "unpack" entry is switched off here.
+]]
+
+local courier_tasks = {} -- task ids whose on_init calls zop_courier_setup
+
+local ids = {}        -- [npc section] = alife id, found this session
+local next_scan = {}  -- [npc section] = time_global() until which a miss is not rescanned
+local RESCAN_MS = 5000
+
+local function alive_npc(section, id)
+	local se = id and alife_object(id)
+	if se and se:section_name() == section and IsStalker(nil, se:clsid()) and se:alive() then
+		return se
+	end
+end
+
+-- the living npc of this section (server object) or nil
+local function find(section)
+	if not section then
+		return
+	end
+	local se = alive_npc(section, ids[section])
+	if se then
+		return se
+	end
+	ids[section] = nil
+	local tg = time_global()
+	if next_scan[section] and tg < next_scan[section] then
+		return
+	end
+	next_scan[section] = tg + RESCAN_MS
+	local sim = alife()
+	for i = 1, 65534 do
+		local o = sim:object(i)
+		if o and o:section_name() == section and IsStalker(nil, o:clsid()) and o:alive() then
+			ids[section] = i
+			next_scan[section] = nil
+			return o
+		end
+	end
+end
+
+local function level_of(se)
+	return alife():level_name(game_graph():vertex(se.m_game_vertex_id):level_id())
+end
+
+local function ready(actor, npc, p)
+	local ok, se = pcall(find, p and p[1])
+	return ok and se ~= nil
+end
+
+local function valid(actor, npc, p)
+	if not (p and p[1] and db.actor) then
+		return true -- nothing to judge by yet
+	end
+	local var = load_var(db.actor, p[1])
+	return type(var) == "table" and var.target_id ~= nil
+end
+
+-- records of the other courier tasks that are not running (shown in the dialog, never taken)
+local function drop_stale(task_id)
+	local info = task_manager.get_task_manager().task_info
+	for i = 1, #courier_tasks do
+		local id = courier_tasks[i]
+		if id ~= task_id and not (info[id] and info[id].status == "selected") and load_var(db.actor, id) ~= nil then
+			save_var(db.actor, id, nil)
+		end
+	end
+end
+
+local function setup(actor, npc, p)
+	local ok, err = pcall(function()
+		if not (p and #p >= 3 and db.actor) then
+			printf("![ZOP] courier: bad parameters")
+			return
+		end
+		local task_id, target_sec = p[1], p[2]
+		drop_stale(task_id)
+		-- already set up when the job was described: keep it (the cargo may be issued by now)
+		local cur = load_var(db.actor, task_id)
+		if type(cur) == "table" and cur.item_1_sec and alive_npc(target_sec, cur.target_id) then
+			return
+		end
+		local item = p[math.random(3, #p)]
+		if not ini_sys:section_exist(item) then
+			printf("![ZOP] courier %s: no item section [%s]", task_id, tostring(item))
+			return
+		end
+		local se_target = find(target_sec)
+		if not se_target then
+			printf("![ZOP] courier %s: addressee [%s] not found", task_id, target_sec)
+			return
+		end
+		-- the giver is the npc the task id is named after: <npc section>_task_<n>
+		local se_giver = find(string.match(task_id, "^(.-)_task_%d+$"))
+		save_var(db.actor, task_id, {
+			lvl_task        = level.name(),
+			lvl_target      = level_of(se_target),
+			task_giver_comm = se_giver and alife_character_community(se_giver) or "csky",
+			task_giver_name = se_giver and se_giver:character_name() or "",
+			target_id       = se_target.id,
+			target_comm     = alife_character_community(se_target),
+			item_1_sec      = item,
+		})
+	end)
+	if not ok then
+		printf("![ZOP] courier setup failed: %s", tostring(err))
+	end
+end
+
+-- item menu of the cargo boxes: no entry, no action
+function cargo_menu(obj)
+	return nil
+end
+
+function cargo_use(obj)
+end
+
+function on_game_start()
+	xr_conditions.zop_courier_ready = ready
+	xr_conditions.zop_courier_valid = valid
+	xr_effects.zop_courier_setup = setup
+	local ok, err = pcall(function()
+		local ini = task_manager.task_ini
+		ini:section_for_each(function(section)
+			local s = ini:r_string_ex(section, "on_init")
+			if s and string.find(s, "zop_courier_setup", 1, true) then
+				courier_tasks[#courier_tasks + 1] = section
+			end
+		end)
+	end)
+	if not ok then
+		printf("![ZOP] courier task list failed: %s", tostring(err))
+	end
+end

@@ -1310,4 +1310,283 @@
 	<string id="st_zop_csky_kruger_bio">
 		<text>Механик Чистого Неба на блокпосту Юпитера, позывной Крюгер. Пришёл на север с группой Холодного и поставил верстак в углу; чинит и улучшает оружие и броню всем, кто держит дорогу на Припять.</text>
 	</string>
+	<string id="st_zop_csky_racuro_name">
+		<text>Ракуро</text>
+	</string>
+	<string id="st_zop_csky_racuro_bio">
+		<text>Медик Чистого Неба на блокпосте Юпитера, позывной Ракуро. Латает тех, кто вернулся с севера, и продаёт то, что поможет выжить следующим.</text>
+	</string>
+	<string id="st_zop_csky_fin_name">
+		<text>Фин</text>
+	</string>
+	<string id="st_zop_csky_fin_bio">
+		<text>Повар Чистого Неба на блокпосте Юпитера, позывной Фин. Держит котёл на огне у стены и продаёт гарнизону еду и выпивку.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_name">
+		<text>Сердце Оазиса</text>
+	</string>
+	<string id="zop_csky_commander_task_14_text">
+		<text>Холодному нужен легендарный артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_about">
+		<text>Есть артефакт, о котором наши геофизики только читали, - Сердце Оазиса. Рождается он там, где Зона прячет свои самые тихие места. Если такой попадёт тебе в руки - не неси торговцу. Неси сюда, Чистое Небо заплатит лучше всех.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_14_fetch_finish">
+		<text>Значит, он всё-таки существует... Осторожно, клади в контейнер. Ты только что дал лаборатории работы на год. Держи оплату - и это честная оплата.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_name">
+		<text>Компас</text>
+	</string>
+	<string id="zop_csky_commander_task_15_text">
+		<text>Холодному нужен легендарный артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_about">
+		<text>Говорят, Компас показывает проход через любое аномальное поле. Легенда нам не нужна - нужны показания: артефакт, который чувствует разрывы между аномалиями, перепишет половину наших карт. Найди такой и принеси мне.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_15_fetch_finish">
+		<text>Компас. Думал, никогда не подержу такой в руках. Наши проводники будут обязаны тебе жизнью и даже не узнают об этом. Забирай оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_name">
+		<text>Изумруд</text>
+	</string>
+	<string id="zop_csky_commander_task_16_text">
+		<text>Холодному нужен легендарный артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_about">
+		<text>Монолитовцы носят с дальнего севера зелёные камни - «Волат-изумруд». Он глушит аномалии вокруг себя, и никто за пределами их секты не знает как. Хочу, чтобы один такой лежал у нас на столе. Где ты его возьмёшь - твоё дело.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_16_fetch_finish">
+		<text>Зелёный, холодный, и приборы уже сходят с ума. Он самый. Чистое Небо такого не забывает - держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_name">
+		<text>Редкий образец</text>
+	</string>
+	<string id="zop_csky_commander_task_17_text">
+		<text>Холодному нужен редкий артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_about">
+		<text>Лаборатория переросла простые образцы. Теперь ей нужны редкие - то, что поля отдают раз в несколько выбросов. У меня конкретная заявка от геофизиков, и плачу я заметно выше торговцев.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_17_fetch_finish">
+		<text>Чистый экземпляр. Геофизики уже спорят, кому он достанется первому. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_name">
+		<text>Вылазка в поля</text>
+	</string>
+	<string id="zop_csky_commander_task_18_text">
+		<text>Сходить в аномальные поля и принести Холодному артефакт: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_about">
+		<text>Нужен человек на вылазку. После последнего выброса поля в округе сместились, и лаборатории нужен свежий артефакт оттуда - конкретного вида. Сходи, найди и вернись живым.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_fetch_about">
+		<text>Принеси с вылазки: %s.</text>
+	</string>
+	<string id="zop_csky_commander_task_18_fetch_finish">
+		<text>Вернулся целым, да ещё с добычей. Хорошая вылазка. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_name">
+		<text>Замеры у блокпоста</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text">
+		<text>Снять для Холодного замеры у аномалии недалеко от блокпоста.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_0">
+		<text>Холодный попросил снять замеры в аномальном поле, но я потерял прибор ($item_1). Сначала нужно его вернуть.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_1">
+		<text>Холодный попросил снять замеры у аномалии недалеко от блокпоста.\nНужно добраться до отмеченного места.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_2">
+		<text>Я у аномалии. Нужно взять в руки прибор ($item_1) и дождаться конца замера.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_text_3">
+		<text>Замеры сняты. Можно возвращаться к Холодному с прибором ($item_1) и показаниями.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_about">
+		<text>Поля вокруг блокпоста дышат, и я хочу знать как. Возьми наш детектор, подойди к аномалии, которую я отмечу, держи прибор в руке и жди, пока он всё запишет. И поглядывай за спину: местная живность любит приходить посмотреть, что это там пищит.</text>
+	</string>
+	<string id="zop_csky_commander_task_19_finish">
+		<text>Показания чистые. Ещё одна точка на нашей карте полей. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_name">
+		<text>Полевая съёмка</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text">
+		<text>Снять для Холодного замеры у аномалии, на которую укажет его список.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_0">
+		<text>Холодный попросил снять замеры в аномальном поле, но я потерял прибор ($item_1). Сначала нужно его вернуть.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_1">
+		<text>Холодный попросил снять замеры у аномалии из его списка - она может быть рядом, а может и в соседнем районе.\nНужно добраться до отмеченного места.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_2">
+		<text>Я у аномалии. Нужно взять в руки прибор ($item_1) и дождаться конца замера.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_text_3">
+		<text>Замеры сняты. Можно возвращаться к Холодному с прибором ($item_1) и показаниями.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_about">
+		<text>Одна точка - это ещё не наука. Чтобы понять, как связаны поля, мне нужны показания со всей округи - наши поля, Затон, Рыжий лес, куда на этот раз укажет список. Дорога может оказаться дальней, поэтому и плачу больше. Бери детектор и верни его с записью.</text>
+	</string>
+	<string id="zop_csky_commander_task_20_finish">
+		<text>И не зря: эти цифры сходятся с нашими. Поля всё-таки связаны. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_21_name">
+		<text>Вылазка: поля Юпитера</text>
+	</string>
+	<string id="zop_csky_commander_task_21_text">
+		<text>Установить сканер Холодного в аномальном поле Юпитера.</text>
+	</string>
+	<string id="zop_csky_commander_task_21_about">
+		<text>Вылазка, и не из тихих. Даю тебе сканер. Отнесёшь его в самое сердце аномального поля, которое я отмечу на карте, установишь там и вернёшься. Дальше он сам будет слать нам показания, пока жив. Такие поля чужих даром не пускают, так что смотри под ноги.</text>
+	</string>
+	<string id="zop_csky_commander_task_21_finish">
+		<text>Сигнал идёт. Сканер стоит где надо. Чистая вылазка - держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_22_name">
+		<text>Вылазка: поля Затона</text>
+	</string>
+	<string id="zop_csky_commander_task_22_text">
+		<text>Установить сканер Холодного в аномальном поле Затона.</text>
+	</string>
+	<string id="zop_csky_commander_task_22_about">
+		<text>Эта вылазка дальняя. На Затоне есть поля, каких у нас нет: «Коготь», «Железный лес», «Рубец». Хочу, чтобы в одном из них стоял наш сканер. Бери прибор, доберись до поля, которое я отмечу, установи и возвращайся. За дорогу тоже плачу.</text>
+	</string>
+	<string id="zop_csky_commander_task_22_finish">
+		<text>Затон в эфире. Теперь мы видим тамошние болота как свои. Держи оплату, заработал.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_name">
+		<text>Курьер: артефакты для Викинга</text>
+	</string>
+	<string id="zop_csky_commander_task_23_text">
+		<text>Отнести кейс с артефактами от Холодного Викингу на завод на Агропроме.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_text_0">
+		<text>У Холодного груз для Викинга ($item_1). При мне его нет - нужно его взять.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_text_1">
+		<text>Я несу груз от Холодного ($item_1). Его нужно отдать лично Викингу на заводе Чистого Неба на Агропроме.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_about">
+		<text>За эти недели блокпост набрал целый кейс артефактов, и всё это должно уйти на юг - в большую лабораторию Викинга на заводе. Кейс тяжёлый, стоит целое состояние, и ползоны за него убьёт. Нужен курьер, которому я верю. Отдашь лично Викингу - он расплатится на месте.</text>
+	</string>
+	<string id="zop_csky_commander_task_23_finish">
+		<text>Хорошая работа, курьер.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_23_0">
+		<text>Викинг, кейс с севера. Артефакты, вся партия. Отправил $name.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_23_1">
+		<text>От Холодного? Пломбы целы, вес сходится. Значит, северная лаборатория и правда работает. Ты пронёс через всю Зону целое состояние и не вскрыл - я такое ценю. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_name">
+		<text>Курьер: архив для Викинга</text>
+	</string>
+	<string id="zop_csky_commander_task_24_text">
+		<text>Отнести полевой архив блокпоста от Холодного Викингу на завод на Агропроме.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_text_0">
+		<text>У Холодного груз для Викинга ($item_1). При мне его нет - нужно его взять.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_text_1">
+		<text>Я несу груз от Холодного ($item_1). Его нужно отдать лично Викингу на заводе Чистого Неба на Агропроме.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_about">
+		<text>Журналы замеров, карты полей, сводки по Монолиту - месяц нашей работы, на бумаге и на носителях. По радио я это не отправлю: слишком много ушей. Отнеси архив Викингу на завод и отдай ему в руки. Платит он при получении.</text>
+	</string>
+	<string id="zop_csky_commander_task_24_finish">
+		<text>Хорошая работа, курьер.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_24_0">
+		<text>Викинг, архив с блокпоста на Юпитере. Отправил $name, велел отдать только тебе.</text>
+	</string>
+	<string id="st_zop_csky_commander_task_24_1">
+		<text>Наконец-то. Этих бумаг я ждал дольше, чем весны. Учёные разберутся, а ты держи оплату - заработал.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_name">
+		<text>Курьер: припасы для севера</text>
+	</string>
+	<string id="zop_csky_viking_task_7_text">
+		<text>Отнести ящик с припасами от Викинга Холодному на блокпост Юпитера.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_text_0">
+		<text>У Викинга груз для Холодного ($item_1). При мне его нет - нужно его взять.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_text_1">
+		<text>Я несу груз от Викинга ($item_1). Его нужно отдать лично Холодному на блокпосте Чистого Неба на Юпитере.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_about">
+		<text>Люди Холодного сидят на самом краю карты, и ни один караван туда не пойдёт. Медикаменты, пайки, антирад, батареи для приборов - всё уложено в один ящик, и он тяжёлый. Донеси его до блокпоста на Юпитере и отдай Холодному. Заплатит он на месте.</text>
+	</string>
+	<string id="zop_csky_viking_task_7_finish">
+		<text>Хорошая работа, курьер.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_7_0">
+		<text>Холодный, ящик с юга. Припасы, отправил $name.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_7_1">
+		<text>От Викинга? Вовремя: у нас оставалась последняя пачка антирада. Гарнизон запомнит твоё имя. Держи оплату.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_name">
+		<text>Курьер: оружие для севера</text>
+	</string>
+	<string id="zop_csky_viking_task_8_text">
+		<text>Отнести ящик с оружием от Викинга Холодному на блокпост Юпитера.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_text_0">
+		<text>У Викинга груз для Холодного ($item_1). При мне его нет - нужно его взять.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_text_1">
+		<text>Я несу груз от Викинга ($item_1). Его нужно отдать лично Холодному на блокпосте Чистого Неба на Юпитере.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_about">
+		<text>Монолит каждую неделю пробует блокпост на прочность, и стволы у Холодного изнашиваются. Арсенал собрал ящик: винтовки, запчасти, патроны. Весит он как дохлый кабан, и военным с ним лучше не попадаться. Донеси его на север и отдай лично Холодному.</text>
+	</string>
+	<string id="zop_csky_viking_task_8_finish">
+		<text>Хорошая работа, курьер.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_8_0">
+		<text>Холодный, ящик с завода. Оружие и патроны, отправил $name.</text>
+	</string>
+	<string id="st_zop_csky_viking_task_8_1">
+		<text>Вот это подарок. Следующий отряд Монолита ждёт сюрприз. Передай Викингу спасибо и держи оплату.</text>
+	</string>
+	<string id="st_zop_courier_artefacts_name">
+		<text>Опломбированный кейс с артефактами</text>
+	</string>
+	<string id="st_zop_courier_artefacts_descr">
+		<text>Тяжёлый экранированный кейс с пломбами Чистого Неба: большая партия артефактов, собранных на блокпосте Юпитера. Адресован Викингу, завод на Агропроме. Не вскрывать.</text>
+	</string>
+	<string id="st_zop_courier_documents_name">
+		<text>Полевой архив блокпоста</text>
+	</string>
+	<string id="st_zop_courier_documents_descr">
+		<text>Опечатанная папка и носители: журналы замеров, карты аномальных полей и сводки блокпоста на Юпитере. Адресован Викингу, завод на Агропроме.</text>
+	</string>
+	<string id="st_zop_courier_supplies_name">
+		<text>Ящик с припасами для блокпоста</text>
+	</string>
+	<string id="st_zop_courier_supplies_descr">
+		<text>Медикаменты, пайки, антирад и батареи для приборов, уложенные на заводе на Агропроме. Адресован Холодному, блокпост на Юпитере.</text>
+	</string>
+	<string id="st_zop_courier_weapons_name">
+		<text>Ящик с оружием для блокпоста</text>
+	</string>
+	<string id="st_zop_courier_weapons_descr">
+		<text>Винтовки, запчасти и патроны со склада Арсенала на заводе на Агропроме. Адресован Холодному, блокпост на Юпитере. Очень тяжёлый.</text>
+	</string>
 </string_table>
