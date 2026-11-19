@@ -7,6 +7,7 @@
 <p align="center"><a href="README.md">Русский</a> · <b>English</b></p>
 
 <p align="center"><b>ModDB:</b>
+<a href="https://www.moddb.com/mods/stalker-anomaly/addons/zone-operations-mixon">Zone Operations</a> ·
 <a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-companion-training">Companion Training</a> ·
 <a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-backpack-upgrades">Backpack Upgrades</a> ·
 <a href="https://www.moddb.com/mods/stalker-anomaly/addons/mixon-zombie-raid">Zombie Raid</a> ·
@@ -18,8 +19,8 @@
 <h1 align="center">MIXON GAMMA MODS</h1>
 
 <p align="center">
-  <b>Four mods and a set of fixes for S.T.A.L.K.E.R. Anomaly — G.A.M.M.A.</b><br>
-  <sub>Companions who learn and drag you back from the dead · backpacks with an upgrade tree · zombified raids · carry weight</sub>
+  <b>Five mods and a set of fixes for S.T.A.L.K.E.R. Anomaly — G.A.M.M.A.</b><br>
+  <sub>Faction operations that take and hold bases · companions who learn and drag you back from the dead · backpacks with an upgrade tree · zombified raids · carry weight</sub>
 </p>
 
 <p align="center">
@@ -31,13 +32,14 @@
   <br>
   <img src="https://img.shields.io/badge/in--game%20text-RU%20%2B%20EN-556b2f?style=for-the-badge" alt="in-game text: RU + EN">
   <img src="https://img.shields.io/badge/new%20game-not%20required-556b2f?style=for-the-badge" alt="new game: not required">
-  <img src="https://img.shields.io/badge/Companion%20Training-v9-b8860b?style=for-the-badge" alt="Companion Training: v9">
+  <img src="https://img.shields.io/badge/Zone%20Operations-1.1.0-b8860b?style=for-the-badge" alt="Zone Operations: 1.1.0">
+  <img src="https://img.shields.io/badge/Companion%20Training-v11-b8860b?style=for-the-badge" alt="Companion Training: v11">
   <img src="https://img.shields.io/badge/voices-4%20%C2%B7%20Russian-8b4513?style=for-the-badge" alt="voices: 4 · Russian">
 </p>
 
 > 📟 **PDA** · *incoming message* · **Mixon → all stalkers**
 >
-> I built what my own modpack was missing: companions who gain experience and pick you up when you go down, backpacks you can have a technician rework, and a horde of zombified for dessert. Patched a few other people's mods along the way. Tested on **GAMMA RC3** under **Mod Organizer 2**. Installs into a running save.
+> I built what my own modpack was missing: faction operations where the base stays yours, companions who gain experience and pick you up when you go down, backpacks you can have a technician rework, and a horde of zombified for dessert. Patched a few other people's mods along the way. Tested on **GAMMA RC3** under **Mod Organizer 2**. Installs into a running save.
 
 ---
 
@@ -45,7 +47,8 @@
 
 | | Section | What is inside |
 |:-:|---|---|
-| 01 | [Mods at a glance](#mods) | All four mods in one table |
+| 01 | [Mods at a glance](#mods) | All five mods in one table |
+| ★ | [Zone Operations](#zop) | Clear Sky, Freedom, Duty and Army operations, bases, services, tasks |
 | 02 | [Companion Training](#companion) | Perks, knockdown, medic, artefacts, banter, MCM, compatibility |
 | 03 | [Backpack Upgrades](#backpack) | 4 classes, 5 branches, the full upgrade list |
 | 04 | [Zombie Raid](#zombie) | Sizes, reward, random raids |
@@ -67,10 +70,53 @@
 
 | Mod | What it does | MCM page |
 |---|---|---|
+| **[Zone Operations (Mixon)](mods/Zone%20Operations%20%28Mixon%29)** · *new* | Faction operations: lead allied squads into a battle across several points, and what you take stays taken. A garrison moves in, then a trader, mechanic, medic, barman and a commander with tasks. Clear Sky chain from the Swamps to Jupiter, plus Freedom, Duty and Army operations | Zone Operations (Mixon) · «Операции Зоны (Mixon)» |
 | **[Mixon Companion Training](mods/Mixon%20Companion%20Training)** | Companion progression: 7 perk branches, a PDA-style training window, a medic (medkits, antirad, vodka), player knockdown with a companion revive, artefact hunting, banter and jokes with Russian and English voice-over (3 voices each) | Companion Training · «Развитие напарников» |
 | **[Mixon Backpack Upgrades](mods/Mixon%20Backpack%20Upgrades)** | Backpack upgrades at technicians: 4 backpack classes, 5 branches, +1 artefact slot, protection, ergonomics, rigging | Backpack Upgrades · «Улучшения рюкзаков» |
 | **[Zombie Raid (Mixon)](mods/Zombie%20Raid%20%28Mixon%29)** | Zombified raids: on a hotkey or at random, 4 sizes, a "repel the attack" task, reward by kill count | Zombie raid (Mixon) · «Рейд зомбированных (Mixon)» |
 | **[Carry Weight (Mixon)](mods/Carry%20Weight%20%28Mixon%29)** | Extra carry weight, 10–150 kg, a slider in MCM | Carry weight (Mixon) · «Переносимый вес (Mixon)» |
+
+<p align="right"><a href="#top">▲ back to top</a></p>
+
+---
+
+<a id="zop"></a>
+
+<p align="center">
+  <img src="docs/media/zop/art/clear_sky_2.jpg" width="100%" alt="Zone Operations: Clear Sky holds the line against a wave of zombified">
+</p>
+
+## ☢ ZONE OPERATIONS
+
+<p>
+  <img src="https://img.shields.io/badge/version-1.1.0-b8860b?style=flat-square" alt="version: 1.1.0">
+  <img src="https://img.shields.io/badge/factions-4-556b2f?style=flat-square" alt="factions: 4">
+  <img src="https://img.shields.io/badge/operations-10-556b2f?style=flat-square" alt="operations: 10">
+  <img src="https://img.shields.io/badge/bases%20with%20services-6-2f4f4f?style=flat-square" alt="bases with services: 6">
+  <a href="https://www.moddb.com/mods/stalker-anomaly/addons/zone-operations-mixon"><img src="https://img.shields.io/badge/ModDB-zone--operations--mixon-b22222?style=flat-square" alt="ModDB"></a>
+</p>
+
+A faction leader gives you squads, you lead them into a battle across several points, and **what you take stays taken**: a garrison moves in, and a few hours later the faction's own people arrive — a trader, a mechanic, a medic, a barman and a commander with new tasks. Installs into a running save.
+
+| | |
+|---|---|
+| ![Storming the factory gate](docs/media/zop/art/clear_sky_1.jpg) | ![The Jupiter checkpoint held by Clear Sky](docs/media/zop/art/clear_sky_3.jpg) |
+| Operation Factory: the gate at Agroprom | Checkpoint: Clear Sky's northern base on Jupiter |
+
+| Faction | Operations |
+|---|---|
+| **Clear Sky** | Swamp Cleanup → Operation Factory (Agroprom, army counterattack, truce, main base with Viking) → The Scientists' Bunker (Yantar: 3 waves of elite zombified, then Monolith) → Checkpoint (Jupiter: Kholodny, Salazar, Kruger, the medic Racuro and the cook Fin) |
+| **Freedom** | Operation Outpost (Garbage) · Operation Rostok (two-sided assault, commander Yastreb) · Defense of Yanov / Operation Return |
+| **Duty** | Operation Yanov (Colonel Mixon and his tasks) |
+| **Army** | Special Operation Valley (Dark Valley bandits) |
+
+**New in 1.1:** Kholodny hands out hunts for top-tier artefacts (Heart of the Oasis, Compass, Volat Emerald), scanner sorties into the anomaly fields of Jupiter and Zaton, anomaly measurements, and courier runs to Viking at Agroprom; Viking sends supplies or weapons back to Jupiter.
+
+| | | |
+|---|---|---|
+| ![Freedom](docs/media/zop/art/freedom_1.jpg) | ![Duty](docs/media/zop/art/duty_1.jpg) | ![Army](docs/media/zop/art/army_1.jpg) |
+
+MCM «Операции Зоны (Mixon)» / Zone Operations (Mixon): enable operations, reward multiplier (0.5–3), extra squads (0–2). Full task list (RU): [`docs/zop_quests_ru.md`](docs/zop_quests_ru.md).
 
 <p align="right"><a href="#top">▲ back to top</a></p>
 
@@ -570,6 +616,7 @@ Applies at once, no reload needed. The bonus goes through the Experience Framewo
 
 | Mod | Required | Optional (detected automatically, all in GAMMA) |
 |---|---|---|
+| **Zone Operations (Mixon)** | Anomaly 1.5.3 + Modded Exes (DLTX), MCM | Hideout Furniture (furniture at the bases) |
 | **Mixon Companion Training** | Anomaly 1.5.3 + Modded Exes (2024+), MCM | Useful Idiots (training button), Companion DBNO (Reanimator revives downed companions), Body Health System (limb healing), Experience Framework (companion level in the window), Soulslike, G_FLAT, Tougher Important NPCs |
 | **Mixon Backpack Upgrades** | Anomaly 1.5.3 + Modded Exes (2024+, needed for the extra artefact slot), MCM | Experience Framework (sprint, jump and carry weight bonuses), a_pack Upgradeable Backpacks (compatibility patch included) |
 | **Zombie Raid (Mixon)** | Anomaly 1.5.3, MCM | GAMMA heavy zombified squads (used in large raids if present) |
@@ -580,10 +627,11 @@ All required dependencies are part of G.A.M.M.A. — on GAMMA you don't need to 
 1. Download the repository (**Code → Download ZIP**) and unpack it.
 2. For each mod you want from the [`mods/`](mods) folder, copy the whole folder into `<GAMMA>\mods\`, e.g. `E:\GAMMA\GAMMA RC3\mods\Mixon Companion Training\` (there must be a `gamedata` folder inside).
 3. Open MO2, press **F5** (refresh) and **enable** the mods with the checkbox. Place them **above** the other mods (higher priority) — the easiest way is to drag them to the very top of the list.
-4. Start the game. Settings are in MCM: Companion Training, Backpack Upgrades, Zombie raid (Mixon), Carry weight (Mixon).
+4. Start the game. Settings are in MCM: Zone Operations (Mixon), Companion Training, Backpack Upgrades, Zombie raid (Mixon), Carry weight (Mixon).
 
 ```text
 <GAMMA>\mods\
+├── Zone Operations (Mixon)\
 ├── Mixon Companion Training\
 │   ├── gamedata\
 │   └── meta.ini
