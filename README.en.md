@@ -83,7 +83,7 @@
 <a id="zop"></a>
 
 <p align="center">
-  <img src="docs/media/zop/art/clear_sky_2.jpg" width="100%" alt="Zone Operations: Clear Sky holds the line against a wave of zombified">
+  <img src="docs/media/zop_banner.jpg" width="100%" alt="Zone Operations: Clear Sky holds the line against a wave of zombified">
 </p>
 
 ## ☢ ZONE OPERATIONS

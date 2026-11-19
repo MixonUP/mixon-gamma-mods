@@ -81,7 +81,7 @@
 <a id="zop"></a>
 
 <p align="center">
-  <img src="docs/media/zop/art/clear_sky_2.jpg" width="100%" alt="Операции Зоны: Чистое Небо держит оборону против волны зомбированных">
+  <img src="docs/media/zop_banner.jpg" width="100%" alt="Операции Зоны: Чистое Небо держит оборону против волны зомбированных">
 </p>
 
 ## ☢ ОПЕРАЦИИ ЗОНЫ · ZONE OPERATIONS
