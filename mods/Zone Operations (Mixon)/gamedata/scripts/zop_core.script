@@ -176,6 +176,13 @@ end
 
 -- PDA marks: the point the attack will come from, and every attacking squad
 local MARK = "red_location"
+local member_marks = {}   -- [npc id] = true: marks on single fighters (runtime only, not saved)
+local function unmark_members()
+	for id in pairs(member_marks) do
+		pcall(level.map_remove_object_spot, id, MARK)
+	end
+	member_marks = {}
+end
 local function mark(id, text_id)
 	if id then
 		pcall(level.map_add_object_spot_ser, id, MARK, tr(text_id))
@@ -303,6 +310,25 @@ function place_props(op)
 	st.props[op.id] = true
 end
 
+-- lose_as = <op id>: when this defense is lost, the targets are taken as by that operation of the
+-- enemy (its garrison, services and evacuations: Duty takes Yanov, Loki and Ashot leave). The
+-- attackers still standing stay as the garrison; the rest comes later, out of the player's sight.
+function hand_over(op, attackers)
+	local win = op and op.lose_as and zop_registry.get(op.lose_as)
+	if not win then
+		return
+	end
+	for _, t in ipairs(win.targets) do
+		zop_world.capture(t, win, true)
+		zop_world.adopt(t, attackers)
+	end
+	for _, e in ipairs(win.evacuate) do
+		pcall(zop_spawn.evacuate, e.squad, e.to)
+	end
+	zop_world.arm_services(win)
+	printf("[ZOP] %s lost: %s now holds %s", op.id, win.faction, table.concat(win.targets, ", "))
+end
+
 local function finish(success)
 	pcall(zop_battle.stop)
 	clear_since, lost_since = nil, nil
@@ -322,6 +348,8 @@ local function finish(success)
 	end
 	unmark(s.counter_from_id)
 	unmark(s.staging_id)
+	unmark_members()
+	pcall(zop_census.release_forced)
 	for sid in pairs(s.attackers or {}) do
 		unmark(sid)
 	end
@@ -410,6 +438,8 @@ local function finish(success)
 				pcall(zop_world.release, t, op.id)
 			end
 		end
+		-- a lost defense: the place goes to the enemy as if their own operation had won
+		pcall(hand_over, op, s.squads)
 		pcall(function() news(op_text(op, "failed")) end)
 	end
 	zop_api.emit("zop_on_operation_end", op.id, success and true or false, zop_api.operation(op.id))
@@ -487,7 +517,10 @@ function start(op_id)
 				end
 			end
 		end
-		if se_t and op.occupy_squad and op.occupy_count > 0 then
+		-- occupy_if_fewer: only where the enemy is too thin on the ground to make a fight of it
+		local thin = op.occupy_if_fewer <= 0
+			or zop_census.count(op.enemy, se_t, op.radius) < op.occupy_if_fewer
+		if se_t and op.occupy_squad and op.occupy_count > 0 and thin then
 			st.active.occupiers = st.active.occupiers or {}
 			for _ = 1, op.occupy_count do
 				local ok, sq = pcall(zop_spawn.squad_at_smart, op.occupy_squad, se_t, tname)
@@ -535,8 +568,7 @@ local function evac_skip(s, op)
 		skip[sid] = true
 	end
 	for _, e in ipairs(op.evacuate) do
-		local id = get_story_object_id(e.squad)
-		if id then
+		for _, id in ipairs(zop_spawn.squad_ids(e.squad)) do
 			skip[id] = true
 		end
 	end
@@ -556,8 +588,7 @@ local function send_story_away(s, op, se_t)
 	next_send[se_t.id] = time_global() + 2000
 	local to_of = {}
 	for _, e in ipairs(op.evacuate) do
-		local id = get_story_object_id(e.squad)
-		if id then
+		for _, id in ipairs(zop_spawn.squad_ids(e.squad)) do
 			to_of[id] = e.to
 		end
 	end
@@ -702,7 +733,7 @@ local function step_assault(s, op)
 		end
 	end
 	zop_battle.reveal(main, se_t, op.enemy, op.radius)
-	if zop_census.count(op.enemy, se_t, op.radius, evac_skip(s, op)) > 0 then
+	if zop_census.count(op.enemy, se_t, op.radius, evac_skip(s, op), true) > 0 then
 		clear_since = nil
 		return
 	end
@@ -1011,11 +1042,12 @@ local function step_defend(s, op)
 			unmark(sid)
 		end
 		s.squads = {}
-		if spawn_wave(op, nw.section, nw.count, s.staging, op.targets[1], nil, wave_point(op, s.wave)) == 0 then
+		local count = nw.count + (tonumber(mcm("extra_squads", 0)) or 0)
+		if spawn_wave(op, nw.section, count, s.staging, op.targets[1], nil, wave_point(op, s.wave)) == 0 then
 			return finish(true)
 		end
 		s.t1 = now()
-		s.wave_secs = 0
+		s.wave_secs, s.wave_pulls = 0, 0
 		s.enemy = nw.enemy
 		mark_squads(s.squads, "st_zop_mark_attackers")
 		pcall(function() news(op_text(op, "wave" .. s.wave)) end)
@@ -1029,15 +1061,41 @@ local function step_defend(s, op)
 	local se_t = zop_census.smart_by_name(op.targets[1])
 	s.defenders = s.defenders or {}
 	reinforce(s, op, s.defenders, op.targets[1])
-	-- a wave that cannot reach the place in 15 real minutes has given up: it counts as beaten
-	s.wave_secs = (s.wave_secs or 0) + TICK_MS / 1000
-	if s.wave_secs > 900 then
-		pcall(unforce, s.squads)
-		for sid in pairs(s.squads) do
-			unmark(sid)
-			pcall(zop_spawn.steer_by_id, sid, nil, false)
+	-- The wave clock runs only while the player is at the place: nobody wins a defense from afar
+	-- (away, the defense is lost after DEFENSE_HOURS). After 15 real minutes a wave that is still
+	-- fighting at the place goes on; one stuck out there is sent in again and its stragglers are
+	-- pulled closer, up to 3 times; only then has it given up and counts as beaten.
+	if zop_census.actor_near(se_t, NEAR_TARGET) then
+		s.wave_secs = (s.wave_secs or 0) + TICK_MS / 1000
+	end
+	if (s.wave_secs or 0) > 900 then
+		local list, closest = zop_census.members(s.squads, se_t.position)
+		local fight_r = op.radius * 1.5
+		if closest and closest <= fight_r then
+			s.wave_secs = 600
+		elseif (s.wave_pulls or 0) < 3 then
+			s.wave_pulls = (s.wave_pulls or 0) + 1
+			s.wave_secs = 600
+			for sid in pairs(s.squads) do
+				pcall(zop_spawn.steer_by_id, sid, op.targets[1], true)
+			end
+			local far = {}
+			for _, o in ipairs(list) do
+				if o:position():distance_to(se_t.position) > fight_r then
+					far[#far + 1] = o
+				end
+			end
+			if #far > 0 then
+				pcall(counter_pull, far, se_t, s.wave_pulls)
+			end
+		else
+			pcall(unforce, s.squads)
+			for sid in pairs(s.squads) do
+				unmark(sid)
+				pcall(zop_spawn.steer_by_id, sid, nil, false)
+			end
+			s.squads = {}
 		end
-		s.squads = {}
 	end
 	if zop_census.actor_near(se_t, NEAR_TARGET) then
 		zop_battle.engage(se_t, op.faction, s.enemy or op.enemy, op.radius * 1.7)
@@ -1068,12 +1126,44 @@ end
 local STEPS = { muster = step_muster, assault = step_assault, wait = step_wait, defend = step_defend,
 	counter_wait = step_counter_wait, counter = step_counter }
 
+-- One-time fixes for saves made with older versions (st.fixed is saved)
+local migrated = false
+local function migrate()
+	migrated = true
+	st.fixed = st.fixed or {}
+	-- 1.1.1: Rostok taken while its medic and Cardan were missing from the evacuation list
+	if st.done.freedom_rostok and not st.fixed.rostok_evac then
+		local op = zop_registry.get("freedom_rostok")
+		for _, e in ipairs(op and op.evacuate or {}) do
+			if e.squad == "dolg_medic_squad" or e.squad == "bar_visitors_cardan_tech_squad" then
+				pcall(zop_spawn.evacuate, e.squad, e.to)
+			end
+		end
+		st.fixed.rostok_evac = true
+	end
+	-- 1.1.1: the Yanov defense was lost recently, but a loss did not give Yanov to Duty then
+	if not st.fixed.yanov_lost then
+		local op = zop_registry.get("freedom_yanov")
+		if op and op.lose_as and st.cooldown.freedom_yanov and now() < st.cooldown.freedom_yanov
+			and not st.done.freedom_yanov and not st.active and not zop_world.owner("jup_a6") then
+			pcall(hand_over, op, nil)
+		end
+		st.fixed.yanov_lost = true
+	end
+end
+
 local function actor_on_update()
 	local tg = time_global()
 	if tg < next_tick then
 		return
 	end
 	next_tick = tg + TICK_MS
+	if not migrated and SIMBOARD and SIMBOARD.smarts_by_names then
+		local ok, err = pcall(migrate)
+		if not ok then
+			printf("![ZOP] migration failed: %s", tostring(err))
+		end
+	end
 	local s, op = a(), cur_op()
 	if not s then
 		return
@@ -1107,17 +1197,29 @@ local function actor_on_update()
 	if op.kind == "defense" then
 		enemy_sets[#enemy_sets + 1] = s.squads or {}
 	end
+	local still = {}
 	for _, set in ipairs(enemy_sets) do
 		for sid in pairs(set) do
 			local sq = zop_spawn.valid_squad(sid)
 			if sq then
 				for m in sq:squad_members() do
 					local o = level.object_by_id(m.id)
-					if o and o:alive() and level.map_has_object_spot(m.id, MARK) == 0 then
-						pcall(level.map_add_object_spot, m.id, MARK, tr("st_zop_mark_attackers"))
+					if o and o:alive() then
+						still[m.id] = true
+						if level.map_has_object_spot(m.id, MARK) == 0 then
+							pcall(level.map_add_object_spot, m.id, MARK, tr("st_zop_mark_attackers"))
+							member_marks[m.id] = true
+						end
 					end
 				end
 			end
+		end
+	end
+	-- the dead, and squads let go, lose their mark
+	for id in pairs(member_marks) do
+		if not still[id] then
+			pcall(level.map_remove_object_spot, id, MARK)
+			member_marks[id] = nil
 		end
 	end
 	local f = STEPS[s.stage]
@@ -1208,6 +1310,8 @@ local function load_state(m)
 	st.done = st.done or {}
 	st.cooldown = st.cooldown or {}
 	st.done_at = st.done_at or {}
+	st.fixed = st.fixed or {}
+	migrated = false
 end
 
 -- debug entry points for the bridge / console

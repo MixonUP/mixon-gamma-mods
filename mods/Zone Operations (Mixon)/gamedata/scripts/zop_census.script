@@ -26,9 +26,26 @@ function actor_near(se_smart, dist)
 	return a:position():distance_to(se_smart.position) <= dist
 end
 
--- living members of a community within radius of the smart (online) or assigned to it (offline)
+local forced = {}   -- [squad id] = true: enemy squads made to come online by count(..., force)
+
+-- lets go of the enemy squads count() forced online (when an operation is over)
+function release_forced()
+	for sid in pairs(forced) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			sq.force_online = nil
+			sq.forced_online_status = nil
+		end
+	end
+	forced = {}
+end
+
+-- living members of a community within radius of the smart: online NPCs by their position,
+-- offline squads assigned to the smart only when they are there too (a squad still on its way
+-- does not hold the place). force: such an offline squad is made to come online, so that it can
+-- be fought (GAMMA keeps squads within 75 m of the player offline).
 -- skip (optional): squad ids left out - story squads that are being evacuated
-function count(community, se_smart, radius, skip)
+function count(community, se_smart, radius, skip, force)
 	if not (community and se_smart) then
 		return 0
 	end
@@ -49,17 +66,55 @@ function count(community, se_smart, radius, skip)
 		local sim = alife()
 		for sid in pairs(sb.squads) do
 			local sq = sim:object(sid)
-			if sq and not sq.online and not (skip and skip[sid]) then
+			local here = sq and sq.position and sq.position:distance_to(pos) <= radius + 30
+			if sq and not sq.online and here and not (skip and skip[sid]) then
 				local ok, c, cnt = pcall(function()
 					return sq:get_squad_community(), sq:npc_count()
 				end)
 				if ok and c == community then
 					n = n + (cnt or 0)
+					if force and not forced[sid] then
+						sq.force_online = true
+						sq.forced_online_status = true
+						forced[sid] = true
+					end
 				end
 			end
 		end
 	end
 	return n
+end
+
+-- living online members of tracked squads (game objects), and the distance of the closest
+-- member (online or not) to pos
+function members(squad_ids, pos)
+	local list, best = {}, nil
+	local sim = alife()
+	for sid in pairs(squad_ids or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			for m in sq:squad_members() do
+				local o = level.object_by_id(m.id)
+				local p
+				if o then
+					if o:alive() then
+						list[#list + 1] = o
+						p = o:position()
+					end
+				else
+					local se = sim:object(m.id)
+					p = se and se.position
+				end
+				if p and pos then
+					local d = p:distance_to(pos)
+					if not best or d < best then
+						best = d
+					end
+				end
+			end
+		end
+	end
+	return list, best
 end
 
 -- living members of tracked squads (ids of squad server objects)

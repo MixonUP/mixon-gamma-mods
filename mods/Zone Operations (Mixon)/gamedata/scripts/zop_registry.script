@@ -105,6 +105,8 @@ local function read_op(ini, id)
 		reinforce_max  = n("reinforce_max", 3),
 		reinforce_squad = s("reinforce_squad"),
 		retake         = s("retake") == "true",
+		lose_as        = s("lose_as"),
+		occupy_if_fewer = n("occupy_if_fewer", 0),
 		restore        = {},
 	}
 	for _, item in ipairs(split(s("waves"))) do

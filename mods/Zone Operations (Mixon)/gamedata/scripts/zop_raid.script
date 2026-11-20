@@ -134,18 +134,8 @@ local function route(kind, giver)
 	return from.se, to and to.se
 end
 
------------------------------------------------------------------- effects
--- p[1] task id, p[2] kind, p[3..] factions
-local function setup(actor, npc, p)
-	local task_id, kind = p[1], p[2]
-	if not (task_id and HOURS[kind]) then
-		return
-	end
-	local factions = {}
-	for i = 3, #p do
-		factions[#factions + 1] = p[i]
-	end
-	local faction = pick_faction(factions)
+-- the giver's server object (or a stand-in that only knows the base smart he is at)
+function giver_of(npc)
 	-- on_init may get the actor as npc: the giver is whoever the actor is talking to
 	local spk = get_speaker and get_speaker(true)
 	if not spk or spk:id() == AC_ID then
@@ -166,7 +156,37 @@ local function setup(actor, npc, p)
 		end
 		giver = best and { m_smart_terrain_id = best.id } or giver
 	end
+	return giver
+end
+
+-- precondition of a raid task: {=zop_raid_ready(kind)} - this level has a route for it
+-- (a task without one would fail the moment it is taken)
+local function ready(actor, npc, p)
+	local kind = p and p[1]
+	if not (kind and HOURS[kind] and db.actor and SIMBOARD and SIMBOARD.smarts) then
+		return false
+	end
+	local ok, se_from, se_to = pcall(route, kind, giver_of(npc))
+	return ok and se_from ~= nil and se_to ~= nil
+end
+
+------------------------------------------------------------------ effects
+-- p[1] task id, p[2] kind, p[3..] factions
+local function setup(actor, npc, p)
+	local task_id, kind = p[1], p[2]
+	if not (task_id and HOURS[kind]) then
+		return
+	end
+	local factions = {}
+	for i = 3, #p do
+		factions[#factions + 1] = p[i]
+	end
+	local faction = pick_faction(factions)
+	local giver = giver_of(npc)
 	local se_from, se_to = route(kind, giver)
+	-- the news are signed by whoever gave the task
+	local ok_n, name = pcall(function() return giver.character_name and giver:character_name() end)
+	local who = ok_n and type(name) == "string" and name ~= "" and name or tr("st_zop_raid_hq")
 	if not (faction and se_from and se_to) then
 		printf("![ZOP] raid %s: no faction or route (faction=%s)", task_id, tostring(faction))
 		raids[task_id] = nil
@@ -183,9 +203,13 @@ local function setup(actor, npc, p)
 	end
 	raids[task_id] = {
 		squad = sq.id, section = SQUADS[faction], kind = kind, faction = faction,
-		to = se_to:name(), deadline = now() + HOURS[kind] * 3600,
+		to = se_to:name(), deadline = now() + HOURS[kind] * 3600, who = who,
 	}
-	news(tr("st_zop_raid_" .. kind .. "_news", tr(faction), smart_title(se_from), smart_title(se_to)))
+	if kind == "camp" then
+		news(tr("st_zop_raid_camp_news", who, tr(faction), smart_title(se_from)))
+	else
+		news(tr("st_zop_raid_" .. kind .. "_news", who, tr(faction), smart_title(se_from), smart_title(se_to)))
+	end
 end
 
 local function cleanup(actor, npc, p)
@@ -235,7 +259,7 @@ local function status(tsk, task_id)
 			tsk.stage = 1      -- all dead and the player was there: report to the colonel
 			return
 		end
-		news(tr("st_zop_raid_beaten"))
+		news(tr("st_zop_raid_beaten", r.who or tr("st_zop_raid_hq")))
 		return "fail"          -- someone else got there first
 	end
 	if now() > r.deadline then
@@ -288,6 +312,7 @@ end
 function on_game_start()
 	xr_effects.zop_raid_setup = setup
 	xr_effects.zop_raid_cleanup = cleanup
+	xr_conditions.zop_raid_ready = ready
 	task_functor.zop_raid_target = target
 	task_status_functor.zop_raid_status = status
 	RegisterScriptCallback("npc_on_death_callback", npc_on_death_callback)

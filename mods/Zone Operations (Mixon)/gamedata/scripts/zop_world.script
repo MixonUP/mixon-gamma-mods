@@ -31,7 +31,8 @@ function all()
 	return owners
 end
 
-function capture(smart_name, op)
+-- no_top_up: the garrison is filled later (hourly, out of the player's sight), not now
+function capture(smart_name, op, no_top_up)
 	local old = owners[smart_name]
 	if old and old.faction ~= op.faction then
 		-- the place changed hands: the old garrison and services are no longer ours to keep
@@ -48,7 +49,9 @@ function capture(smart_name, op)
 		garrison = old and old.garrison or {},
 		services = old and old.services or nil,
 	}
-	top_up(smart_name, true)
+	if not no_top_up then
+		top_up(smart_name, true)
+	end
 	if #op.services > 0 and smart_name == op.services_home and not owners[smart_name].services then
 		-- not armed yet: zop_core arms it when the operation is over (arm_services)
 		owners[smart_name].services = { squads = {} }

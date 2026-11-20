@@ -78,15 +78,35 @@ function steer_by_id(squad_id, target, rush)
 	return false
 end
 
--- sends a story squad (by story id) to another smart; story NPCs leave instead of dying
-function evacuate(story_squad, to_smart)
-	local id = get_story_object_id(story_squad)
-	local se = id and alife():object(id)
-	if not se then
-		return false
+-- squads named in an evacuate / restore list: the squad with that story id, or - for a stock
+-- squad that has none (e.g. dolg_medic_squad, the Bar's medic) - every squad of that section
+function squad_ids(name)
+	local id = get_story_object_id(name)
+	if id then
+		return { id }
 	end
-	steer(se, to_smart, false)
-	return true
+	local out = {}
+	if SIMBOARD and SIMBOARD.squads and ini_sys:section_exist(name) then
+		for sid in pairs(SIMBOARD.squads) do
+			if valid_squad(sid, name) then
+				out[#out + 1] = sid
+			end
+		end
+	end
+	return out
+end
+
+-- sends a story squad to another smart; story NPCs leave instead of dying
+function evacuate(story_squad, to_smart)
+	local any = false
+	for _, id in ipairs(squad_ids(story_squad)) do
+		local se = alife():object(id)
+		if se then
+			steer(se, to_smart, false)
+			any = true
+		end
+	end
+	return any
 end
 
 -- Sends a squad off the battlefield at once: its members and the squad are moved to the smart

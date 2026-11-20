@@ -14,7 +14,8 @@
 ;                two-sided assault: a second group sets out with the first from flank_muster
 ;                (default: far side of flank_target) and fights at flank_target meanwhile
 ; radius         metres around a target smart that must be clear
-; evacuate       story_squad:smart pairs sent away before the fight (story NPCs never die here)
+; evacuate       story_squad:smart pairs sent away before the fight (story NPCs never die here);
+;                a squad section with no story id (dolg_medic_squad) means every squad of it
 ; capture        true = cleared targets become the faction's (no enemy respawn, garrison kept);
 ;                on a defense: the target becomes the faction's when the defense succeeds
 ; garrison_squad / garrison_count    garrison per captured smart
@@ -31,11 +32,13 @@
 ; requires_info  info portion the player must have (story progress, e.g. bar_deactivate_radar_done)
 ; allies / defender_squad / defender_count   defense: communities that also hold the target, our own squad sent there
 ; waves          defense in waves "squad:count, squad:count" (the enemy of each wave is its squad's faction);
-;                a wave that has not been beaten in 15 real minutes gives up; news text st_zop_<id>_wave<N> from wave 2 on
+;                a wave still out of reach after 15 real minutes with the player there is sent in again (3 times),
+;                then it gives up; news text st_zop_<id>_wave<N> from wave 2 on
 ; wave_spawn_N   the same for wave N only (e.g. wave_spawn_4: the Monolith comes from elsewhere)
 ; wave_spawn     x,y,z@level_vertex@game_vertex - a fixed spot on the target's level where the defense waves
 ;                appear (default: a smart 180-450 m from the target); the PDA mark goes to the smart next to it
 ; occupy_squad / occupy_count   the enemy digs in at every target when the operation starts
+; occupy_if_fewer               ... only at targets where fewer enemies than this are found (0 = always)
 ; evict          true = everybody else living at the targets moves out when the operation starts
 ; counter_squad / counter_count / counter_delay_seconds / counter_target
 ;                after the last target: a countdown (real seconds, default 180), then a counterattack on
@@ -55,6 +58,7 @@
 ;                (the assault, the counterattack and the defense count separately)
 ; restore        story_squad:smart pairs sent (back) there when the operation succeeds
 ; blocks         operations that become unavailable after this one succeeds
+; lose_as        defense: when it is lost, the targets go to the enemy as if this operation of theirs had won
 ; reward_money, goodwill, cooldown_days
 ;
 ; texts per operation: st_zop_<id>_name / _offer / _muster / _won / _failed, assault: _go / _next
@@ -95,6 +99,8 @@ attacker_squad = zop_dolg_assault
 attacker_count = 3
 delay_hours    = 2
 radius         = 90
+; lost: Duty takes Yanov as in their own operation (Loki and Ashot leave), Return opens
+lose_as        = duty_yanov
 reward_money   = 25000
 goodwill       = 150
 cooldown_days  = 5
@@ -105,6 +111,10 @@ giver          = mar_smart_terrain_base_stalker_leader_marsh
 type           = assault
 targets        = mar_smart_terrain_8_11, mar_smart_terrain_11_11
 enemy          = renegade
+; the camps may stand empty: a squad of the enemy digs in where fewer than 3 are left
+occupy_squad   = zop_raid_renegade
+occupy_count   = 1
+occupy_if_fewer = 3
 ally_squad     = zop_csky_assault
 ally_count     = 2
 radius         = 70
@@ -122,6 +132,10 @@ giver          = agr_smart_terrain_1_6_near_2_military_colonel_kovalski
 type           = assault
 targets        = val_smart_terrain_8_6, val_smart_terrain_7_3
 enemy          = bandit
+; the camps may stand empty: a squad of the enemy digs in where fewer than 3 are left
+occupy_squad   = zop_raid_bandit
+occupy_count   = 1
+occupy_if_fewer = 3
 ally_squad     = zop_army_assault
 ally_count     = 2
 radius         = 70
@@ -141,6 +155,10 @@ giver          = mil_smart_terrain_7_7_freedom_leader_stalker
 type           = assault
 targets        = gar_smart_terrain_5_2
 enemy          = dolg
+; the camps may stand empty: a squad of the enemy digs in where fewer than 3 are left
+occupy_squad   = zop_raid_dolg
+occupy_count   = 1
+occupy_if_fewer = 3
 ally_squad     = zop_freedom_assault
 ally_count     = 2
 radius         = 70
@@ -191,7 +209,7 @@ flank_muster   = bar_zastava_dogs_lair_2
 flank_target   = bar_zastava_2
 flank_count    = 2
 radius         = 60
-evacuate       = bar_dolg_leader_squad:zat_stalker_base_smart, bar_dolg_general_petrenko_stalker_squad:zat_stalker_base_smart, bar_dolg_general_zoneguard_stalker_squad:zat_stalker_base_smart, bar_zastava_2_commander_squad:zat_stalker_base_smart, bar_duty_security_squad_leader_squad:zat_stalker_base_smart, bar_dolg_medic_squad:zat_stalker_base_smart, bar_visitors_stalker_mechanic_squad:zat_stalker_base_smart
+evacuate       = bar_dolg_leader_squad:zat_stalker_base_smart, bar_dolg_general_petrenko_stalker_squad:zat_stalker_base_smart, bar_dolg_general_zoneguard_stalker_squad:zat_stalker_base_smart, bar_zastava_2_commander_squad:zat_stalker_base_smart, bar_duty_security_squad_leader_squad:zat_stalker_base_smart, dolg_medic_squad:zat_stalker_base_smart, bar_visitors_cardan_tech_squad:zat_stalker_base_smart
 capture        = true
 garrison_squad = zop_freedom_garrison
 garrison_count = 4

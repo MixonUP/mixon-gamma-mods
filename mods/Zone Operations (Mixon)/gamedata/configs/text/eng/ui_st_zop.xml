@@ -378,16 +378,16 @@ Hold %s. Attackers left: %d.</text>
 		<text>Good parts. I already see where they go. Here.</text>
 	</string>
 	<string id="st_zop_raid_convoy_news">
-		<text>Mixon: a convoy (%s) is moving from %s to %s. Intercept it on the way.</text>
+		<text>%s: a convoy (%s) is moving from %s to %s. Intercept it on the way.</text>
 	</string>
 	<string id="st_zop_raid_ambush_news">
-		<text>Mixon: a strike group (%s) is moving from %s to %s. Meet it before the station.</text>
+		<text>%s: a strike group (%s) is moving from %s to %s. Meet it before it reaches the base.</text>
 	</string>
 	<string id="st_zop_raid_beaten">
-		<text>Mixon: someone beat you to it - the group was wiped out without you. Task failed.</text>
+		<text>%s: someone beat you to it - the group was wiped out without you. Task failed.</text>
 	</string>
 	<string id="st_zop_raid_camp_news">
-		<text>Mixon: scouts spotted a camp (%s) near %s. Wipe it out.</text>
+		<text>%s: scouts spotted a camp (%s) near %s. Wipe it out.</text>
 	</string>
 	<string id="st_zop_freedom_garbage_name">
 		<text>Operation Checkpoint</text>
@@ -1588,5 +1588,11 @@ Hold %s. Attackers left: %d.</text>
 	</string>
 	<string id="st_zop_courier_weapons_descr">
 		<text>Rifles, spare parts and ammunition from Arsenal's stock at the Agroprom factory. Addressed to Kholodny at the Jupiter checkpoint. Very heavy.</text>
+	</string>
+	<string id="st_zop_raid_hq">
+		<text>HQ</text>
+	</string>
+	<string id="ui_mcm_menu_zop">
+		<text>Zone Operations (Mixon)</text>
 	</string>
 </string_table>

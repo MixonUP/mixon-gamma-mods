@@ -378,16 +378,16 @@
 		<text>Хорошие детали. Уже вижу, куда их поставить. Держи.</text>
 	</string>
 	<string id="st_zop_raid_convoy_news">
-		<text>Миксон: конвой (%s) выдвинулся от %s к %s. Перехвати его в пути.</text>
+		<text>%s: конвой (%s) выдвинулся от %s к %s. Перехвати его в пути.</text>
 	</string>
 	<string id="st_zop_raid_ambush_news">
-		<text>Миксон: ударная группа (%s) идёт от %s к %s. Встреть её до станции.</text>
+		<text>%s: ударная группа (%s) идёт от %s к %s. Встреть её до базы.</text>
 	</string>
 	<string id="st_zop_raid_beaten">
-		<text>Миксон: кто-то опередил тебя - группу положили без твоего участия. Задание провалено.</text>
+		<text>%s: кто-то опередил тебя - группу положили без твоего участия. Задание провалено.</text>
 	</string>
 	<string id="st_zop_raid_camp_news">
-		<text>Миксон: разведка засекла лагерь (%s) у %s. Уничтожь их.</text>
+		<text>%s: разведка засекла лагерь (%s) у %s. Уничтожь их.</text>
 	</string>
 	<string id="st_zop_freedom_garbage_name">
 		<text>Операция «Застава»</text>
@@ -1588,5 +1588,11 @@
 	</string>
 	<string id="st_zop_courier_weapons_descr">
 		<text>Винтовки, запчасти и патроны со склада Арсенала на заводе на Агропроме. Адресован Холодному, блокпост на Юпитере. Очень тяжёлый.</text>
+	</string>
+	<string id="st_zop_raid_hq">
+		<text>Штаб</text>
+	</string>
+	<string id="ui_mcm_menu_zop">
+		<text>Операции Зоны (Mixon)</text>
 	</string>
 </string_table>

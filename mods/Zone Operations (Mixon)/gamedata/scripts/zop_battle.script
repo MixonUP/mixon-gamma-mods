@@ -95,8 +95,27 @@ local function on_enemy_eval(obj, enemy, flags)
 	end
 end
 
+-- a story NPC of our own side (Loki and Ashot defending Yanov) keeps whatever protection he has:
+-- the battle only opens up the fighters, and the enemy's story NPCs are evacuated instead
+local function own_story(obj, c, z)
+	if c ~= z.a then
+		return false
+	end
+	local id = obj:id()
+	if get_object_story_id(id) then
+		return true
+	end
+	local se = alife():object(id)
+	local sid = se and se.group_id
+	return sid ~= nil and sid ~= 65535 and get_object_story_id(sid) ~= nil
+end
+
 local function need_inv_wrapper(npc)
-	if npc and zone_of(npc) then
+	local z, c = nil, nil
+	if npc then
+		z, c = zone_of(npc)
+	end
+	if z and not own_story(npc, c, z) then
 		return false
 	end
 	return orig_need_inv(npc)
@@ -203,7 +222,7 @@ function engage(se_smart, side_a, side_b, radius)
 			clear_overrides(o:id())
 			hold_facer(o)
 			ff_off(o)
-			if o:invulnerable() then
+			if o:invulnerable() and not own_story(o, character_community(o), zones[zid]) then
 				o:invulnerable(false)
 			end
 		end
