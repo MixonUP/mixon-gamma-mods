@@ -175,7 +175,7 @@ local CSKY_DESC = [[
 	<rank>52000</rank>
 	<reputation>1500</reputation>
 	<money min="5000" max="8000" infinitive="0"/>
-	<visual>actors\stalker_nebo\stalker_nebo_2_face_2</visual>
+	<visual>actors\stalker_nebo\zop_csky_commander_exo</visual>
 	<supplies>
 		[spawn] \n
 		wpn_sig550 \n

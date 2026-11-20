@@ -1,0 +1,35 @@
+-- Zone Operations (Mixon): service NPCs that already exist in a save keep the visual they were
+-- spawned with; when the mod gives one of them a new visual, put it on at net spawn.
+-- Only if the model file is in the game's file index (a missing model is a hard engine crash).
+
+local VISUALS = {
+	zop_csky_commander = "actors\\stalker_nebo\\zop_csky_commander_exo",
+}
+
+local function model_exists(vis)
+	local fs = getFS()
+	return fs and fs:exist("$game_meshes$", vis .. ".ogf") ~= nil
+end
+
+local function on_spawn(npc)
+	local vis = npc and VISUALS[npc:section()]
+	if not vis then
+		return
+	end
+	if npc:get_visual_name() == vis or not model_exists(vis) then
+		return
+	end
+	-- not inside net_spawn itself: a moment later, once the NPC is fully online
+	local id = npc:id()
+	CreateTimeEvent("zop_visuals", id, 1, function()
+		local o = level.object_by_id(id)
+		if o and o:alive() and o:get_visual_name() ~= vis then
+			pcall(function() o:set_visual_name(vis) end)
+		end
+		return true
+	end)
+end
+
+function on_game_start()
+	RegisterScriptCallback("npc_on_net_spawn", on_spawn)
+end
