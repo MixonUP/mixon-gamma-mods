@@ -34,7 +34,7 @@ Unlocks after the Swamps storyline. A chain of four operations:
    response group. Three waves of twenty elite zombified, then six Monolith squads with a legend in
    each. Hold the bunker, and the ecologists become your friends; the trader Kompas sets up by the
    bunker.
-4. **Checkpoint** (5 days later, Brain Scorcher off): the Jupiter checkpoint is held by Monolith
+4. **Checkpoint** (5 days later): the Jupiter checkpoint is held by Monolith
    veterans. Take it, survive their counterattack, and it becomes Clear Sky's northern base:
    commander Kholodny, the trader Salazar, the mechanic Kruger, a medic and a barman.
 
