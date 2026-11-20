@@ -222,8 +222,26 @@ function load()
 		printf("![ZOP] %s not found, no operations", INI_PATH)
 		return ops
 	end
-	for _, id in ipairs(split(ini:r_string_ex("zop_ops", "list"))) do
-		if ini:section_exist(id) then
+	-- "list" is ours; other mods add their own "list_<mod>" keys through DLTX (see zop_api)
+	local ids, seen = split(ini:r_string_ex("zop_ops", "list")), {}
+	local extra = {}
+	for i = 0, ini:line_count("zop_ops") - 1 do
+		local _, key, value = ini:r_line("zop_ops", i, "", "")
+		if key and key ~= "list" and string.find(key, "^list") then
+			extra[#extra + 1] = key
+		end
+	end
+	table.sort(extra)
+	for _, key in ipairs(extra) do
+		for _, id in ipairs(split(ini:r_string_ex("zop_ops", key))) do
+			ids[#ids + 1] = id
+		end
+	end
+	for _, id in ipairs(ids) do
+		if seen[id] then
+			-- listed twice: keep the first
+		elseif ini:section_exist(id) then
+			seen[id] = true
 			local op = read_op(ini, id)
 			local bad = check(op)
 			if bad then

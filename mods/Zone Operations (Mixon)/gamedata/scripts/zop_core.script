@@ -130,6 +130,10 @@ function available(op)
 	if op.requires_info and not (db.actor and db.actor:has_info(op.requires_info)) then
 		return false
 	end
+	-- other mods may hold an operation back (zop_api.add_condition)
+	if not zop_api.check_conditions(op) then
+		return false
+	end
 	if op.requires_days > 0 then
 		for _, req in ipairs(op.requires) do
 			local at = st.done_at[req]
@@ -408,6 +412,7 @@ local function finish(success)
 		end
 		pcall(function() news(op_text(op, "failed")) end)
 	end
+	zop_api.emit("zop_on_operation_end", op.id, success and true or false, zop_api.operation(op.id))
 end
 
 function start(op_id)
@@ -501,6 +506,7 @@ function start(op_id)
 	else
 		news(string.format(op_text(op, "muster"), op.delay_hours))
 	end
+	zop_api.emit("zop_on_operation_start", op.id, zop_api.operation(op.id))
 	return true
 end
 
@@ -712,6 +718,7 @@ local function step_assault(s, op)
 			zop_world.adopt(tname, s.squads)
 		end
 	end
+	zop_api.emit("zop_on_target_taken", op.id, tname, s.target, zop_api.operation(op.id))
 	if s.target < #op.targets then
 		s.target, clear_since = s.target + 1, nil
 		local nxt = op.targets[s.target]
@@ -988,6 +995,7 @@ local function step_wait(s, op)
 	s.enemy = w.enemy
 	mark_squads(s.squads, "st_zop_mark_attackers")
 	news(op_text(op, "attack"))
+	zop_api.emit("zop_on_wave", op.id, 1, zop_api.operation(op.id))
 end
 
 local function step_defend(s, op)
@@ -1011,6 +1019,7 @@ local function step_defend(s, op)
 		s.enemy = nw.enemy
 		mark_squads(s.squads, "st_zop_mark_attackers")
 		pcall(function() news(op_text(op, "wave" .. s.wave)) end)
+		zop_api.emit("zop_on_wave", op.id, s.wave, zop_api.operation(op.id))
 		return
 	end
 	if now() - s.t1 > DEFENSE_HOURS * 3600 then
@@ -1202,6 +1211,19 @@ local function load_state(m)
 end
 
 -- debug entry points for the bridge / console
+------------------------------------------------------------------ for zop_api
+function is_done(op_id)
+	return st.done[op_id] and true or false
+end
+
+function active_info()
+	local s = st.active
+	if not s then
+		return nil
+	end
+	return { op_id = s.op, stage = s.stage, target = s.target, wave = s.wave }
+end
+
 function debug_state()
 	return st
 end

@@ -118,6 +118,8 @@ A faction leader gives you squads, you lead them into a battle across several po
 
 MCM «Операции Зоны (Mixon)» / Zone Operations (Mixon): enable operations, reward multiplier (0.5–3), extra squads (0–2). Full task list (RU): [`docs/zop_quests_ru.md`](docs/zop_quests_ru.md).
 
+**For modders:** `zop_api.script` gives other mods events (operation started/ended, target taken, wave, base captured, services arrived), queries (who holds a smart, which operations are won, what is running), custom conditions, and new operations through DLTX with no script. See [`docs/zop_api.md`](docs/zop_api.md).
+
 <p align="right"><a href="#top">▲ back to top</a></p>
 
 ---

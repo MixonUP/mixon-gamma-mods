@@ -53,6 +53,9 @@ function capture(smart_name, op)
 		-- not armed yet: zop_core arms it when the operation is over (arm_services)
 		owners[smart_name].services = { squads = {} }
 	end
+	if not (old and old.faction == op.faction) then
+		zop_api.emit("zop_on_base_captured", smart_name, op.faction, op.id)
+	end
 end
 
 -- adopt existing squads (the assault allies) as part of the garrison
@@ -302,6 +305,7 @@ function services_update(name, force)
 	if not o.services.arrived and services_arrived(o, se) then
 		o.services.arrived = true
 		news("st_zop_" .. op.id .. "_services_here", smart_title(se))
+		zop_api.emit("zop_on_services_arrived", name, o.faction, op.id)
 	end
 end
 
@@ -319,6 +323,7 @@ function release(smart_name, op_id)
 	end
 	owners[smart_name] = nil
 	index_services()
+	zop_api.emit("zop_on_base_released", smart_name, o.faction, op_id)
 end
 
 -- called by zop_core when an operation succeeded: the services set out services_delay hours later

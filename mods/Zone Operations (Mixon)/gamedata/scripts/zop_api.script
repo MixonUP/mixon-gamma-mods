@@ -1,0 +1,173 @@
+--[[
+	Zone Operations (Mixon) - public API for other mods. Stable: names here do not change
+	between versions; new things are only added. Full guide: docs/zop_api.md in the GitHub repo.
+
+	Use it only if Zone Operations is installed:
+
+		if zop_api and zop_api.VERSION then
+			zop_api.on("zop_on_operation_end", function(op_id, success, info) ... end)
+		end
+
+	(Touching the global zop_api loads this file, which declares the callbacks; after that the
+	stock RegisterScriptCallback / UnregisterScriptCallback work with these names as well.)
+
+	Callbacks (every info table is a copy; changing it changes nothing in Zone Operations):
+		zop_on_operation_start (op_id, info)                 an operation was accepted
+		zop_on_operation_end   (op_id, success, info)        won or lost
+		zop_on_target_taken    (op_id, smart_name, index, info)  one assault target cleared
+		zop_on_wave            (op_id, wave, info)           a defense wave set out (1, 2, ...)
+		zop_on_base_captured   (smart_name, faction, op_id)  a smart now belongs to a faction
+		zop_on_base_released   (smart_name, faction, op_id)  a failed operation gave it back
+		zop_on_services_arrived(smart_name, faction, op_id)  the trader / mechanic / ... walked in
+
+	Adding operations: no script needed. A DLTX file
+	configs\misc\zone_ops\mod_zop_operations_<yourmod>.ltx with
+		![zop_ops]
+		list_<yourmod> = my_op_1, my_op_2
+	plus one section per operation (keys as in zop_operations.ltx). Every [zop_ops] key that
+	starts with "list" is read, so several mods never overwrite each other's lists.
+]]
+
+VERSION = 1
+
+local EVENTS = {
+	"zop_on_operation_start", "zop_on_operation_end", "zop_on_target_taken", "zop_on_wave",
+	"zop_on_base_captured", "zop_on_base_released", "zop_on_services_arrived",
+}
+for _, name in ipairs(EVENTS) do
+	AddScriptCallback(name)
+end
+
+local conditions = {}   -- [key] = function(op_id, info) -> false blocks the operation
+
+local function copy(t, depth)
+	if type(t) ~= "table" then
+		return t
+	end
+	depth = depth or 0
+	if depth > 4 then
+		return nil
+	end
+	local out = {}
+	for k, v in pairs(t) do
+		out[k] = copy(v, depth + 1)
+	end
+	return out
+end
+
+------------------------------------------------------------------ events
+-- subscribe / unsubscribe (same as RegisterScriptCallback, but checks the name)
+function on(name, fn)
+	if not (type(name) == "string" and type(fn) == "function") then
+		return false
+	end
+	RegisterScriptCallback(name, fn)
+	return true
+end
+
+function off(name, fn)
+	if type(name) == "string" and fn then
+		UnregisterScriptCallback(name, fn)
+	end
+end
+
+-- used by Zone Operations itself; a broken listener must not break an operation
+function emit(name, ...)
+	local ok, err = pcall(SendScriptCallback, name, ...)
+	if not ok then
+		printf("![ZOP] api: a listener of %s failed: %s", name, tostring(err))
+	end
+end
+
+------------------------------------------------------------------ operations
+-- info about an operation: a copy of its config (id, faction, enemy, kind, giver, targets,
+-- reward, ...) plus done / available
+function operation(op_id)
+	local op = zop_registry.get(op_id)
+	if not op then
+		return nil
+	end
+	local info = copy(op)
+	info.done = zop_core.is_done(op_id)
+	info.available = zop_core.available(op) and true or false
+	return info
+end
+
+-- ids of all loaded operations, in config order
+function operations()
+	return copy(zop_registry.list())
+end
+
+-- ids of the operations a commander offers (story id = character profile id)
+function operations_of(giver_story_id)
+	local out = {}
+	for _, op in ipairs(zop_registry.by_giver(giver_story_id)) do
+		out[#out + 1] = op.id
+	end
+	return out
+end
+
+function is_done(op_id)
+	return zop_core.is_done(op_id)
+end
+
+function is_available(op_id)
+	return zop_core.available(zop_registry.get(op_id)) and true or false
+end
+
+-- the running operation: op_id, stage ("muster", "assault", "counter_wait", "counter",
+-- "wait", "defend"), target (index), wave; nil when none is running
+function active()
+	return zop_core.active_info()
+end
+
+-- start an operation as if its commander gave it (all its conditions still apply)
+function start(op_id)
+	return zop_core.start(op_id) and true or false
+end
+
+-- block or allow operations from your mod: fn(op_id, info) returns false to block.
+-- key is any unique string of yours; fn = nil removes it.
+function add_condition(key, fn)
+	conditions[key] = fn
+end
+
+-- used by zop_core.available
+function check_conditions(op)
+	for key, fn in pairs(conditions) do
+		local ok, res = pcall(fn, op.id, op)
+		if not ok then
+			printf("![ZOP] api: condition %s failed: %s", tostring(key), tostring(res))
+		elseif res == false then
+			return false
+		end
+	end
+	return true
+end
+
+------------------------------------------------------------------ the map
+-- faction that holds a smart through Zone Operations, or nil
+function owner(smart_name)
+	return zop_world.owner(smart_name)
+end
+
+-- { [smart_name] = { faction, op } } for every captured smart
+function bases()
+	local out = {}
+	for name, o in pairs(zop_world.all()) do
+		out[name] = { faction = o.faction, op = o.op }
+	end
+	return out
+end
+
+-- smart names held by one faction
+function bases_of(faction)
+	local out = {}
+	for name, o in pairs(zop_world.all()) do
+		if o.faction == faction then
+			out[#out + 1] = name
+		end
+	end
+	table.sort(out)
+	return out
+end
