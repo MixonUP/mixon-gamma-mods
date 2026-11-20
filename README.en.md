@@ -110,6 +110,15 @@ A faction leader gives you squads, you lead them into a battle across several po
 | **Duty** | Operation Yanov (Colonel Mixon and his tasks) |
 | **Army** | Special Operation Valley (Dark Valley bandits) |
 
+![Kholodny rallies Clear Sky to the assault](docs/media/zop/art/kholodny_assault.jpg)
+
+| | |
+|---|---|
+| ![Kholodny](docs/media/zop/art/kholodny_portrait.jpg) | **Kholodny** — commander of Clear Sky's northern base at the Jupiter checkpoint. Beret, eye patch, iron jaw and an exoskeleton. |
+| ![Kholodny in game](docs/media/zop/zop_kholodny_closeup.jpg) | **In game** — his own model: a Clear Sky exoskeleton without the helmet, a commander's head and beret, a hand-built iron jaw and black eye patch. |
+
+![Kholodny's 3D head model, three views](docs/media/zop/kholodny_model.jpg)
+
 **New in 1.1:** Kholodny hands out hunts for top-tier artefacts (Heart of the Oasis, Compass, Volat Emerald), scanner sorties into the anomaly fields of Jupiter and Zaton, anomaly measurements, and courier runs to Viking at Agroprom; Viking sends supplies or weapons back to Jupiter.
 
 | | | |
