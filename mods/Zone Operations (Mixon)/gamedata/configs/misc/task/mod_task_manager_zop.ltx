@@ -1709,3 +1709,96 @@ task_complete_descr = sim_default_csky_mechanic_task_3_fetch_finish
 on_complete = %+zop_csky_kruger_mechanic_upgrade_tier_3 =complete_task_inc_goodwill(50:csky) =fetch_reward_and_remove(zop_csky_kruger_mechanic_task_3_fetch) =inc_task_stage(zop_csky_kruger_mechanic_task_3)%
 precondition = {+zop_csky_kruger_mechanic_upgrade_tier_2 -zop_csky_kruger_mechanic_upgrade_tier_3} true, false
 condlist_0 = {!task_giver_alive(zop_csky_kruger_mechanic_task_3)} fail
+
+; ------------------------------------------------------------------ Jupiter checkpoint: Racuro (medic)
+; Triage: the wounded of the garrison need medicine (stock generic fetch, one of the sections, 3 of it)
+
+[zop_csky_racuro_medic_task_1]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 86400
+title = zop_csky_racuro_medic_task_1_name
+descr = zop_csky_racuro_medic_task_1_text
+job_descr = zop_csky_racuro_medic_task_1_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_racuro_medic_task_1_fetch_about
+task_complete_descr = zop_csky_racuro_medic_task_1_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_generic_fetch_task(zop_csky_racuro_medic_task_1_fetch:3:medkit_army:drug_coagulant:stimpack)%
+on_complete = %=fetch_reward_and_remove(zop_csky_racuro_medic_task_1_fetch:1.6) =reward_stash(false) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_racuro_medic_task_1) =pstor_reset(zop_csky_racuro_medic_task_1_fetch) =drx_sl_unregister_task_giver(zop_csky_racuro_medic_task_1) =drx_sl_reset_stored_task(zop_csky_racuro_medic_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_racuro_medic_task_1_fetch) =drx_sl_unregister_task_giver(zop_csky_racuro_medic_task_1) =drx_sl_reset_stored_task(zop_csky_racuro_medic_task_1)%
+condlist_0 = {!task_giver_alive(zop_csky_racuro_medic_task_1)} fail
+
+; Perishable: a serum for the scientists' bunker on Yantar, handed to Kompas within 36 game hours
+; (stock delivery task, zop_courier.script names the addressee and keeps the deadline)
+
+[zop_csky_racuro_medic_task_2]
+icon = ui_inGame2_Osobiy_zakaz
+storyline = false
+prior = 60
+repeat_timeout = 172800
+precondition = {=zop_courier_ready(zop_csky_rostok_trader)} true, false
+title = zop_csky_racuro_medic_task_2_name
+descr = zop_csky_racuro_medic_task_2_text
+descr_functor = general_delivery_desc
+job_descr = zop_csky_racuro_medic_task_2_about
+task_complete_descr = zop_csky_racuro_medic_task_2_finish
+stage_complete = 2
+target_functor = general_delivery
+status_functor = delivery_task
+on_job_descr = %=zop_courier_setup(zop_csky_racuro_medic_task_2:zop_csky_rostok_trader:zop_courier_serum)%
+on_init = %=zop_courier_setup(zop_csky_racuro_medic_task_2:zop_csky_rostok_trader:zop_courier_serum) =zop_task_deadline(zop_csky_racuro_medic_task_2:36)%
+on_complete = %=remove_delivery_item(zop_csky_racuro_medic_task_2) =reward_random_money(16000:20000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) -zop_csky_racuro_medic_task_2_quest_item_received =pstor_reset(zop_csky_racuro_medic_task_2) =pstor_reset(zop_csky_racuro_medic_task_2_due) =drx_sl_unregister_task_giver(zop_csky_racuro_medic_task_2) =drx_sl_reset_stored_task(zop_csky_racuro_medic_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =remove_delivery_item(zop_csky_racuro_medic_task_2) -zop_csky_racuro_medic_task_2_quest_item_received =pstor_reset(zop_csky_racuro_medic_task_2) =pstor_reset(zop_csky_racuro_medic_task_2_due) =drx_sl_unregister_task_giver(zop_csky_racuro_medic_task_2) =drx_sl_reset_stored_task(zop_csky_racuro_medic_task_2)%
+on_cancel = %=remove_delivery_item(zop_csky_racuro_medic_task_2) -zop_csky_racuro_medic_task_2_quest_item_received =pstor_reset(zop_csky_racuro_medic_task_2) =pstor_reset(zop_csky_racuro_medic_task_2_due) =drx_sl_unregister_task_giver(zop_csky_racuro_medic_task_2) =drx_sl_reset_stored_task(zop_csky_racuro_medic_task_2)%
+condlist_0 = {!task_giver_alive(zop_csky_racuro_medic_task_2)} fail
+condlist_1 = {!zop_courier_valid(zop_csky_racuro_medic_task_2)} fail
+condlist_2 = {=zop_task_overdue(zop_csky_racuro_medic_task_2)} fail
+
+; ------------------------------------------------------------------ Jupiter checkpoint: Fin (cook)
+; A pot for everyone: raw mutant meat for the garrison's kitchen (stock generic fetch, 5 of one kind)
+
+[zop_csky_fin_barman_task_1]
+icon = ui_iconsTotal_find_item
+storyline = false
+prior = 60
+repeat_timeout = 259200
+title = zop_csky_fin_barman_task_1_name
+descr = zop_csky_fin_barman_task_1_text
+job_descr = zop_csky_fin_barman_task_1_about
+stage_complete = 1
+title_functor = general_fetch_task
+descr_functor = general_fetch_task
+fetch_descr = zop_csky_fin_barman_task_1_fetch_about
+task_complete_descr = zop_csky_fin_barman_task_1_fetch_finish
+target_functor = general_fetch_task
+status_functor = actor_has_fetch_item
+fetch_func = %=setup_generic_fetch_task(zop_csky_fin_barman_task_1_fetch:5:mutant_part_dog_meat:mutant_part_flesh_meat:mutant_part_boar_leg:mutant_part_tushkano_meat)%
+on_complete = %=fetch_reward_and_remove(zop_csky_fin_barman_task_1_fetch:2.5) =reward_item(meat_boar) =reward_item(meat_flesh) =complete_task_inc_goodwill(50:csky) =inc_task_stage(zop_csky_fin_barman_task_1) =pstor_reset(zop_csky_fin_barman_task_1_fetch) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_1) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_1)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =pstor_reset(zop_csky_fin_barman_task_1_fetch) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_1) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_1)%
+condlist_0 = {!task_giver_alive(zop_csky_fin_barman_task_1)} fail
+
+; The lost wagon: the checkpoint's food was taken by a gang that now sits on it in a camp of the level;
+; wipe it out (zop_raid kind "supply": a camp whose fighters carry the food), then report to Fin
+
+[zop_csky_fin_barman_task_2]
+icon = ui_inGame2_PD_Lider
+storyline = false
+prior = 70
+repeat_timeout = 172800
+precondition = {=zop_raid_ready(supply)} true, false
+title = zop_csky_fin_barman_task_2_name
+descr = zop_csky_fin_barman_task_2_text
+job_descr = zop_csky_fin_barman_task_2_about
+stage_complete = 1
+task_complete_descr = zop_csky_fin_barman_task_2_finish
+target_functor = zop_raid_target
+status_functor = zop_raid_status
+on_init = %=zop_raid_setup(zop_csky_fin_barman_task_2:supply:bandit:renegade:killer)%
+on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =reward_item(vodka) =reward_item(kolbasa) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_fin_barman_task_2) =zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
+on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
+condlist_0 = {!task_giver_alive(zop_csky_fin_barman_task_2)} fail

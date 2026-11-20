@@ -1595,4 +1595,67 @@ Hold %s. Attackers left: %d.</text>
 	<string id="ui_mcm_menu_zop">
 		<text>Zone Operations (Mixon)</text>
 	</string>
+	<string id="zop_csky_racuro_medic_task_1_name">
+		<text>Triage</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_text">
+		<text>Racuro needs medicine for the wounded of the checkpoint: %s.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_about">
+		<text>Every night somebody comes back from the fields with holes in him, and my shelf is empty. Bandages I can still boil, but the rest... Bring me what I ask for. Not for me - for the boys on the cots behind that curtain.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_fetch_finish">
+		<text>That's exactly what I needed. Two of them will be on their feet by morning. Here, take this - and try not to end up on my table yourself.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_name">
+		<text>Perishable</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_text">
+		<text>Carry Racuro's serum to Kompas at the scientists' bunker on Yantar within a day and a half.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_about">
+		<text>The scientists on Yantar asked for my serum - the one against the psy-burns from the north. It keeps for a day and a half, no more, and then it is just coloured water. Kompas, our trader by the bunker, will take it to them. Go now, and don't stop for artefacts on the way.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_finish">
+		<text>Kompas has the serum. The scientists owe Clear Sky one more favour.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_name">
+		<text>A Pot for Everyone</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_text">
+		<text>Fin needs raw meat for the garrison's kitchen: %s.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_about">
+		<text>Twenty men, one pot and tins that taste of the tin. Kholodny says a soldier fights on what he eats. So bring me meat - real meat, from the mutants out there. I'll cook it so you won't recognise it. That's a compliment.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_fetch_about">
+		<text>Bring: %s.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_fetch_finish">
+		<text>Now that's a stew in the making. Here's your pay, and a little of what's left from last time - still warm.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_name">
+		<text>The Lost Wagon</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_text">
+		<text>Find the gang that took the checkpoint's food and wipe it out. Then report to Fin.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_about">
+		<text>Our food came up from the south on a cart with two boys, and the cart never got here. The boys did - barefoot and without a single tin. Some gang has made camp on our provisions. Find them, take back what's left, and tell me when it's done. I'll make sure you never eat from a tin here again.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_finish">
+		<text>So they had a feast on our food. Their last one. Here - a little something from the kitchen.</text>
+	</string>
+	<string id="st_zop_raid_supply_news">
+		<text>%s: the gang (%s) that took our food is camping near %s. Get it back.</text>
+	</string>
+	<string id="st_zop_courier_serum_name">
+		<text>Racuro's serum</text>
+	</string>
+	<string id="st_zop_courier_serum_descr">
+		<text>A cold-packed case of ampoules against psy-burns, made by Racuro at the Jupiter checkpoint. Keeps a day and a half. Addressed to Kompas at the scientists' bunker on Yantar.</text>
+	</string>
 </string_table>

@@ -116,6 +116,15 @@ A faction leader gives you squads, you lead them into a battle across several po
 |---|---|---|
 | ![Freedom](docs/media/zop/art/freedom_1.jpg) | ![Duty](docs/media/zop/art/duty_1.jpg) | ![Army](docs/media/zop/art/army_1.jpg) |
 
+**At the Jupiter checkpoint:** the medic Racuro asks for medicine for the wounded (Triage) and sends a serum to Kompas at the Yantar bunker against the clock (Perishable); the cook Fin wants raw mutant meat (A Pot for Everyone) and the food back from the gang that stole it (The Lost Wagon).
+
+| | |
+|---|---|
+| ![Kholodny: beret, eye patch, iron jaw implant](docs/media/zop/zop_kholodny_closeup.jpg) | ![Fin's tasks](docs/media/zop/zop_fin_tasks.jpg) |
+| Kholodny: beret, eye patch, iron jaw implant | Fin: A Pot for Everyone and The Lost Wagon |
+| ![Racuro: Triage done](docs/media/zop/zop_racuro_triage_done.jpg) | ![Racuro's serum](docs/media/zop/zop_racuro_serum.jpg) |
+| Racuro: Triage handed in, Perishable next | Racuro's serum: to Kompas within 36 hours |
+
 MCM «Операции Зоны (Mixon)» / Zone Operations (Mixon): enable operations, reward multiplier (0.5–3), extra squads (0–2). Full task list (RU): [`docs/zop_quests_ru.md`](docs/zop_quests_ru.md).
 
 **For modders:** `zop_api.script` gives other mods events (operation started/ended, target taken, wave, base captured, services arrived), queries (who holds a smart, which operations are won, what is running), custom conditions, and new operations through DLTX with no script. See [`docs/zop_api.md`](docs/zop_api.md).

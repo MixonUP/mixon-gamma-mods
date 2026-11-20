@@ -403,6 +403,7 @@ local CSKY2_DESC = [[
 	<actor_dialog>dm_init_trader</actor_dialog>
 	<actor_dialog>dm_ordered_task_dialog</actor_dialog>
 	<actor_dialog>dm_ordered_task_completed_dialog</actor_dialog>
+	<actor_dialog>dm_delivery_dialog</actor_dialog>
 	<actor_dialog>dm_important_documents</actor_dialog>
 	<actor_dialog>buy_route</actor_dialog>
 	<actor_dialog>actor_break_dialog</actor_dialog>

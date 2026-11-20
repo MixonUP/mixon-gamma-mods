@@ -1595,4 +1595,67 @@
 	<string id="ui_mcm_menu_zop">
 		<text>Операции Зоны (Mixon)</text>
 	</string>
+	<string id="zop_csky_racuro_medic_task_1_name">
+		<text>Триаж</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_text">
+		<text>Ракуро нужны медикаменты для раненых блокпоста: %s.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_about">
+		<text>Каждую ночь кто-то возвращается с полей с дырками, а у меня полка пустая. Бинты я ещё прокипячу, а остальное... Принеси, что прошу. Не мне - ребятам на койках за той занавеской.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_1_fetch_finish">
+		<text>То, что нужно. К утру двое встанут на ноги. Держи - и постарайся сам ко мне на стол не попасть.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_name">
+		<text>Скоропортящееся</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_text">
+		<text>За полтора дня донести сыворотку Ракуро Компасу к бункеру учёных на Янтаре.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_about">
+		<text>Учёные с Янтаря просили мою сыворотку - ту, что от пси-ожогов с севера. Хранится полтора дня, не больше, потом это просто подкрашенная вода. Компас, наш торговец у бункера, передаст её учёным. Иди сейчас и не отвлекайся на артефакты по дороге.</text>
+	</string>
+	<string id="zop_csky_racuro_medic_task_2_finish">
+		<text>Сыворотка у Компаса. Учёные снова должны Чистому Небу.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_name">
+		<text>Котёл на всех</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_text">
+		<text>Фину нужно сырое мясо для кухни гарнизона: %s.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_about">
+		<text>Двадцать ртов, один котёл и консервы со вкусом жести. Холодный говорит, боец воюет тем, что съел. Так что неси мясо - настоящее, с мутантов. Приготовлю так, что не узнаешь. Это комплимент.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_fetch_about">
+		<text>Принеси: %s.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_1_fetch_finish">
+		<text>Вот это будет похлёбка. Держи оплату - и немного с прошлого раза, ещё тёплое.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_name">
+		<text>Пропавший обоз</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_text">
+		<text>Найти банду, забравшую провизию блокпоста, и уничтожить её. Потом доложить Фину.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_about">
+		<text>Провизия шла к нам с юга на телеге с двумя парнями, и телега не дошла. Парни дошли - босиком и без единой банки. Какая-то банда встала лагерем на наших харчах. Найди их, забери что осталось и скажи мне, когда закончишь. А я позабочусь, чтобы ты у нас больше никогда не ел из банки.</text>
+	</string>
+	<string id="zop_csky_fin_barman_task_2_finish">
+		<text>Значит, пировали на наших харчах. Последний раз. Держи - кое-что с кухни.</text>
+	</string>
+	<string id="st_zop_raid_supply_news">
+		<text>%s: банда (%s), что забрала наши харчи, стоит лагерем у %s. Верни их.</text>
+	</string>
+	<string id="st_zop_courier_serum_name">
+		<text>Сыворотка Ракуро</text>
+	</string>
+	<string id="st_zop_courier_serum_descr">
+		<text>Кейс с охлаждёнными ампулами от пси-ожогов, сделанными Ракуро на блокпосту Юпитера. Хранится полтора дня. Адресован Компасу у бункера учёных на Янтаре.</text>
+	</string>
 </string_table>

@@ -136,6 +136,25 @@ local function setup(actor, npc, p)
 	end
 end
 
+-- a time limit for a task: on_init = %=zop_task_deadline(<task id>:<game hours>)%,
+-- condlist_N = {=zop_task_overdue(<task id>)} fail, and =pstor_reset(<task id>_due) when it ends
+local function game_secs()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+end
+
+local function deadline(actor, npc, p)
+	local hours = p and tonumber(p[2])
+	if p and p[1] and hours and db.actor then
+		save_var(db.actor, p[1] .. "_due", game_secs() + hours * 3600)
+	end
+end
+
+local function overdue(actor, npc, p)
+	local due = p and p[1] and db.actor and load_var(db.actor, p[1] .. "_due")
+	return type(due) == "number" and game_secs() > due
+end
+
 -- item menu of the cargo boxes: no entry, no action
 function cargo_menu(obj)
 	return nil
@@ -148,6 +167,8 @@ function on_game_start()
 	xr_conditions.zop_courier_ready = ready
 	xr_conditions.zop_courier_valid = valid
 	xr_effects.zop_courier_setup = setup
+	xr_effects.zop_task_deadline = deadline
+	xr_conditions.zop_task_overdue = overdue
 	local ok, err = pcall(function()
 		local ini = task_manager.task_ini
 		ini:section_for_each(function(section)

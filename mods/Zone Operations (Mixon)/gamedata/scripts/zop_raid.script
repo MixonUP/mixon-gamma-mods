@@ -33,7 +33,13 @@ local SQUADS = {
 -- what a convoy carries (every member gets one of each)
 local CARGO = { "medkit_army", "prt_i_transistors", "prt_i_capacitors", "conserva", "ammo_5.45x39_ap" }
 
-local HOURS   = { convoy = 10, ambush = 8, camp = 24 }
+local HOURS   = { convoy = 10, ambush = 8, camp = 24, supply = 24 }
+
+-- "supply": a camp sitting on stolen food (Fin's wagon); every member carries some of it
+local FOOD = { "conserva", "kolbasa", "bread", "vodka" }
+
+-- kinds that hold one place instead of walking somewhere
+local STAYS = { camp = true, supply = true }
 local ARRIVED = 50      -- metres from the destination = the squad got through
 
 local raids = {}        -- [task_id] = { squad, section, kind, faction, to, deadline, actor_kills }
@@ -114,7 +120,7 @@ end
 --        ambush = far smart -> the giver's base (the smart he stands at)
 local function route(kind, giver)
 	local smarts = level_smarts()
-	if kind == "camp" then
+	if STAYS[kind] then
 		local at = pick(smarts, function(e) return e.d > 300 and e.d < 1000 end)
 		return at and at.se, at and at.se
 	end
@@ -198,15 +204,17 @@ local function setup(actor, npc, p)
 		return
 	end
 	sq.rush, sq.rush_to_target = false, false
-	if kind == "convoy" then
+	if kind == "supply" then
+		sq.item_on_all = FOOD
+	elseif kind == "convoy" then
 		sq.item_on_all = CARGO   -- sim_squad_scripted spawns these on every member at first update
 	end
 	raids[task_id] = {
 		squad = sq.id, section = SQUADS[faction], kind = kind, faction = faction,
 		to = se_to:name(), deadline = now() + HOURS[kind] * 3600, who = who,
 	}
-	if kind == "camp" then
-		news(tr("st_zop_raid_camp_news", who, tr(faction), smart_title(se_from)))
+	if STAYS[kind] then
+		news(tr("st_zop_raid_" .. kind .. "_news", who, tr(faction), smart_title(se_from)))
 	else
 		news(tr("st_zop_raid_" .. kind .. "_news", who, tr(faction), smart_title(se_from), smart_title(se_to)))
 	end
@@ -265,7 +273,7 @@ local function status(tsk, task_id)
 	if now() > r.deadline then
 		return "fail"
 	end
-	local se_to = r.kind ~= "camp" and zop_census.smart_by_name(r.to)
+	local se_to = not STAYS[r.kind] and zop_census.smart_by_name(r.to)
 	if se_to and sq.position:distance_to(se_to.position) < ARRIVED then
 		return "fail"          -- they got through
 	end
