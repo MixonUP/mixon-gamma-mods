@@ -7,6 +7,7 @@ function on_mcm_load()
 			{ id = "enabled", type = "check", val = 1, def = true },
 			{ id = "reward_mult", type = "track", val = 2, min = 0.5, max = 3, step = 0.1, def = 1 },
 			{ id = "extra_squads", type = "track", val = 2, min = 0, max = 2, step = 1, def = 0 },
+			{ id = "voice_lang", type = "list", val = 2, def = 0, content = { { 0, "zop_vlang_auto" }, { 1, "zop_vlang_ru" }, { 2, "zop_vlang_en" } } },
 		},
 	}
 end

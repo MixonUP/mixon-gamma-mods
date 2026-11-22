@@ -210,6 +210,47 @@ faction = army
 npc_random = sim_default_military_3, sim_default_military_4, sim_default_military_4, sim_default_military_5
 npc_in_squad = 5, 6
 
+; ---- the mercenaries' operation in the Dead City
+; army spetsnaz holding the Administration from the start (6 squads, about 20 men)
+[zop_army_spetsnaz_hold]:online_offline_group
+faction = army
+npc_random = sim_default_military_4, sim_default_military_5
+npc_in_squad = 3, 4
+
+; spetsnaz assault waves and the flank group: 5 men, a legend leads
+[zop_army_spetsnaz]:online_offline_group
+faction = army
+npc = zop_army_legend
+npc_random = sim_default_military_4, sim_default_military_4, sim_default_military_5
+npc_in_squad = 5, 5
+
+; merc reinforcements from cit_killers_2, and the mercs storming the Administration
+[zop_killer_reinforce]:online_offline_group
+faction = killer
+npc_random = sim_default_killer_3, sim_default_killer_4, sim_default_killer_4, sim_default_killer_5
+npc_in_squad = 4, 5
+
+[zop_killer_assault]:online_offline_group
+faction = killer
+npc_random = sim_default_killer_4, sim_default_killer_4, sim_default_killer_5
+npc_in_squad = 5, 5
+
+[zop_killer_garrison]:online_offline_group
+faction = killer
+npc_random = sim_default_killer_3, sim_default_killer_4
+npc_in_squad = 4, 4
+
+; the roof team: one man each
+[zop_killer_roof_sniper]:online_offline_group
+faction = killer
+npc = zop_killer_roof_sniper_npc
+always_arrived = true
+
+[zop_killer_roof_rpg]:online_offline_group
+faction = killer
+npc = zop_killer_roof_rpg_npc
+always_arrived = true
+
 ; Monolith: zop_monolith_wave belonged to the first version of csky_rostok (not used now, kept for
 ; saves); zop_monolith_pro are the veterans holding the Jupiter checkpoint
 [zop_monolith_wave]:online_offline_group

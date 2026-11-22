@@ -21,7 +21,9 @@ function squad_at_smart(section, se_at, target, at)
 		return nil
 	end
 	local ok2, err = pcall(function()
-		se:create_npc(se_at, pos, lvid, gvid)
+		-- with a smart given, create_npc ignores pos and puts everybody at the smart: an exact
+		-- spot (wave_spawn) must be passed without one (the squad is still assigned to se_at below)
+		se:create_npc(not at and se_at or nil, pos, lvid, gvid)
 		-- register with the spawn smart at once, as vanilla simulation_board:create_squad does;
 		-- otherwise a squad spawned at its own target gets no base jobs until on_reach_target
 		SIMBOARD:assign_squad_to_smart(se, se_at.id)

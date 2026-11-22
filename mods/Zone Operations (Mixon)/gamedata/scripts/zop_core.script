@@ -21,6 +21,7 @@ local DEFENSE_HOURS    = 12      -- attackers give up after this many game hours
 
 local st = { active = nil, done = {}, cooldown = {}, done_at = {} }
 local pending_offer          -- op id remembered between dialog precondition and its script text
+local skip_goodwill          -- debug_start: the goodwill requirement is not checked
 local next_tick = 0
 -- real-time windows (time_global) are runtime only: never saved, a reload simply restarts them
 local clear_since, lost_since
@@ -119,6 +120,10 @@ function available(op)
 	if st.done[op.id] then
 		return false
 	end
+	-- a chained operation about to start by itself is not offered meanwhile
+	if st.pending_start and st.pending_start.op == op.id and not skip_goodwill then
+		return false
+	end
 	if st.cooldown[op.id] and now() < st.cooldown[op.id] then
 		return false
 	end
@@ -129,6 +134,12 @@ function available(op)
 	end
 	if op.requires_info and not (db.actor and db.actor:has_info(op.requires_info)) then
 		return false
+	end
+	if op.requires_goodwill > 0 and not skip_goodwill then
+		local ok, gw = pcall(relation_registry.community_goodwill, op.faction, AC_ID)
+		if not (ok and gw and gw >= op.requires_goodwill) then
+			return false
+		end
 	end
 	-- other mods may hold an operation back (zop_api.add_condition)
 	if not zop_api.check_conditions(op) then
@@ -424,6 +435,10 @@ local function finish(success)
 			end
 		end
 		pcall(function() news(string.format(op_text(op, "won"), money)) end)
+		-- a chain: the next operation starts by itself a little later (saved, see actor_on_update)
+		if op.on_success_start then
+			st.pending_start = { op = op.on_success_start, left = op.on_success_delay }
+		end
 	else
 		pcall(function() tm():set_task_failed("zop_task") end)
 		st.cooldown[op.id] = now() + op.cooldown * 86400
@@ -480,6 +495,8 @@ function start(op_id)
 		flank = {},
 		t0 = now(),
 		attack_at = now() + op.delay_hours * 3600,
+		-- delay_seconds: real seconds, counted down by the tick and saved (a reload keeps the time left)
+		attack_left = op.delay_seconds > 0 and op.delay_seconds or nil,
 	}
 	-- defense: our own squad takes position at the target at once
 	if op.kind == "defense" and op.defender_squad and op.defender_count > 0 then
@@ -530,12 +547,17 @@ function start(op_id)
 			end
 		end
 	end
+	if st.pending_start and st.pending_start.op == op.id then
+		st.pending_start = nil
+	end
 	pcall(function() tm():give_task("zop_task") end)
 	for _, id in ipairs(op.start_news) do
 		news(tr(id))
 	end
 	if op.kind == "assault" then
 		news(string.format(op_text(op, "muster"), muster_title(se_m:name(), op)))
+	elseif op.delay_seconds > 0 then
+		news(string.format(op_text(op, "muster"), math.ceil(op.delay_seconds / 60)))
 	else
 		news(string.format(op_text(op, "muster"), op.delay_hours))
 	end
@@ -1009,7 +1031,18 @@ local function step_wait(s, op)
 			mark(se_p.id, "st_zop_mark_attack_from")
 		end
 	end
-	if now() < s.attack_at then
+	if s.attack_left then
+		s.attack_left = s.attack_left - TICK_MS / 1000
+		if s.attack_left > 0 then
+			-- a reminder on every whole minute left
+			local min = math.ceil(s.attack_left / 60)
+			if min < math.ceil(op.delay_seconds / 60) and s.attack_said ~= min then
+				s.attack_said = min
+				news(string.format(tr("st_zop_attack_in"), min))
+			end
+			return
+		end
+	elseif now() < s.attack_at then
 		return
 	end
 	local se_a = s.staging_pre and zop_census.smart_by_name(s.staging_pre) or staging_for(op.targets[1], op)
@@ -1166,6 +1199,25 @@ local function actor_on_update()
 	end
 	local s, op = a(), cur_op()
 	if not s then
+		local p = st.pending_start
+		if p then
+			p.left = (p.left or 0) - TICK_MS / 1000
+			if p.left <= 0 then
+				st.pending_start = nil
+				local nop = zop_registry.get(p.op)
+				if nop then
+					st.cooldown[p.op], st.done[p.op] = nil, nil
+					skip_goodwill = true
+					local ok, res = pcall(start, p.op)
+					skip_goodwill = nil
+					if not (ok and res) then
+						printf("![ZOP] chained operation %s could not start: %s", p.op, tostring(res))
+						-- operation scripts let go of what they kept for it
+						zop_api.emit("zop_on_operation_end", p.op, false, zop_api.operation(p.op))
+					end
+				end
+			end
+		end
 		return
 	end
 	if not op then
@@ -1249,6 +1301,9 @@ local function descr_impl()
 		local se_t = zop_census.smart_by_name(op.targets[s.target])
 		return string.format(tr("st_zop_descr_assault"), place_title(op.targets[s.target]), s.target, #op.targets,
 			zop_census.count(op.enemy, se_t, op.radius, evac_skip(s, op)))
+	elseif s.stage == "wait" and s.attack_left then
+		return string.format(tr("st_zop_descr_wait"), place_title(op.targets[1])) .. " "
+			.. string.format(tr("st_zop_attack_in"), math.max(1, math.ceil(s.attack_left / 60)))
 	elseif s.stage == "wait" then
 		return string.format(tr("st_zop_descr_wait"), place_title(op.targets[1]))
 	elseif s.stage == "counter_wait" then
@@ -1335,7 +1390,10 @@ end
 function debug_start(op_id)
 	st.cooldown[op_id] = nil
 	st.done[op_id] = nil
-	return start(op_id)
+	skip_goodwill = true
+	local ok, res = pcall(start, op_id)
+	skip_goodwill = nil
+	return ok and res
 end
 
 function debug_abort()
@@ -1344,8 +1402,91 @@ function debug_abort()
 	end
 end
 
+------------------------------------------------------------------ for operation scripts (zop_merc)
+-- the running operation's saved state table (nil if `op_id` is not the one running)
+function active_state(op_id)
+	local s = st.active
+	if s and (not op_id or s.op == op_id) then
+		return s
+	end
+end
+
+-- squads spawned by an operation script join one of the operation's sets: "squads" (a defense:
+-- the attackers), "defenders" (our side) - marked, kept online and released like the others
+function add_squad(op_id, set_name, squad_id)
+	local s = active_state(op_id)
+	if not (s and squad_id) then
+		return false
+	end
+	s[set_name] = s[set_name] or {}
+	s[set_name][squad_id] = true
+	if set_name == "squads" and cur_op() and cur_op().kind == "defense" then
+		mark(squad_id, "st_zop_mark_attackers")
+	end
+	return true
+end
+
+-- an operation script ends the running operation (a loss rule of its own)
+function end_active(op_id, success)
+	if st.active and st.active.op == op_id then
+		finish(success and true or false)
+	end
+end
+
+-- no emission and no psi storm starts while an operation runs: they are put off to their next time.
+-- The emission is pushed back an hour ahead of time (its radio warning and crows come before the
+-- start, and a skipped one would leave the warning played for nothing); the callback below and the
+-- psi storm patch are the backstop.
+local next_postpone = 0
+local function postpone_events()
+	if not st.active or time_global() < next_postpone then
+		return
+	end
+	next_postpone = time_global() + 10000
+	pcall(function()
+		local now = game.get_game_time()
+		local SM = surge_manager and surge_manager.get_surge_manager()
+		if SM and not SM.started and SM._delta and SM.last_surge_time
+			and SM._delta - now:diffSec(SM.last_surge_time) < 3600 then
+			SM._delta = SM._delta + 3600
+		end
+		local PM = psi_storm_manager and psi_storm_manager.get_psi_storm_manager()
+		if PM and not PM.started and PM._delta and PM.last_psi_storm_time
+			and PM._delta - now:diffSec(PM.last_psi_storm_time) < 3600 then
+			PM._delta = PM._delta + 3600
+		end
+	end)
+end
+
+local function on_before_surge(flags)
+	if st.active and flags then
+		flags.allow = false
+		printf("[ZOP] emission put off: operation %s is running", tostring(st.active.op))
+	end
+end
+
+local psi_start
+local function guard_psi_storm()
+	local cls = psi_storm_manager and psi_storm_manager.CPsiStormManager
+	if psi_start or not (cls and cls.start) then
+		return
+	end
+	psi_start = cls.start
+	cls.start = function(self, manual)
+		if st.active and not manual then
+			printf("[ZOP] psi storm put off: operation %s is running", tostring(st.active.op))
+			self.game_time_factor = level.get_time_factor()
+			return self:skip_psi_storm()
+		end
+		return psi_start(self, manual)
+	end
+end
+
 function on_game_start()
 	pcall(guard_world_furniture)
+	pcall(guard_psi_storm)
+	RegisterScriptCallback("on_before_surge", on_before_surge)
+	RegisterScriptCallback("actor_on_update", postpone_events)
 	RegisterScriptCallback("actor_on_update", actor_on_update)
 	RegisterScriptCallback("save_state", save_state)
 	RegisterScriptCallback("load_state", load_state)

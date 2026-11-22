@@ -1,0 +1,89 @@
+--[[
+	Zone Operations (Mixon) - radio: voiced lines played over the radio, one after another.
+
+	say("a01")         queues sounds\zop\radio\a01_<lang>.ogg (2D, never two at once)
+	say_once(s, "a01") the same, but only once per operation (s = the operation's state: s.said)
+
+	Language: MCM zop/voice_lang 0 = auto (st_zop_radio_lang says "en" in the English texts),
+	1 = RU, 2 = EN. Every line also comes as a PDA news text st_zop_radio_<id> (subtitles).
+	The queue is runtime only: a reload simply drops lines not yet played.
+]]
+
+local GAP_MS = 350        -- silence between two lines
+local MAX_QUEUE = 6       -- older lines are dropped when the fight gets too busy
+
+local queue = {}
+local busy_until = 0
+local snd                 -- the sound_object playing now (kept so it is not collected)
+
+local function lang()
+	local v = 0
+	if ui_mcm and ui_mcm.get then
+		v = tonumber(ui_mcm.get("zop/voice_lang")) or 0
+	end
+	if v == 0 then
+		v = (game.translate_string("st_zop_radio_lang") == "en") and 2 or 1
+	end
+	return v == 2 and "en" or "ru"
+end
+
+local function subtitle(id)
+	local key = "st_zop_radio_" .. id
+	local text = game.translate_string(key)
+	if db.actor and text and text ~= key and text ~= "" then
+		pcall(news_manager.send_tip, db.actor, text, nil, nil, 7000)
+	end
+end
+
+local function play(id)
+	local path = "zop\\radio\\" .. id .. "_" .. lang()
+	local ok, len = pcall(function()
+		snd = sound_object(path)
+		snd:play(db.actor, 0, sound_object.s2d)
+		snd.volume = 1.0
+		return snd:length()
+	end)
+	subtitle(id)
+	if not ok then
+		printf("![ZOP] radio: cannot play %s: %s", path, tostring(len))
+		len = 2500
+	end
+	busy_until = time_global() + (tonumber(len) or 2500) + GAP_MS
+end
+
+function say(id)
+	if not id then
+		return
+	end
+	if #queue >= MAX_QUEUE then
+		table.remove(queue, 1)
+	end
+	queue[#queue + 1] = id
+end
+
+function say_once(s, id)
+	if not s then
+		return say(id)
+	end
+	s.said = s.said or {}
+	if s.said[id] then
+		return
+	end
+	s.said[id] = true
+	say(id)
+end
+
+function clear()
+	queue = {}
+end
+
+local function actor_on_update()
+	if #queue == 0 or time_global() < busy_until or not db.actor then
+		return
+	end
+	play(table.remove(queue, 1))
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+end

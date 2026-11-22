@@ -1,0 +1,360 @@
+--[[
+	Zone Operations (Mixon) - the army helicopter "Sokol-1" over the merc HQ, and the roof team's
+	duel with it (zop_merc). State lives in the defense's s.merc (saved by zop_core):
+	  m.heli      id of the helicopter (re-validated on every use)
+	  m.heli_hp   health the roof team has left it (scripted hits)
+	  m.rockets   RPG rockets left; m.heli_down: it is down
+	Section zop_army_heli: stock heli, medium armour; custom_data "[logic] zop = true" keeps the
+	stock heli logic away, it is flown from here: a round path over the HQ, every few seconds a
+	new enemy (a merc it can see, now and then the player).
+	Stalkers do not shoot at helicopters, so the roof team's fire is scripted: the shot is heard
+	from the roof, the hit comes off the heli's health; an RPG rocket also blows up at the heli.
+]]
+
+local SECTION = "zop_army_heli"
+local HQ = "cit_killers"
+-- comes in from the north edge of the map (a point outside the level crashes the engine)
+local ENTRY = { x = -44, y = 60, z = 135 }
+local EXIT_S = 40          -- after the defense: real seconds it flies off before it is removed
+local CIRCLE_Y, CIRCLE_R = 42, 85
+local SND_ENGINE = "vehicles\\helicopter\\helicopter"
+local GROUND_Y = 5         -- mercs below this height (on the ground by the HQ) are its targets first
+-- shares of its bursts: the ground around the player (the author: "suppression"), the HQ's lower
+-- floors and yard, the rest at the mercs on the ground
+local SUPPRESS_ACTOR, SUPPRESS_LOW = 0.35, 0.33
+-- the middle of the HQ building at ground level (between the two roof spots, over the 2nd floor)
+local BUILDING = { x = -42.5, y = 1.5, z = 28 }
+local ENEMY_EVERY_MS = 6000
+-- the helicopter takes 1.5x the damage to bring down (the author: medium health +50%)
+local HP_MULT = 1.5
+local SNIPER_EVERY_MS, SNIPER_DMG, SNIPER_HIT = 5000, 0.05 / HP_MULT, 0.6
+local RPG_EVERY_MS, RPG_DMG = 14000, 0.42 / HP_MULT
+local ROCKETS = 4          -- the first one misses
+local SND_SNIPER = "weapons\\_gunfire\\mono\\_sniper_big\\cls_1"
+local SND_RPG = "weapons\\_boom\\mono\\rpg\\cls_1"
+local BLAST = "zop_rpg_blast"
+
+local next_enemy, next_sniper, next_rpg = 0, 0, 0
+local blasts = {}          -- [id] = true: explosive objects waiting to come online and go off
+local sounds = {}          -- keep playing sound objects referenced
+local route_set            -- heli id whose round path is set (runtime: re-issued after a reload)
+local online_since         -- { id, t }: when the helicopter came online (runtime)
+local engine_snd, engine_for   -- the rotor sound and the heli it belongs to (runtime)
+
+local function engine_stop()
+	if engine_snd then
+		pcall(function() engine_snd:stop() end)
+	end
+	engine_snd, engine_for = nil, nil
+end
+
+-- every frame (zop_merc): the fallback rotor sound goes along with the helicopter
+function frame()
+	if not (engine_snd and engine_for) then
+		return
+	end
+	local o = level.object_by_id(engine_for)
+	if o then
+		pcall(function() engine_snd:set_position(o:position()) end)
+	end
+end
+local READY_MS = 5000
+
+local function heli_obj(m)
+	local o = m and m.heli and level.object_by_id(m.heli)
+	if o and o:section() == SECTION then
+		return o, o:get_helicopter()
+	end
+end
+
+local function play_at(path, pos)
+	pcall(function()
+		local s = sound_object(path)
+		s:play_at_pos(db.actor, pos, 0, sound_object.s3d)
+		s.volume = 1.0
+		sounds[#sounds + 1] = s
+		if #sounds > 8 then
+			table.remove(sounds, 1)
+		end
+	end)
+end
+
+local function blast_at(pos)
+	local lvid = level.vertex_id(pos)
+	local se_hq = zop_census.smart_by_name(HQ)
+	if not (se_hq and lvid and lvid < 4294967295) then
+		return
+	end
+	local ok, se = pcall(alife_create, BLAST, pos, lvid, se_hq.m_game_vertex_id)
+	if ok and se then
+		blasts[se.id] = true
+	end
+end
+
+local function blasts_update()
+	for id in pairs(blasts) do
+		local o = level.object_by_id(id)
+		if o then
+			blasts[id] = nil
+			pcall(function() o:explode(0) end)
+		elseif not alife():object(id) then
+			blasts[id] = nil
+		end
+	end
+end
+
+function spawn(m)
+	if m.heli and alife():object(m.heli) then
+		return
+	end
+	local se_hq = zop_census.smart_by_name(HQ)
+	if not se_hq then
+		return
+	end
+	local pos = vector():set(ENTRY.x, ENTRY.y, ENTRY.z)
+	local lvid = level.vertex_id(vector():set(ENTRY.x, se_hq.position.y + 2, ENTRY.z))
+	if not lvid or lvid >= 4294967295 then
+		lvid = se_hq.m_level_vertex_id
+	end
+	local se = alife_create(SECTION, pos, lvid, se_hq.m_game_vertex_id)
+	local d = se and utils_stpk.get_heli_data(se)
+	if not d then
+		if se then
+			safe_release_manager.release(se)
+		end
+		return
+	end
+	d.visual_name = [[dynamics\vehicles\mi24\veh_mi24_army]]
+	d.motion_name = [[helicopter\aaa.anm]]
+	d.startup_animation = "idle"
+	d.skeleton_name = "idle"
+	d.engine_sound = [[vehicles\helicopter\helicopter]]
+	d.custom_data = "[logic]\nzop = true\n"
+	utils_stpk.set_heli_data(d, se)
+	m.heli, m.heli_hp, m.rockets, m.heli_down, m.heli_route = se.id, 1, ROCKETS, nil, nil
+	printf("[ZOP] merc heli %s spawned", se.id)
+end
+
+local function pick_enemy(o, h, se_hq)
+	local best, bd
+	for i = 1, #db.OnlineStalkers do
+		local x = level.object_by_id(db.OnlineStalkers[i])
+		if x and x:alive() and character_community(x) == "killer" and not get_object_story_id(x:id()) then
+			local d = x:position():distance_to(se_hq.position)
+			-- the mercs down by the building first (the roof team and the upper floors come after)
+			if x:position().y > se_hq.position.y + GROUND_Y then
+				d = d + 200
+			end
+			if d < 340 and (not bd or d < bd) then
+				best, bd = x, d
+			end
+		end
+	end
+	return best
+end
+
+local function down(m, by_roof)
+	m.heli_down = true
+	engine_stop()
+	if by_roof then
+		zop_radio.say("m06")
+	end
+	zop_radio.say("a08")
+	zop_radio.say("d04")
+	pcall(function()
+		if db.actor then
+			news_manager.send_tip(db.actor, game.translate_string("st_zop_killer_heli_down"), nil, nil, 10000)
+		end
+	end)
+end
+
+-- m: the defense's s.merc; men: { sniper = obj, rpg = obj } of the roof team online
+function update(m, men)
+	blasts_update()
+	if not m.heli or m.heli_down then
+		-- once it is down the roof team turns to the infantry
+		if m.heli_down and not m.switched and (men.sniper or men.rpg) then
+			m.switched = true
+			if men.sniper then zop_radio.say("m07") end
+			if men.rpg then zop_radio.say("m08") end
+		end
+		return
+	end
+	local o, h = heli_obj(m)
+	if not o then
+		online_since = nil
+		engine_stop()
+		if not alife():object(m.heli) then
+			m.heli = nil
+		end
+		return
+	end
+	-- a helicopter that has just come online is not ready to be flown: wait a few seconds
+	local tg0 = time_global()
+	if not online_since or online_since.id ~= m.heli then
+		online_since = { id = m.heli, t = tg0 }
+	end
+	if tg0 - online_since.t < READY_MS then
+		return
+	end
+	local se_hq = zop_census.smart_by_name(HQ)
+	if not se_hq then
+		return
+	end
+	local hp = h:GetfHealth()
+	if hp <= 0.001 or not o:alive() then
+		return down(m, m.roof_hits and m.roof_hits > 0)
+	end
+	-- +50% health: whatever the engine took off since the last tick (the player's fire, blasts)
+	-- is given back by a third
+	if m.heli_hp_seen and hp < m.heli_hp_seen then
+		hp = m.heli_hp_seen - (m.heli_hp_seen - hp) / HP_MULT
+		h:SetfHealth(hp)
+	end
+	local tg = time_global()
+	-- the route: once, then it keeps circling (re-issued after a reload)
+	if route_set ~= m.heli then
+		route_set = m.heli
+		h:SetMaxVelocity(28)
+		h:SetSpeedInDestPoint(12)
+		h:GoPatrolByRoundPath(vector():set(se_hq.position.x, CIRCLE_Y, se_hq.position.z), CIRCLE_R, true)
+		h.m_use_mgun_on_attack = true
+		h.m_use_rocket_on_attack = true
+	end
+	-- the rotor: the stock heli logic switches the engine sound on; ours is off, so it is done here
+	-- (engine_sound is set in the spawn data). If that fails, a looped sound is moved with it.
+	if engine_for ~= m.heli then
+		engine_for = m.heli
+		-- the engine does not save the heli's health: a reload would heal it
+		if m.heli_hp_seen and h:GetfHealth() > m.heli_hp_seen then
+			h:SetfHealth(m.heli_hp_seen)
+		end
+		local ok = pcall(function() h:TurnEngineSound(true) end)
+		if not ok then
+			pcall(function()
+				engine_snd = sound_object(SND_ENGINE)
+				engine_snd:play_at_pos(o, o:position(), 0, sound_object.s3d + sound_object.looped)
+				engine_snd.volume = 1.0
+			end)
+		end
+	end
+	-- suppression: it fires (mgun and rockets) at a spot on the ground, not at a man it must see:
+	-- mostly the ground around the player (4-10 m off him), otherwise the mercs by the building
+	if tg > next_enemy then
+		next_enemy = tg + ENEMY_EVERY_MS
+		local spot
+		local ap = db.actor and db.actor:alive() and db.actor:position()
+		local roll = math.random()
+		local hp0 = se_hq.position
+		if ap and ap:distance_to(hp0) < 200 and roll < SUPPRESS_ACTOR then
+			local a, r = math.random() * 6.283, 4 + math.random() * 6
+			spot = vector():set(ap.x + math.cos(a) * r, ap.y, ap.z + math.sin(a) * r)
+		elseif roll < SUPPRESS_ACTOR + SUPPRESS_LOW then
+			-- the lower floors and the yard of the HQ building: a point 6-24 m from its middle, 0-4 m up
+			local a, r = math.random() * 6.283, 6 + math.random() * 18
+			spot = vector():set(BUILDING.x + math.cos(a) * r, BUILDING.y + math.random() * 4, BUILDING.z + math.sin(a) * r)
+		else
+			local e = pick_enemy(o, h, se_hq)
+			local p = e and e:position()
+			if p then
+				spot = vector():set(p.x + math.random(-3, 3), p.y, p.z + math.random(-3, 3))
+			end
+		end
+		if spot then
+			-- its guns only reach where its nose points: it turns to the spot as well
+			pcall(function()
+				h:SetEnemy(spot)
+				h:LookAtPoint(spot, true)
+			end)
+		end
+	end
+	local hpos = o:position()
+	-- the sniper: a shot every few seconds, most of them hit
+	if men.sniper and tg > next_sniper then
+		next_sniper = tg + SNIPER_EVERY_MS + math.random(0, 2000)
+		play_at(SND_SNIPER, men.sniper:position())
+		if math.random() < SNIPER_HIT then
+			m.roof_hits = (m.roof_hits or 0) + 1
+			hp = hp - SNIPER_DMG
+			if m.roof_hits == 1 then
+				zop_radio.say("m03")
+			end
+		end
+	end
+	-- the RPG: the first rocket misses, the next ones hit
+	if men.rpg and (m.rockets or 0) > 0 and tg > next_rpg then
+		next_rpg = tg + RPG_EVERY_MS
+		m.rockets = m.rockets - 1
+		zop_radio.say("m04")
+		play_at(SND_RPG, men.rpg:position())
+		if m.rockets == ROCKETS - 1 then
+			zop_radio.say("m05")
+			blast_at(vector():set(hpos.x + 9, hpos.y + 4, hpos.z - 6))
+		else
+			m.roof_hits = (m.roof_hits or 0) + 1
+			hp = hp - RPG_DMG
+			blast_at(vector():set(hpos.x, hpos.y - 1, hpos.z))
+		end
+	end
+	m.heli_hp_seen = hp
+	if hp < h:GetfHealth() then
+		h:SetfHealth(math.max(0, hp))
+		if hp < 0.35 then
+			pcall(h.StartFlame, h)
+		end
+		if hp <= 0.02 then
+			pcall(h.Die, h)
+			return down(m, true)
+		end
+	end
+end
+
+-- the defense is over: a living helicopter flies away north and is removed far from the player
+local leaving = {}
+function leave(id)
+	local se = id and alife():object(id)
+	if not (se and se:section_name() == SECTION) then
+		return
+	end
+	local o = level.object_by_id(id)
+	if o and o:get_helicopter():GetfHealth() <= 0.001 then
+		return     -- a wreck stays where it fell
+	end
+	leaving[id] = time_global() + EXIT_S * 1000
+	if o then
+		local h = o:get_helicopter()
+		pcall(function() h:ClearEnemy() end)
+		pcall(function() h:SetDestPosition(vector():set(ENTRY.x, ENTRY.y + 15, ENTRY.z)) end)
+	end
+end
+
+local next_leave = 0
+local function actor_on_update()
+	blasts_update()
+	if not next(leaving) or time_global() < next_leave then
+		return
+	end
+	next_leave = time_global() + 2000
+	local tg = time_global()
+	for id, t in pairs(leaving) do
+		local se = alife():object(id)
+		local o = level.object_by_id(id)
+		if not se then
+			leaving[id] = nil
+			engine_stop()
+		elseif o and o:get_helicopter():GetfHealth() <= 0.001 then
+			leaving[id] = nil      -- shot down on its way out: the wreck stays
+			engine_stop()
+		elseif tg > t then
+			leaving[id] = nil
+			if engine_for == id then
+				engine_stop()
+			end
+			pcall(safe_release_manager.release, se)
+		end
+	end
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+end

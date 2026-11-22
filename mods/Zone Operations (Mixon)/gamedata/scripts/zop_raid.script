@@ -41,8 +41,11 @@ local FOOD = { "conserva", "kolbasa", "bread", "vodka" }
 -- kinds that hold one place instead of walking somewhere
 local STAYS = { camp = true, supply = true }
 local ARRIVED = 50      -- metres from the destination = the squad got through
+local NEAR = 100        -- the player within this many metres of the (online) group = he is in the fight
+local NEAR_SECS = 300   -- ...and that counts for 5 game minutes after he was last seen there
 
-local raids = {}        -- [task_id] = { squad, section, kind, faction, to, deadline, actor_kills }
+local raids = {}        -- [task_id] = { squad, section, kind, faction, to, deadline, who,
+                        --   members = {[npc_id] = true}, size, deaths, actor_kills, actor_hits, near_at }
 
 local function now()
 	local y, m, d, h, mi, s = game.get_game_time():get()
@@ -262,10 +265,40 @@ local function status(tsk, task_id)
 	end
 	local sq = zop_spawn.valid_squad(r.squad, r.section)
 	local ok, n = pcall(function() return sq and sq:npc_count() or 0 end)
+	if ok and n > 0 and db.actor then
+		-- keep the member ids: at npc_on_death_callback the victim is already out of its squad
+		-- (get_object_squad returns nil), so deaths are matched by id
+		r.members = r.members or {}
+		pcall(function()
+			for m in sq:squad_members() do
+				r.members[m.id] = true
+			end
+		end)
+		if not r.size or n > r.size then
+			r.size = n
+		end
+		-- remember whether the player was close to the group lately (kills by explosions or
+		-- other indirect means may not name the actor as the killer); online squads only,
+		-- so positions on another level never match
+		if sq.online then
+			local d = sq.position and sq.position:distance_to(db.actor:position())
+			if d and d < NEAR then
+				r.near_at = now()
+			end
+		end
+	end
+	local took_part = (r.actor_kills or 0) > 0 or (r.actor_hits or 0) > 0
+		or (r.near_at and now() - r.near_at < NEAR_SECS)
 	if not ok or n == 0 then
-		if (r.actor_kills or 0) > 0 then
-			tsk.stage = 1      -- all dead and the player was there: report to the colonel
+		if took_part then
+			tsk.stage = 1      -- all dead and the player was there: report to the giver
 			return
+		end
+		if r.size and (r.deaths or 0) < r.size then
+			-- the group vanished without being killed (emission, despawn by another mod):
+			-- nobody beat the player to it, so no "someone got there first" message
+			printf("![ZOP] raid %s: group vanished (%s of %s died)", task_id, r.deaths or 0, r.size)
+			return "fail"
 		end
 		news(tr("st_zop_raid_beaten", r.who or tr("st_zop_raid_hq")))
 		return "fail"          -- someone else got there first
@@ -273,8 +306,9 @@ local function status(tsk, task_id)
 	if now() > r.deadline then
 		return "fail"
 	end
+	-- a fight at the destination itself does not count as "they got through"
 	local se_to = not STAYS[r.kind] and zop_census.smart_by_name(r.to)
-	if se_to and sq.position:distance_to(se_to.position) < ARRIVED then
+	if se_to and not took_part and sq.position:distance_to(se_to.position) < ARRIVED then
 		return "fail"          -- they got through
 	end
 end
@@ -284,28 +318,107 @@ local function by_player(who)
 	if not who then
 		return false
 	end
-	local id = who:id()
-	if id == AC_ID then
-		return true
+	local ok, res = pcall(function()
+		local id = who:id()
+		if id == AC_ID then
+			return true
+		end
+		-- a weapon or grenade held by the actor (some mods report it as the killer)
+		local p = who.parent and who:parent()
+		if p and p:id() == AC_ID then
+			return true
+		end
+		-- the player's companions count too
+		local sq = get_object_squad(who)
+		return sq and axr_companions and axr_companions.companion_squads and axr_companions.companion_squads[sq.id] and true or false
+	end)
+	return ok and res or false
+end
+
+-- raid records whose group the victim belongs to
+local function raids_of(victim)
+	local out = {}
+	local ok, sq = pcall(get_object_squad, victim)
+	local sid = ok and sq and sq.id
+	local vid = victim:id()
+	for _, r in pairs(raids) do
+		if (sid and r.squad == sid) or (r.members and r.members[vid]) then
+			out[#out + 1] = r
+		end
 	end
-	-- the player's companions count too
-	local sq = get_object_squad(who)
-	return sq and axr_companions and axr_companions.companion_squads and axr_companions.companion_squads[sq.id] and true or false
+	return out
+end
+
+-- a member died: count it, credit the player if it was him, and forget the id
+-- (the engine may give it to another object later)
+local function member_died(r, id, by_actor)
+	r.deaths = (r.deaths or 0) + 1
+	if by_actor then
+		r.actor_kills = (r.actor_kills or 0) + 1
+	end
+	if r.members then
+		r.members[id] = nil
+	end
 end
 
 local function npc_on_death_callback(victim, who)
 	if not (victim and next(raids)) then
 		return
 	end
-	local sq = get_object_squad(victim)
-	if not sq then
+	pcall(function()
+		local list = raids_of(victim)
+		if #list == 0 then
+			return
+		end
+		local mine = by_player(who)
+		for _, r in ipairs(list) do
+			member_died(r, victim:id(), mine)
+		end
+	end)
+end
+
+-- sim_squad_scripted:on_npc_death raises this for every member death, online or offline, before
+-- the client npc_on_death_callback; whichever comes first counts the death and drops the id
+local function squad_on_npc_death(squad, se_npc, se_killer)
+	if not (se_npc and next(raids)) then
 		return
 	end
-	for _, r in pairs(raids) do
-		if r.squad == sq.id and by_player(who) then
-			r.actor_kills = (r.actor_kills or 0) + 1
+	pcall(function()
+		local id = se_npc.id
+		local mine = false
+		if se_killer then
+			if se_killer.id == AC_ID then
+				mine = true
+			else
+				local ksq = se_killer.group_id and se_killer.group_id ~= 65535 and se_killer.group_id
+				mine = ksq and axr_companions and axr_companions.companion_squads
+					and axr_companions.companion_squads[ksq] and true or false
+			end
 		end
+		local sid = squad and squad.id
+		for _, r in pairs(raids) do
+			if (sid and r.squad == sid) or (r.members and r.members[id]) then
+				member_died(r, id, mine)
+			end
+		end
+	end)
+end
+
+-- any hit by the player or his companions on a member counts as taking part
+-- (the first hit is also where the victim's squad is still known)
+local function npc_on_hit_callback(victim, amount, dir, who, bone)
+	if not (victim and next(raids)) then
+		return
 	end
+	pcall(function()
+		local list = raids_of(victim)
+		if #list == 0 or not by_player(who) then
+			return
+		end
+		for _, r in ipairs(list) do
+			r.actor_hits = (r.actor_hits or 0) + 1
+		end
+	end)
 end
 
 ------------------------------------------------------------------ save / load
@@ -324,6 +437,8 @@ function on_game_start()
 	task_functor.zop_raid_target = target
 	task_status_functor.zop_raid_status = status
 	RegisterScriptCallback("npc_on_death_callback", npc_on_death_callback)
+	RegisterScriptCallback("npc_on_hit_callback", npc_on_hit_callback)
+	RegisterScriptCallback("squad_on_npc_death", squad_on_npc_death)
 	RegisterScriptCallback("save_state", save_state)
 	RegisterScriptCallback("load_state", load_state)
 end

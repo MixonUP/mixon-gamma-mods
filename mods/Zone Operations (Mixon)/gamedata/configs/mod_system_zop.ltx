@@ -47,6 +47,41 @@ community         = csky
 [zop_monolith_legend]:sim_default_monolith_4
 spec_rank         = legend
 
+; ---- the mercenaries' operation in the Dead City (killer_deadcity / killer_admin, scripts\zop_merc.script)
+; army spetsnaz: masters, a legend leads every squad
+[zop_army_legend]:sim_default_military_5
+spec_rank         = legend
+
+; the merc roof team: sniper Gyurza (gets a Barrett M82) and RPG gunner Kuvalda (gets an RPG-7)
+[zop_killer_roof_sniper_npc]:sim_default_killer_5
+spec_rank         = legend
+
+[zop_killer_roof_rpg_npc]:sim_default_killer_5
+spec_rank         = legend
+
+; the army helicopter Sokol-1: the stock Mi-24 with the standard (medium) armour, not the strong one
+[zop_army_heli]:simulation_helicopter_strong
+immunities_sect   = sect_heli_immunities
+combat_use_rocket = true
+combat_use_mgun   = true
+min_rocket_attack_dist = 25
+time_between_rocket_attack = 12000
+velocity          = 28
+
+; a mine before the Administration's entrance: set off by script (zop_merc) when anybody steps close
+[zop_mine]:explosive_barrel
+visual            = dynamics\weapons\wpn_grenades\wpn_f1.ogf
+blast             = 4.0
+blast_r           = 6.0
+frags             = 30
+frags_r           = 12
+
+; the roof team's RPG rocket going off at the helicopter
+[zop_rpg_blast]:explosive_grenade
+blast             = 3.0
+blast_r           = 6.0
+frags             = 0
+
 ; Salazar - Clear Sky's trader at the Jupiter checkpoint (post: configs\scripts\jupiter\zop_csky_jupiter_posts.ltx)
 [zop_csky_salazar]:stalker
 $spawn            = "respawn\zop_csky_salazar"

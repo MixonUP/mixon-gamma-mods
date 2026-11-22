@@ -1658,4 +1658,161 @@
 	<string id="st_zop_courier_serum_descr">
 		<text>Кейс с охлаждёнными ампулами от пси-ожогов, сделанными Ракуро на блокпосту Юпитера. Хранится полтора дня. Адресован Компасу у бункера учёных на Янтаре.</text>
 	</string>
+	<!-- mercenaries: Clean Field (killer_deadcity / killer_admin) and the radio -->
+	<string id="st_zop_radio_lang">
+		<text>ru</text>
+	</string>
+	<string id="zop_vlang_auto">
+		<text>Авто (по языку игры)</text>
+	</string>
+	<string id="zop_vlang_ru">
+		<text>Русский</text>
+	</string>
+	<string id="zop_vlang_en">
+		<text>Английский</text>
+	</string>
+	<string id="ui_mcm_zop_voice_lang">
+		<text>Язык рации</text>
+	</string>
+	<string id="ui_mcm_zop_voice_lang_desc">
+		<text>На каком языке звучат голоса в эфире операций. Авто: английский, если игра на английском.</text>
+	</string>
+	<string id="st_zop_attack_in">
+		<text>Атака через %d мин.</text>
+	</string>
+	<string id="st_zop_killer_deadcity_name">
+		<text>Чистое поле</text>
+	</string>
+	<string id="st_zop_killer_deadcity_offer">
+		<text>Слушай сюда. Мои ребята в эфире перехватили армейскую частоту: в Администрации сидит спецназ, и это не патруль. Операция у них называется «Чистое поле», цель - мы. Ударят по штабу через пять минут после того, как поймут, что мы знаем. Держим базу до последнего, подкрепление пришлю. Отобьёмся - пойдём забирать Администрацию. Шестьдесят тысяч за оборону, ещё девяносто за штурм.</text>
+	</string>
+	<string id="st_zop_killer_deadcity_muster">
+		<text>Наёмники: спецназ ударит по штабу через %d мин. Все на позиции!</text>
+	</string>
+	<string id="st_zop_killer_deadcity_attack">
+		<text>Наёмники: пошли! Спецназ идёт на штаб от Администрации!</text>
+	</string>
+	<string id="st_zop_killer_deadcity_wave2">
+		<text>Наёмники: первую волну положили - вторая идёт! Держать штаб!</text>
+	</string>
+	<string id="st_zop_killer_deadcity_won">
+		<text>Наёмники: штаб отбили. За оборону: %d RU. Готовьтесь - идём на Администрацию.</text>
+	</string>
+	<string id="st_zop_killer_deadcity_failed">
+		<text>Наёмники: штаб не удержали... Контракт сорван.</text>
+	</string>
+	<string id="st_zop_killer_admin_name">
+		<text>Чистое поле: Администрация</text>
+	</string>
+	<string id="st_zop_killer_admin_offer">
+		<text>Спецназ засел в Администрации. Выкурим их оттуда - и Мёртвый город наш. Девяносто тысяч.</text>
+	</string>
+	<string id="st_zop_killer_admin_muster">
+		<text>Наёмники: штурмовые группы собираются у штаба (%s). Подходи.</text>
+	</string>
+	<string id="st_zop_killer_admin_go">
+		<text>Наёмники: вперёд, на %s! Смотри под ноги - у входа мины.</text>
+	</string>
+	<string id="st_zop_killer_admin_next">
+		<text>Наёмники: чисто. Дальше - %s.</text>
+	</string>
+	<string id="st_zop_killer_admin_won">
+		<text>Наёмники: Администрация наша. Контракт закрыт: %d RU.</text>
+	</string>
+	<string id="st_zop_killer_admin_failed">
+		<text>Наёмники: штурм провалился. Отходим к штабу.</text>
+	</string>
+	<string id="st_zop_killer_flank">
+		<text>Наёмники: с запада ещё группа спецназа - фланг!</text>
+	</string>
+	<string id="st_zop_killer_reinforce">
+		<text>Наёмники: подкрепление с востока на подходе.</text>
+	</string>
+	<string id="st_zop_killer_dushman_dead">
+		<text>Наёмники: Душман убит... Контракт сорван.</text>
+	</string>
+	<string id="st_zop_killer_come_back">
+		<text>Наёмники: ты куда ушёл? Вернись к штабу, или считай, что ты нас бросил.</text>
+	</string>
+	<string id="st_zop_killer_admin_mines">
+		<text>Наёмники: разведка говорит, вход в Администрацию заминирован. Пять мин, смотри под ноги.</text>
+	</string>
+	<string id="st_zop_killer_heli_down">
+		<text>Наёмники: вертушка сбита! Премия за неё - отдельно.</text>
+	</string>
+	<string id="st_zop_radio_a01">
+		<text>Гранит: Гранит — всем позывным. Начинаем операцию «Чистое поле». Наёмников в Мёртвом городе ликвидировать. Пленных не брать. Как поняли, приём!</text>
+	</string>
+	<string id="st_zop_radio_a02">
+		<text>Гранит: Гранит — Кедру. Пять минут до выхода. Крыши держать, цели отмечать.</text>
+	</string>
+	<string id="st_zop_radio_a03">
+		<text>Гранит: Всем — вперёд! Штурм пошёл! Молот, работай по штабу!</text>
+	</string>
+	<string id="st_zop_radio_a04">
+		<text>Гранит: Молот, недолёт. Ближе полсотни. Огонь!</text>
+	</string>
+	<string id="st_zop_radio_a05">
+		<text>Гранит: Молот, есть накрытие. Беглым — огонь!</text>
+	</string>
+	<string id="st_zop_radio_a06">
+		<text>Сокол-1: Сокол-один, захожу с севера. Вижу цели, работаю.</text>
+	</string>
+	<string id="st_zop_radio_a07">
+		<text>Гранит: Кедр, ответь Граниту! Кедр!.. Кедр не отвечает.</text>
+	</string>
+	<string id="st_zop_radio_a08">
+		<text>Сокол-1: Сокол-один, меня подбили! Падаю, падаю!</text>
+	</string>
+	<string id="st_zop_radio_a09">
+		<text>Гранит: Гранит — второй группе. Пошли, пошли! Давить их!</text>
+	</string>
+	<string id="st_zop_radio_a10">
+		<text>Гранит: Гранит — всем. Отходим к Администрации! Отход!</text>
+	</string>
+	<string id="st_zop_radio_d01">
+		<text>Душман: Слышали эфир? Вояки решили нас зачистить. Пять минут. Кто не на позиции — тот труп.</text>
+	</string>
+	<string id="st_zop_radio_d02">
+		<text>Душман: Держи тубус. Два выстрела. Вертушку увидишь — не жалей.</text>
+	</string>
+	<string id="st_zop_radio_d03">
+		<text>Душман: Наши на подходе с востока. Держитесь, мужики!</text>
+	</string>
+	<string id="st_zop_radio_d04">
+		<text>Душман: Вертушку сняли! Премию выпишу.</text>
+	</string>
+	<string id="st_zop_radio_d05">
+		<text>Душман: Отбились. Теперь наша очередь — берём Администрацию.</text>
+	</string>
+	<string id="st_zop_radio_d06">
+		<text>Душман: Заряд на дверь. Три... два... один!</text>
+	</string>
+	<string id="st_zop_radio_d07">
+		<text>Душман: Контракт закрыт. Мёртвый город — наш.</text>
+	</string>
+	<string id="st_zop_radio_m01">
+		<text>Гюрза: Гюрза — на крыше. Вертушку вижу. Работаю по кабине.</text>
+	</string>
+	<string id="st_zop_radio_m02">
+		<text>Кувалда: Кувалда на позиции! Тубус заряжен, жду, пока подставит брюхо.</text>
+	</string>
+	<string id="st_zop_radio_m03">
+		<text>Гюрза: Есть попадание! Стекло в кабине — в крошку. Он дымит!</text>
+	</string>
+	<string id="st_zop_radio_m04">
+		<text>Кувалда: Кувалда — выстрел! Ракета пошла!</text>
+	</string>
+	<string id="st_zop_radio_m05">
+		<text>Кувалда: Мимо, зараза! Перезаряжаюсь!</text>
+	</string>
+	<string id="st_zop_radio_m06">
+		<text>Кувалда: Есть! Птичка горит! Падает, падает!</text>
+	</string>
+	<string id="st_zop_radio_m07">
+		<text>Гюрза: Гюрза — перехожу на пехоту. Снимаю пулемётчиков.</text>
+	</string>
+	<string id="st_zop_radio_m08">
+		<text>Кувалда: Кувалда — работаю по пехоте! Кучкуются у забора — сейчас разгоню!</text>
+	</string>
 </string_table>

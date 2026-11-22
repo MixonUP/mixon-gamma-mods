@@ -97,7 +97,13 @@ end
 
 -- a story NPC of our own side (Loki and Ashot defending Yanov) keeps whatever protection he has:
 -- the battle only opens up the fighters, and the enemy's story NPCs are evacuated instead
+-- NPCs an operation script keeps unkillable (zop_merc: the HQ's story NPCs, the roof team)
+keep_protected = {}      -- [npc id] = true
+
 local function own_story(obj, c, z)
+	if keep_protected[obj:id()] then
+		return true
+	end
 	if c ~= z.a then
 		return false
 	end
@@ -160,6 +166,11 @@ local ff_swapped = {}   -- [npc id] = true
 function ff_off(o)
 	local id = o:id()
 	if ff_swapped[id] or not (rx_ff and rx_ff.evaid) or character_community(o) == "zombied" then
+		return
+	end
+	-- only an NPC whose friendly-fire evaluator is set up (one that has just come online may not
+	-- have it yet: removing a missing evaluator is not safe in the engine)
+	if not (db.storage[id] and db.storage[id].rx_ff) then
 		return
 	end
 	local ok = pcall(function()

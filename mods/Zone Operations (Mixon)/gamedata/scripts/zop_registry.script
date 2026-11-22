@@ -46,6 +46,13 @@ local function read_op(ini, id)
 		attacker_squad = s("attacker_squad"),
 		attacker_count = n("attacker_count", 2),
 		delay_hours    = n("delay_hours", 2),
+		-- defense: real seconds before the attack instead of delay_hours (counted down by the tick, saved)
+		delay_seconds  = n("delay_seconds", 0),
+		-- goodwill of the player with actor_faction needed before the operation is offered
+		requires_goodwill = n("requires_goodwill", 0),
+		-- operation started by itself this many real seconds after this one succeeds (a chain)
+		on_success_start = s("on_success_start"),
+		on_success_delay = n("on_success_delay", 60),
 		radius         = n("radius", 80),
 		capture        = s("capture") == "true",
 		garrison_squad = s("garrison_squad"),

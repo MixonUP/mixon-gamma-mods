@@ -1658,4 +1658,161 @@ Hold %s. Attackers left: %d.</text>
 	<string id="st_zop_courier_serum_descr">
 		<text>A cold-packed case of ampoules against psy-burns, made by Racuro at the Jupiter checkpoint. Keeps a day and a half. Addressed to Kompas at the scientists' bunker on Yantar.</text>
 	</string>
+	<!-- mercenaries: Clean Field (killer_deadcity / killer_admin) and the radio -->
+	<string id="st_zop_radio_lang">
+		<text>en</text>
+	</string>
+	<string id="zop_vlang_auto">
+		<text>Auto (game language)</text>
+	</string>
+	<string id="zop_vlang_ru">
+		<text>Russian</text>
+	</string>
+	<string id="zop_vlang_en">
+		<text>English</text>
+	</string>
+	<string id="ui_mcm_zop_voice_lang">
+		<text>Radio voice language</text>
+	</string>
+	<string id="ui_mcm_zop_voice_lang_desc">
+		<text>Language of the voiced radio in operations. Auto: English when the game text is English.</text>
+	</string>
+	<string id="st_zop_attack_in">
+		<text>Attack in %d min.</text>
+	</string>
+	<string id="st_zop_killer_deadcity_name">
+		<text>Clean Field</text>
+	</string>
+	<string id="st_zop_killer_deadcity_offer">
+		<text>Listen up. My boys picked up an army channel: there's spetsnaz sitting in the Administration, and it's no patrol. Their operation is called Clean Field, and the target is us. They'll hit the HQ five minutes after they figure out we know. We hold the base to the last man, I'll send reinforcements. If we hold, we go take the Administration. Sixty thousand for the defense, ninety more for the assault.</text>
+	</string>
+	<string id="st_zop_killer_deadcity_muster">
+		<text>Mercenaries: the spetsnaz hit the HQ in %d min. Everybody to positions!</text>
+	</string>
+	<string id="st_zop_killer_deadcity_attack">
+		<text>Mercenaries: here they come! The spetsnaz are moving on the HQ from the Administration!</text>
+	</string>
+	<string id="st_zop_killer_deadcity_wave2">
+		<text>Mercenaries: the first wave is down - the second is coming! Hold the HQ!</text>
+	</string>
+	<string id="st_zop_killer_deadcity_won">
+		<text>Mercenaries: the HQ held. For the defense: %d RU. Get ready - we're going for the Administration.</text>
+	</string>
+	<string id="st_zop_killer_deadcity_failed">
+		<text>Mercenaries: we lost the HQ... The contract is blown.</text>
+	</string>
+	<string id="st_zop_killer_admin_name">
+		<text>Clean Field: the Administration</text>
+	</string>
+	<string id="st_zop_killer_admin_offer">
+		<text>The spetsnaz dug in at the Administration. Smoke them out and the Dead City is ours. Ninety thousand.</text>
+	</string>
+	<string id="st_zop_killer_admin_muster">
+		<text>Mercenaries: the assault groups gather at the HQ (%s). Come over.</text>
+	</string>
+	<string id="st_zop_killer_admin_go">
+		<text>Mercenaries: go, at %s! Watch your step - mines at the entrance.</text>
+	</string>
+	<string id="st_zop_killer_admin_next">
+		<text>Mercenaries: clear. Next - %s.</text>
+	</string>
+	<string id="st_zop_killer_admin_won">
+		<text>Mercenaries: the Administration is ours. Contract closed: %d RU.</text>
+	</string>
+	<string id="st_zop_killer_admin_failed">
+		<text>Mercenaries: the assault failed. Fall back to the HQ.</text>
+	</string>
+	<string id="st_zop_killer_flank">
+		<text>Mercenaries: another spetsnaz group from the west - the flank!</text>
+	</string>
+	<string id="st_zop_killer_reinforce">
+		<text>Mercenaries: reinforcements coming in from the east.</text>
+	</string>
+	<string id="st_zop_killer_dushman_dead">
+		<text>Mercenaries: Dushman is dead... The contract is blown.</text>
+	</string>
+	<string id="st_zop_killer_come_back">
+		<text>Mercenaries: where did you go? Get back to the HQ, or we count it as you running out on us.</text>
+	</string>
+	<string id="st_zop_killer_admin_mines">
+		<text>Mercenaries: scouts say the Administration entrance is mined. Five mines, watch your step.</text>
+	</string>
+	<string id="st_zop_killer_heli_down">
+		<text>Mercenaries: the chopper is down! There's a bonus for that.</text>
+	</string>
+	<string id="st_zop_radio_a01">
+		<text>Granite: Granite to all call signs. Operation Clean Field is a go. Mercenaries in the Dead City are to be eliminated. No prisoners. How copy, over!</text>
+	</string>
+	<string id="st_zop_radio_a02">
+		<text>Granite: Granite to Cedar. Five minutes to step-off. Hold the roofs, mark your targets.</text>
+	</string>
+	<string id="st_zop_radio_a03">
+		<text>Granite: All units, move! Assault is go! Hammer, hit their HQ!</text>
+	</string>
+	<string id="st_zop_radio_a04">
+		<text>Granite: Hammer, short. Add fifty. Fire!</text>
+	</string>
+	<string id="st_zop_radio_a05">
+		<text>Granite: Hammer, on target. Fire for effect!</text>
+	</string>
+	<string id="st_zop_radio_a06">
+		<text>Falcon One: Falcon One, coming in from the north. Targets in sight, engaging.</text>
+	</string>
+	<string id="st_zop_radio_a07">
+		<text>Granite: Cedar, Granite, respond! Cedar!.. Cedar is down.</text>
+	</string>
+	<string id="st_zop_radio_a08">
+		<text>Falcon One: Falcon One, I'm hit! Going down, going down!</text>
+	</string>
+	<string id="st_zop_radio_a09">
+		<text>Granite: Granite to second group. Go, go! Crush them!</text>
+	</string>
+	<string id="st_zop_radio_a10">
+		<text>Granite: Granite to all. Fall back to the Administration! Fall back!</text>
+	</string>
+	<string id="st_zop_radio_d01">
+		<text>Dushman: You hear that? The army wants us gone. Five minutes. Anyone not in position is a dead man.</text>
+	</string>
+	<string id="st_zop_radio_d02">
+		<text>Dushman: Take the tube. Two rockets. You see that chopper, don't hold back.</text>
+	</string>
+	<string id="st_zop_radio_d03">
+		<text>Dushman: Our boys are coming in from the east. Hold on!</text>
+	</string>
+	<string id="st_zop_radio_d04">
+		<text>Dushman: Chopper's down! That's a bonus for you.</text>
+	</string>
+	<string id="st_zop_radio_d05">
+		<text>Dushman: We held. Now it's our turn - we take the Administration.</text>
+	</string>
+	<string id="st_zop_radio_d06">
+		<text>Dushman: Charge on the door. Three... two... one!</text>
+	</string>
+	<string id="st_zop_radio_d07">
+		<text>Dushman: Contract closed. The Dead City is ours.</text>
+	</string>
+	<string id="st_zop_radio_m01">
+		<text>Viper: Viper on the roof. Eyes on the bird. Working the cockpit.</text>
+	</string>
+	<string id="st_zop_radio_m02">
+		<text>Sledge: Sledge in position! Tube's loaded, waiting for him to show his belly.</text>
+	</string>
+	<string id="st_zop_radio_m03">
+		<text>Viper: Hit! Cockpit glass is gone. He's smoking!</text>
+	</string>
+	<string id="st_zop_radio_m04">
+		<text>Sledge: Sledge, firing! Rocket away!</text>
+	</string>
+	<string id="st_zop_radio_m05">
+		<text>Sledge: Missed, damn it! Reloading!</text>
+	</string>
+	<string id="st_zop_radio_m06">
+		<text>Sledge: Got him! Bird's burning! She's going down!</text>
+	</string>
+	<string id="st_zop_radio_m07">
+		<text>Viper: Viper, switching to infantry. Taking out their gunners.</text>
+	</string>
+	<string id="st_zop_radio_m08">
+		<text>Sledge: Sledge, hitting the infantry! They're bunching up by the fence - breaking them up!</text>
+	</string>
 </string_table>

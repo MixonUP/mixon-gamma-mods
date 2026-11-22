@@ -1,0 +1,638 @@
+--[[
+	Zone Operations (Mixon) - the mercenaries' operation in the Dead City ("Clean Field").
+
+	Two linked operations of zop_core (configs\misc\zone_ops\zop_operations.ltx):
+	  killer_deadcity  defense of the merc HQ (cit_killers) against army spetsnaz
+	  killer_admin     the mercs' assault on the Administration (cit_killers_vs_bandits), started
+	                   by zop_core itself when the defense is won (on_success_start)
+
+	This script adds what the generic engine has no fields for:
+	  - 6 spetsnaz squads holding the Administration from the start (they stay there and are
+	    the enemy of killer_admin; ids kept in mst.garrison, saved);
+	  - a flank group of 2 squads that sets out with wave 1 from the west;
+	  - merc reinforcements from cit_killers_2: the first 3 minutes after the attack, then every 5;
+	  - the army helicopter "Sokol-1" over the HQ (zop_merc_heli: flight, fire, death);
+	  - the roof team: sniper "Gyurza" (Barrett M82) and RPG gunner "Kuvalda", 3 minutes after
+	    the attack; they work on the helicopter (scripted shots), then on the infantry;
+	  - 5 mines before the Administration entrance (killer_admin), set off by anybody;
+	  - the radio (zop_radio) on every event;
+	  - the loss rule: Dushman dead, or the player away from the HQ for 2 real minutes.
+	Story NPCs of the HQ (Dushman, Hog, Surgeon, the barman) cannot be killed during the defense.
+
+	State: per operation in zop_core's s.merc (saved with it); between the two operations in
+	m_data.zop_merc (garrison, roof team, mines).
+]]
+
+local OP_DEF, OP_ADM = "killer_deadcity", "killer_admin"
+local HQ, ADMIN, REINF_FROM = "cit_killers", "cit_killers_vs_bandits", "cit_killers_2"
+
+local GARRISON_SQUAD, GARRISON_COUNT = "zop_army_spetsnaz_hold", 6
+local FLANK_SQUAD, FLANK_COUNT = "zop_army_spetsnaz", 2
+local FLANK_AT = { x = -149.80, y = 2.31, z = 60.20, lvid = 46951, gvid = 2345 }
+local REINF_SQUAD = "zop_killer_reinforce"
+local REINF_FIRST, REINF_EVERY, REINF_CAP = 60, 180, 6   -- real s after the attack; live squads at most
+local HELI_AT_S = 4      -- real s after the attack starts
+local ROOF_AT_S = HELI_AT_S + 30   -- the roof team comes up 30 s after the helicopter
+-- the roof team's spots on the ridge of the HQ roof (shown by the author in game). There is no AI
+-- mesh up there: they are spawned on the floor below (lvid) and put on the spot (pos) every frame
+-- while the helicopter flies (roof_hold_frame); then they are let go and walk down to the others.
+-- (npc:command() hangs this engine build: they are never given scripted actions)
+local ROOF = {
+	sniper = { section = "zop_killer_roof_sniper", pos = { -59.78, 16.33, 19.57 }, lvid = 94955,
+		weapon = "wpn_m82", ammo = "ammo_12.7x55_ap", n = 60 },
+	rpg    = { section = "zop_killer_roof_rpg",    pos = { -25.34, 16.33, 19.57 }, lvid = 117854,
+		weapon = "wpn_rpg7", ammo = "ammo_og-7b", n = 6 },
+}
+local roof_held = {}     -- [npc id] = spot vector, held every frame (runtime)
+local roof_down = {}     -- [npc id] = level vertex below his spot: where he is put when let go
+
+-- the roof team is let go: vulnerable again, put on the floor below (a 16 m roof with no AI mesh)
+local function roof_let_go()
+	for id in pairs(roof_held) do
+		local o = level.object_by_id(id)
+		if o and o:alive() then
+			pcall(function() o:invulnerable(false) end)
+			local lv = roof_down[id]
+			if lv then
+				pcall(function() o:set_npc_position(level.vertex_position(lv)) end)
+			end
+		end
+	end
+	roof_held, roof_down = {}, {}
+end
+-- the HQ's key NPCs: unkillable for the whole operation (the defense and the assault)
+local PROTECT = { "cit_killers_merc_trader_stalker", "cit_killers_merc_mechanic_stalker",
+	"cit_killers_merc_medic_stalker", "cit_killers_merc_barman_mlr", "cit_killers_merc_barman_stalker",
+	"ds_killer_guide_main_base" }
+local DUSHMAN = "cit_killers_merc_trader_stalker"
+local AWAY_DIST, AWAY_S = 300, 120
+-- mines: 5 spots on an arc before the Administration's entrance
+local MINE_SECTION, MINE_R, MINE_ARM_S = "zop_mine", 2.5, 2
+local MINES = { { -58.1, -52.0 }, { -61.0, -53.5 }, { -64.0, -52.5 }, { -55.5, -54.5 }, { -66.5, -54.5 } }
+
+local mst = { garrison = {}, roof = {}, mines = {} }   -- saved in m_data.zop_merc
+local next_tick, next_mines = 0, 0
+local mine_arm = {}      -- [mine id] = time_global when it arms (runtime: after a reload they are armed)
+local LEVEL = "l09_deadcity"
+
+local function on_level()
+	return level.name() == LEVEL
+end
+
+local function tr(id) return game.translate_string(id) end
+local function news(id)
+	if db.actor then
+		pcall(news_manager.send_tip, db.actor, tr(id), nil, nil, 10000)
+	end
+end
+local function smart(name) return zop_census.smart_by_name(name) end
+local function say(id) zop_radio.say(id) end
+
+local function alive_squad(sid)
+	local sq = zop_spawn.valid_squad(sid)
+	return sq and sq:npc_count() > 0 and sq or nil
+end
+
+local function count_alive(set)
+	local n = 0
+	for sid in pairs(set or {}) do
+		if alive_squad(sid) then
+			n = n + 1
+		end
+	end
+	return n
+end
+
+local function force_online(set)
+	for sid in pairs(set or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			sq.force_online = true
+			sq.forced_online_status = true
+		end
+	end
+end
+
+local function unforce(set)
+	for sid in pairs(set or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			sq.force_online, sq.forced_online_status = nil, nil
+		end
+	end
+end
+
+------------------------------------------------------------------ protection of the HQ's story NPCs
+local protected = {}     -- [npc id] = true while the defense runs (runtime, rebuilt by the tick)
+local orig_need_inv
+
+local function need_inv(npc)
+	if npc and protected[npc:id()] then
+		return true
+	end
+	return orig_need_inv(npc)
+end
+
+-- zop_battle switches invulnerability off in the battle zone unless told to keep it
+local function share_protected()
+	if zop_battle then
+		zop_battle.keep_protected = protected
+	end
+end
+
+local function protect(on)
+	protected = {}
+	if on then
+		for _, sid in ipairs(PROTECT) do
+			local id = get_story_object_id(sid)
+			if id then
+				protected[id] = true
+				local o = level.object_by_id(id)
+				if o and o:alive() and not o:invulnerable() then
+					o:invulnerable(true)
+				end
+			end
+		end
+	end
+	share_protected()
+	-- installed once, over zop_battle's own wrapper
+	if on and not orig_need_inv and stalker_generic and stalker_generic.is_need_invulnerability then
+		orig_need_inv = stalker_generic.is_need_invulnerability
+		stalker_generic.is_need_invulnerability = need_inv
+	end
+end
+
+------------------------------------------------------------------ squads
+local function spawn(section, se_at, target, at)
+	local sq = zop_spawn.squad_at_smart(section, se_at, target, at)
+	return sq and sq.id
+end
+
+-- the Administration's spetsnaz: they hold it from the start and stay there
+local function spawn_garrison()
+	local se_a = smart(ADMIN)
+	if not se_a then
+		return
+	end
+	mst.garrison = {}
+	for _ = 1, GARRISON_COUNT do
+		local id = spawn(GARRISON_SQUAD, se_a, ADMIN)
+		if id then
+			mst.garrison[id] = true
+		end
+	end
+	-- whoever lived there moves out (bandits, loners)
+	local away = zop_spawn.muster_smart(se_a, 300, 700) or zop_spawn.muster_smart(se_a, 200, 900)
+	local sb = SIMBOARD.smarts[se_a.id]
+	for sid in pairs(sb and sb.squads or {}) do
+		local sq = alife():object(sid)
+		if sq and not mst.garrison[sid] and sq.player_id ~= "army" and away and not get_object_story_id(sid) then
+			pcall(zop_spawn.steer, sq, away:name(), false)
+			-- released by zop_core when the operation ends
+			zop_core.add_squad(OP_DEF, "evicted", sid)
+		end
+	end
+end
+
+local function keep_garrison()
+	for sid in pairs(mst.garrison) do
+		local sq = alive_squad(sid)
+		if not sq then
+			mst.garrison[sid] = nil
+		elseif sq.scripted_target ~= ADMIN then
+			zop_spawn.steer(sq, ADMIN, false)
+		end
+	end
+	force_online(mst.garrison)
+end
+
+local function release_garrison()
+	unforce(mst.garrison)
+	for sid in pairs(mst.garrison) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	end
+	mst.garrison = {}
+end
+
+local function spawn_flank(s)
+	-- registered with the smart next to the spot: a squad registered with the HQ itself is put
+	-- straight onto the HQ's job places
+	local se_hq = smart(HQ)
+	local se_at = se_hq and zop_spawn.nearest_smart(vector():set(FLANK_AT.x, FLANK_AT.y, FLANK_AT.z), FLANK_AT.gvid, se_hq.id)
+	local n = 0
+	for _ = 1, FLANK_COUNT do
+		local id = spawn(FLANK_SQUAD, se_at, HQ, FLANK_AT)
+		if id and zop_core.add_squad(OP_DEF, "squads", id) then
+			n = n + 1
+		end
+	end
+	if n > 0 then
+		news("st_zop_killer_flank")
+	end
+end
+
+local function reinforce(s, m)
+	local live = 0
+	for sid in pairs(m.reinf or {}) do
+		if alive_squad(sid) then
+			live = live + 1
+		end
+	end
+	if live >= REINF_CAP then
+		return
+	end
+	local id = spawn(REINF_SQUAD, smart(REINF_FROM), HQ)
+	if id then
+		m.reinf = m.reinf or {}
+		m.reinf[id] = true
+		zop_core.add_squad(OP_DEF, "defenders", id)
+		say("d03")
+		news("st_zop_killer_reinforce")
+	end
+end
+
+------------------------------------------------------------------ the roof team
+local function roof_spawn()
+	local se_hq = smart(HQ)
+	if not se_hq then
+		return
+	end
+	mst.roof = mst.roof or {}
+	for key, r in pairs(ROOF) do
+		if not (mst.roof[key] and alive_squad(mst.roof[key])) then
+			local pos = level.vertex_position(r.lvid)
+			local at = { x = pos.x, y = pos.y, z = pos.z, lvid = r.lvid, gvid = se_hq.m_game_vertex_id }
+			local id = spawn(r.section, se_hq, HQ, at)
+			local sq = id and alife():object(id)
+			if sq then
+				mst.roof[key] = id
+				for m in sq:squad_members() do
+					local npc = alife():object(m.id)
+					if npc then
+						pcall(alife_create_item, r.weapon, npc)
+						for _ = 1, r.n do
+							pcall(alife_create_item, r.ammo, npc)
+						end
+					end
+				end
+			end
+		end
+	end
+	say("m01")
+	say("m02")
+end
+
+-- the members of the roof team, online and alive: { sniper = obj, rpg = obj }
+local function roof_men()
+	local out = {}
+	for key, sid in pairs(mst.roof or {}) do
+		local sq = alive_squad(sid)
+		if sq then
+			for m in sq:squad_members() do
+				local o = level.object_by_id(m.id)
+				if o and o:alive() then
+					out[key] = o
+				end
+			end
+		end
+	end
+	return out
+end
+
+-- once a second: who is to be held on the roof (the frame callback below does the holding)
+local function roof_hold()
+	roof_held = {}
+	for key, sid in pairs(mst.roof or {}) do
+		local sq = alive_squad(sid)
+		local r = ROOF[key]
+		if sq and r then
+			sq.force_online, sq.forced_online_status = true, true
+			if sq.scripted_target ~= HQ then
+				zop_spawn.steer(sq, HQ, false)
+			end
+			for m in sq:squad_members() do
+				roof_held[m.id] = vector():set(r.pos[1], r.pos[2], r.pos[3])
+				roof_down[m.id] = r.lvid
+				-- out in the open on the ridge they would be the first to die: unkillable while held
+				protected[m.id] = true
+				local o = level.object_by_id(m.id)
+				if o and o:alive() and not o:invulnerable() then
+					o:invulnerable(true)
+				end
+			end
+		end
+	end
+end
+
+-- every frame: the roof is pitched and has no AI mesh, so a man left alone slides down at once
+local function roof_hold_frame()
+	if not next(roof_held) then
+		return
+	end
+	for id, spot in pairs(roof_held) do
+		local o = level.object_by_id(id)
+		if not (o and o:alive()) then
+			roof_held[id] = nil
+		elseif o:position():distance_to_sqr(spot) > 0.04 then
+			pcall(function() o:set_npc_position(spot) end)
+		end
+	end
+end
+
+local function release_roof()
+	for _, sid in pairs(mst.roof or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			sq.force_online, sq.forced_online_status = nil, nil
+		end
+	end
+	mst.roof = {}
+	roof_held, roof_down = {}, {}
+end
+
+------------------------------------------------------------------ mines
+local function mines_place()
+	mst.mines = {}
+	local se_a = smart(ADMIN)
+	if not se_a then
+		return
+	end
+	for _, xz in ipairs(MINES) do
+		local lvid = level.vertex_id(vector():set(xz[1], se_a.position.y + 2, xz[2]))
+		if lvid and lvid < 4294967295 then
+			local pos = level.vertex_position(lvid)
+			local ok, se = pcall(alife_create, MINE_SECTION, pos, lvid, se_a.m_game_vertex_id)
+			if ok and se then
+				mst.mines[se.id] = { x = pos.x, y = pos.y, z = pos.z }
+				mine_arm[se.id] = time_global() + MINE_ARM_S * 1000
+			end
+		end
+	end
+	local n = 0
+	for _ in pairs(mst.mines) do
+		n = n + 1
+	end
+	printf("[ZOP] killer_admin: %s mines placed", tostring(n))
+end
+
+local function mines_check()
+	if not next(mst.mines) then
+		return
+	end
+	local tg = time_global()
+	for id, mn in pairs(mst.mines) do
+		local o = level.object_by_id(id)
+		if not alife():object(id) then
+			mst.mines[id] = nil
+		elseif o and tg > (mine_arm[id] or 0) then
+			local p = vector():set(mn.x, mn.y, mn.z)
+			local boom = db.actor and db.actor:position():distance_to_sqr(p) < MINE_R * MINE_R
+			if not boom then
+				for i = 1, #db.OnlineStalkers do
+					local s = level.object_by_id(db.OnlineStalkers[i])
+					-- the spetsnaz laid them and know where they are
+					if s and s:alive() and character_community(s) ~= "army"
+						and s:position():distance_to_sqr(p) < MINE_R * MINE_R then
+						boom = true
+						break
+					end
+				end
+			end
+			if boom then
+				mst.mines[id] = nil
+				pcall(function() o:explode(0) end)
+			end
+		end
+	end
+end
+
+local function mines_clear()
+	for id in pairs(mst.mines or {}) do
+		local se = alife():object(id)
+		if se then
+			pcall(safe_release_manager.release, se)
+		end
+	end
+	mst.mines = {}
+end
+
+------------------------------------------------------------------ the defense
+local function ensure(s)
+	s.merc = s.merc or { secs = 0 }
+	return s.merc
+end
+
+local function tick_defense(s)
+	local m = ensure(s)
+	protect(true)
+	keep_garrison()
+	-- the loss rule: Dushman dead, or the player away from the HQ for 2 minutes
+	local did = get_story_object_id(DUSHMAN)
+	local dse = did and alife():object(did)
+	if did and dse and dse.alive and not dse:alive() then
+		news("st_zop_killer_dushman_dead")
+		return zop_core.end_active(OP_DEF, false)
+	end
+	local se_hq = smart(HQ)
+	if se_hq and db.actor then
+		-- (actor_near checks the level too: on another map he is away)
+		if not zop_census.actor_near(se_hq, AWAY_DIST) then
+			m.away = (m.away or 0) + 1
+			if m.away == 30 then
+				news("st_zop_killer_come_back")
+			end
+			if m.away >= AWAY_S then
+				return zop_core.end_active(OP_DEF, false)
+			end
+		else
+			m.away = nil
+		end
+	end
+	if s.stage ~= "defend" then
+		return
+	end
+	m.secs = (m.secs or 0) + 1
+	-- reinforcements: 3 minutes after the attack, then every 5
+	if m.secs >= (m.next_reinf or REINF_FIRST) then
+		m.next_reinf = m.secs + REINF_EVERY
+		pcall(reinforce, s, m)
+	end
+	if not on_level() then
+		return
+	end
+	if m.heli_due and m.secs >= HELI_AT_S then
+		m.heli_due = nil
+		local ok, err = pcall(zop_merc_heli.spawn, m)
+		if not ok then
+			printf("![ZOP] merc heli spawn: %s", tostring(err))
+		end
+		mst.heli = m.heli
+	end
+	if m.secs >= ROOF_AT_S and not m.roof_done then
+		m.roof_done = true
+		pcall(roof_spawn)
+	end
+	-- the roof team is held up there only while the helicopter flies; then they go and fight with the rest
+	if m.heli and not m.heli_down then
+		roof_hold()
+	elseif next(roof_held) then
+		-- let go: they go down to the others and can be killed again
+		roof_let_go()
+	end
+	force_online(m.reinf)
+	-- the helicopter and the roof team's duel with it
+	local ok, err = pcall(zop_merc_heli.update, m, roof_men())
+	if not ok then
+		printf("![ZOP] merc heli: %s", tostring(err))
+	end
+end
+
+------------------------------------------------------------------ the assault
+local function tick_assault(s)
+	local m = ensure(s)
+	protect(true)
+	keep_garrison()
+	if not on_level() then
+		return
+	end
+	local se_a = smart(ADMIN)
+	if se_a and db.actor and not m.breach and db.actor:position():distance_to(se_a.position) < 35 then
+		m.breach = true
+		say("d06")
+	end
+end
+
+------------------------------------------------------------------ events
+local function on_start(op_id)
+	local s = zop_core.active_state(op_id)
+	if not s then
+		return
+	end
+	if op_id == OP_DEF then
+		zop_radio.clear()
+		say("a01")
+		say("a02")
+		say("d01")
+		pcall(spawn_garrison)
+		protect(true)
+	elseif op_id == OP_ADM then
+		if on_level() then
+			pcall(mines_place)
+			news("st_zop_killer_admin_mines")
+		end
+	end
+end
+
+local function on_wave(op_id, wave)
+	if op_id ~= OP_DEF then
+		return
+	end
+	local s = zop_core.active_state(op_id)
+	if wave == 1 then
+		say("a03")
+		pcall(spawn_flank, s)
+		-- the helicopter comes a few seconds later (not in the frame the wave is spawned)
+		ensure(s).heli_due = true
+		say("a06")
+	else
+		say("a09")
+	end
+end
+
+local function on_end(op_id, success)
+	if op_id == OP_DEF then
+		protect(false)
+		roof_let_go()
+		pcall(zop_merc_heli.leave, mst.heli)
+		-- kept until it is gone: a reload during its departure sends it off again
+		mst.heli_leaving = mst.heli
+		mst.heli = nil
+		if success then
+			say("a10")
+			say("d05")
+			-- the garrison and the roof team go on into the assault (mst keeps them)
+		else
+			release_garrison()
+			release_roof()
+		end
+	elseif op_id == OP_ADM then
+		mines_clear()
+		release_garrison()
+		release_roof()
+		if success then
+			say("d07")
+		end
+	end
+end
+
+local function actor_on_update()
+	roof_hold_frame()
+	zop_merc_heli.frame()
+	local tg = time_global()
+	-- mines: often, a running man covers 4-5 m a second
+	if tg >= next_mines and next(mst.mines) then
+		next_mines = tg + 150
+		if on_level() then
+			local ok, err = pcall(mines_check)
+			if not ok then
+				printf("![ZOP] merc mines: %s", tostring(err))
+			end
+		end
+	end
+	if tg < next_tick then
+		return
+	end
+	next_tick = tg + 1000
+	if mst.heli_leaving then
+		if not alife():object(mst.heli_leaving) then
+			mst.heli_leaving = nil
+		elseif not mst.leave_armed then
+			mst.leave_armed = true
+			pcall(zop_merc_heli.leave, mst.heli_leaving)
+		end
+	end
+	local info = zop_core.active_info()
+	if not info then
+		if next(protected) then
+			protect(false)
+		end
+		return
+	end
+	local s = zop_core.active_state()
+	local ok, err = true, nil
+	if info.op_id == OP_DEF then
+		ok, err = pcall(tick_defense, s)
+	elseif info.op_id == OP_ADM then
+		ok, err = pcall(tick_assault, s)
+	end
+	if not ok then
+		printf("![ZOP] merc %s: %s", info.op_id, tostring(err))
+	end
+end
+
+------------------------------------------------------------------ save / debug
+local function save_state(m)
+	m.zop_merc = mst
+end
+
+local function load_state(m)
+	mst = m.zop_merc or {}
+	mst.garrison = mst.garrison or {}
+	mst.roof = mst.roof or {}
+	mst.mines = mst.mines or {}
+	mst.leave_armed = nil       -- runtime: re-armed on the first tick
+	mine_arm = {}
+end
+
+function debug_state()
+	return mst
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("load_state", load_state)
+	zop_api.on("zop_on_operation_start", on_start)
+	zop_api.on("zop_on_wave", on_wave)
+	zop_api.on("zop_on_operation_end", on_end)
+end
