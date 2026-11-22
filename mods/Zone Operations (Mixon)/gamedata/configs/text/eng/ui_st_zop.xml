@@ -1815,4 +1815,7 @@ Hold %s. Attackers left: %d.</text>
 	<string id="st_zop_radio_m08">
 		<text>Sledge: Sledge, hitting the infantry! They're bunching up by the fence - breaking them up!</text>
 	</string>
+	<string id="st_zop_radio_a11">
+		<text>Granite: Granite to all. Operation Clean Field complete. The mercenary base is cleared. Out.</text>
+	</string>
 </string_table>

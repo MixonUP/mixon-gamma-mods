@@ -37,3 +37,4 @@ Files: `docs/media/zop/radio/<id>_<lang>.ogg` (radio-processed) and `_clean.mp3`
 | m06 | Kuvalda | heli down (before a08) | Есть! Птичка горит! Падает, падает! | Got him! Bird's burning! She's going down! |
 | m07 | Gyurza | switches to infantry | Гюрза — перехожу на пехоту. Снимаю пулемётчиков. | Viper, switching to infantry. Taking out their gunners. |
 | m08 | Kuvalda | switches to infantry | Кувалда — работаю по пехоте! Кучкуются у забора — сейчас разгоню! | Sledge, hitting the infantry! They're bunching up by the fence — breaking them up! |
+| a11 | army | defense lost | Гранит — всем. Операция «Чистое поле» выполнена. База наёмников зачищена. Отбой. | Granite to all. Operation Clean Field complete. The mercenary base is cleared. Out. |

@@ -275,10 +275,13 @@ function reveal(squad_ids, se_smart, enemy, radius, max_dist, opts)
 		enemies[enemy] = true
 	end
 	local tg = time_global()
-	if tg < (next_reveal[se_smart.id] or 0) then
-		return
+	-- opts.own_clock: the caller throttles itself (a second set of squads at the same smart)
+	if not opts.own_clock then
+		if tg < (next_reveal[se_smart.id] or 0) then
+			return
+		end
+		next_reveal[se_smart.id] = tg + PERIOD_MS
 	end
-	next_reveal[se_smart.id] = tg + PERIOD_MS
 	local A, B = {}, {}
 	for sid in pairs(squad_ids or {}) do
 		local se = zop_spawn.valid_squad(sid)
@@ -296,6 +299,13 @@ function reveal(squad_ids, se_smart, enemy, radius, max_dist, opts)
 					end
 					if take then
 						A[#A + 1] = o
+						if opts.wake then
+							-- defenders sent in from outside: the base's peace overrides and the
+							-- friendly-fire check would keep them idle
+							clear_overrides(o:id())
+							hold_facer(o)
+							ff_off(o)
+						end
 					end
 				end
 			end

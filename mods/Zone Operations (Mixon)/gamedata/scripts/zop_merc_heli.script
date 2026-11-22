@@ -153,9 +153,16 @@ local function pick_enemy(o, h, se_hq)
 	return best
 end
 
+local function clear_aim()
+	if zop_roof_fire then
+		zop_roof_fire.aim = {}
+	end
+end
+
 local function down(m, by_roof)
 	m.heli_down = true
 	engine_stop()
+	clear_aim()
 	if by_roof then
 		zop_radio.say("m06")
 	end
@@ -184,6 +191,7 @@ function update(m, men)
 	if not o then
 		online_since = nil
 		engine_stop()
+		clear_aim()
 		if not alife():object(m.heli) then
 			m.heli = nil
 		end
@@ -269,10 +277,29 @@ function update(m, men)
 		end
 	end
 	local hpos = o:position()
+	-- they aim at it (zop_roof_fire turns them and fires their real weapons: the shot is the
+	-- weapon's own; the fake sound is only for an NPC without the scheme, e.g. an old save)
+	local function aim(npc, sniper, fire)
+		if not npc then
+			return false
+		end
+		local st = db.storage[npc:id()]
+		local has = zop_roof_fire and st and st.zop_roof_fire ~= nil
+		if has then
+			local from = npc:bone_position("bip01_head")
+			-- a fresh entry every tick: `fire` only on the tick of a shot (the scheme fires it once)
+			zop_roof_fire.aim[npc:id()] = { dir = vector():set(hpos):sub(from), sniper = sniper, fire = fire }
+		end
+		return has
+	end
+	aim(men.sniper, true, false)
+	aim(men.rpg, false, false)
 	-- the sniper: a shot every few seconds, most of them hit
 	if men.sniper and tg > next_sniper then
 		next_sniper = tg + SNIPER_EVERY_MS + math.random(0, 2000)
-		play_at(SND_SNIPER, men.sniper:position())
+		if not aim(men.sniper, true, true) then
+			play_at(SND_SNIPER, men.sniper:position())
+		end
 		if math.random() < SNIPER_HIT then
 			m.roof_hits = (m.roof_hits or 0) + 1
 			hp = hp - SNIPER_DMG
@@ -286,13 +313,21 @@ function update(m, men)
 		next_rpg = tg + RPG_EVERY_MS
 		m.rockets = m.rockets - 1
 		zop_radio.say("m04")
-		play_at(SND_RPG, men.rpg:position())
+		-- with the scheme a real rocket flies: no scripted blast at the heli then (the hit itself
+		-- is still counted here, a real rocket at a moving heli would miss too often)
+		local real = aim(men.rpg, false, true)
+		if not real then
+			play_at(SND_RPG, men.rpg:position())
+		end
 		if m.rockets == ROCKETS - 1 then
 			zop_radio.say("m05")
-			blast_at(vector():set(hpos.x + 9, hpos.y + 4, hpos.z - 6))
+			if not real then
+				blast_at(vector():set(hpos.x + 9, hpos.y + 4, hpos.z - 6))
+			end
 		else
 			m.roof_hits = (m.roof_hits or 0) + 1
 			hp = hp - RPG_DMG
+			-- the hit shows on the heli itself even when the real rocket goes wide
 			blast_at(vector():set(hpos.x, hpos.y - 1, hpos.z))
 		end
 	end

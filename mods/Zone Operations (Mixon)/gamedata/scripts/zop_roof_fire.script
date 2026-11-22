@@ -1,0 +1,114 @@
+--[[
+	Zone Operations (Mixon) - the merc roof team aims and fires at the army helicopter (zop_merc_heli).
+
+	Stalkers cannot take a helicopter as their enemy. Like stock axr_npc_vs_heli, this is a generic
+	scheme: an evaluator + action in the motivation planner that outranks alife, combat and danger
+	while a target is set, and drives state_mgr ("threat_fire" / "threat_sniper_fire" with a look
+	direction) - the NPC turns to the heli and really fires (state_mgr issues the fire command once
+	he faces it). No scripted mode: npc:command() hangs this engine build.
+
+	aim[npc id] = { dir = vector, fire = bool, sniper = bool } is written by zop_merc_heli once a
+	second; nil = the scheme is idle and the NPC goes on with his own logic.
+]]
+
+evaid = 188931
+actid = 188931
+
+aim = {}
+
+------------------------------------------------------------------ evaluator
+class "evaluator_zop_roof" (property_evaluator)
+function evaluator_zop_roof:__init(name) super(nil, name)
+end
+
+function evaluator_zop_roof:evaluate()
+	return aim[self.object:id()] ~= nil
+end
+
+------------------------------------------------------------------ action
+class "action_zop_roof" (action_base)
+function action_zop_roof:__init(name) super(nil, name)
+end
+
+function action_zop_roof:execute()
+	action_base.execute(self)
+	local npc = self.object
+	local a = aim[npc:id()]
+	if not a then
+		return
+	end
+	local state = a.fire and (a.sniper and "threat_sniper_fire" or "threat_fire") or "threat"
+	pcall(state_mgr.set_state, npc, state, nil, nil, { look_dir = vector():set(a.dir) }, { fast_set = true })
+	-- state_mgr fires only once the body has finished turning; held on the roof every frame it
+	-- may never settle, so the shot is given directly (the same call state_mgr makes)
+	if a.fire and not a.shot then
+		a.shot = true
+		local wpn = npc:best_weapon()
+		if wpn and IsWeapon(wpn) then
+			pcall(function() npc:set_item(object.fire1, wpn, 1, a.sniper and 600 or 300) end)
+		end
+	end
+end
+
+------------------------------------------------------------------ binder (generic scheme)
+function setup_generic_scheme(npc, ini, scheme, section, stype, temp)
+	xr_logic.assign_storage_and_bind(npc, ini, "zop_roof_fire", section, temp)
+end
+
+function add_to_binder(npc, ini, scheme, section, storage, temp)
+	if not npc then
+		return
+	end
+	local manager = npc:motivation_action_manager()
+	if not manager then
+		return
+	end
+	if not npc:alive() or npc:character_community() ~= "killer" then
+		manager:add_evaluator(evaid, property_evaluator_const(false))
+	else
+		manager:add_evaluator(evaid, evaluator_zop_roof("eva_zop_roof"))
+	end
+	temp.action = action_zop_roof("act_zop_roof")
+	temp.action:add_precondition(world_property(stalker_ids.property_alive, true))
+	temp.action:add_precondition(world_property(evaid, true))
+	temp.action:add_effect(world_property(evaid, false))
+	manager:add_action(actid, temp.action)
+end
+
+function configure_actions(npc, ini, scheme, section, stype, temp)
+	if not npc then
+		return
+	end
+	local manager = npc:motivation_action_manager()
+	if not manager or not temp.action then
+		return
+	end
+	-- (the same list stock axr_npc_vs_heli puts itself above)
+	local ids = { xr_danger.actid, stalker_ids.action_combat_planner, stalker_ids.action_danger_planner,
+		xr_actions_id.state_mgr + 1, xr_actions_id.state_mgr + 2, xr_actions_id.alife }
+	for i = 1, #ids do
+		local action = ids[i] and manager:action(ids[i])
+		if action then
+			action:add_precondition(world_property(evaid, false))
+		end
+	end
+end
+
+function disable_generic_scheme(npc, scheme, stype)
+	local st = db.storage[npc:id()] and db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+end
+
+function npc_add_precondition(action)
+	if action then
+		action:add_precondition(world_property(evaid, false))
+	end
+end
+
+LoadScheme(script_name(), "zop_roof_fire", modules.stype_stalker)
+
+-- (present so that axr_main loads this file at game start, before the NPCs' schemes are set up)
+function on_game_start()
+end
