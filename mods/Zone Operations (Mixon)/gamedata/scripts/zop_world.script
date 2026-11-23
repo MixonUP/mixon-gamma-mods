@@ -1,6 +1,8 @@
 --[[
 	Zone Operations (Mixon) - world: who owns captured smarts.
-	owners[smart_name] = { faction, op, garrison = { [squad_id] = true } }
+	owners[smart_name] = { faction, op, garrison = { [squad_id] = section }, prev = <owner before> }
+	prev = { faction, op, prev }: who held the place before it was taken from him; release() (a
+	failed operation) gives the place back to him instead of leaving it to nobody
 	- on_try_respawn: a captured smart never respawns its old inhabitants
 	- every game hour the garrison is topped up while the player is not watching
 	Enemy free squads may still pick the smart as a target and come to fight the garrison:
@@ -33,6 +35,8 @@ end
 -- no_top_up: the garrison is filled later (hourly, out of the player's sight), not now
 function capture(smart_name, op, no_top_up)
 	local old = owners[smart_name]
+	-- who held the place before this faction (kept across captures by the same faction)
+	local prev = old and old.prev
 	if old and old.faction ~= op.faction then
 		-- the place changed hands: the old garrison and services are no longer ours to keep
 		for sid, sec in pairs(old.garrison or {}) do
@@ -41,12 +45,14 @@ function capture(smart_name, op, no_top_up)
 		for sid, sec in pairs(old.services and old.services.squads or {}) do
 			pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 		end
+		prev = { faction = old.faction, op = old.op, prev = old.prev }
 		old = nil
 	end
 	owners[smart_name] = {
 		faction = op.faction, op = op.id,
 		garrison = old and old.garrison or {},
 		services = old and old.services or nil,
+		prev = prev,
 	}
 	if not no_top_up then
 		top_up(smart_name, true)
@@ -324,9 +330,25 @@ function release(smart_name, op_id)
 	for sid, sec in pairs(o.services and o.services.squads or {}) do
 		pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 	end
-	owners[smart_name] = nil
+	-- the place goes back to whoever held it before (a failed retake must leave Yanov to Duty,
+	-- or "take it back" is never offered again); nobody before: it is nobody's, as always
+	local p = o.prev
+	local pop = p and zop_registry.get(p.op)
+	if p and pop then
+		owners[smart_name] = { faction = p.faction, op = p.op, garrison = {}, prev = p.prev }
+		-- his garrison comes back with the hourly top-up, out of the player's sight; his services
+		-- (if this is their home) are sent at the next hourly check
+		if #pop.services > 0 and smart_name == pop.services_home then
+			owners[smart_name].services = { due = 0, squads = {} }
+		end
+	else
+		owners[smart_name] = nil
+	end
 	index_services()
 	zop_api.emit("zop_on_base_released", smart_name, o.faction, op_id)
+	if owners[smart_name] then
+		zop_api.emit("zop_on_base_captured", smart_name, p.faction, p.op)
+	end
 end
 
 -- called by zop_core when an operation succeeded: the services set out services_delay hours later

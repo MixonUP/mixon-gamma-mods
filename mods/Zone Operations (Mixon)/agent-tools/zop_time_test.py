@@ -429,5 +429,39 @@ except Exception as e:
     import traceback; traceback.print_exc()
     check(False, "counter clock: %s" % e)
 
+# ---------------------------------------------------------------- 10. previous owner
+print("10. a failed capture gives the place back to its previous owner")
+try:
+    lua.execute(r"""
+	EVENTS = {}
+	G.zop_api = { emit = function(name, smart, faction, op) EVENTS[#EVENTS + 1] = name .. ":" .. tostring(faction) end }
+	OPS = {
+		duty_yanov      = { id = "duty_yanov", faction = "dolg", services = { "trader" }, services_home = "jup_a6" },
+		freedom_retake  = { id = "freedom_retake", faction = "freedom", services = {} },
+		freedom_retake2 = { id = "freedom_retake2", faction = "freedom", services = {} },
+	}
+	G.zop_registry = { get = function(id) return OPS[id] end }
+	""")
+    W = load_module("zop_world", src("zop_world"))
+    L = lua.globals()
+    W.capture("jup_a6", L.OPS.duty_yanov, True)
+    W.capture("jup_a6", L.OPS.freedom_retake, True)
+    o = W.all()["jup_a6"]
+    check(o.faction == "freedom" and o.prev.faction == "dolg", "retake: Freedom holds Yanov, Duty remembered as previous owner")
+    W.capture("jup_a6", L.OPS.freedom_retake2, True)
+    check(W.all()["jup_a6"].prev.faction == "dolg", "a second capture by the same faction keeps the previous owner")
+    lua.execute("EVENTS = {}")
+    W.release("jup_a6", "freedom_retake2")
+    o = W.all()["jup_a6"]
+    check(o is not None and o.faction == "dolg" and o.op == "duty_yanov", "failed retake: Yanov is Duty's again (old code: nobody's)")
+    check(o is not None and o.services is not None and o.services.due == 0, "Duty's services are sent back to their home")
+    check(list(L.EVENTS.values()) == ["zop_on_base_released:freedom", "zop_on_base_captured:dolg"], "API events: released, then captured by Duty: %s" % list(L.EVENTS.values()))
+    W.capture("gar_smart", L.OPS.freedom_retake, True)
+    W.release("gar_smart", "freedom_retake")
+    check(W.all()["gar_smart"] is None, "no previous owner: the place is nobody's, as before")
+except Exception as e:
+    import traceback; traceback.print_exc()
+    check(False, "previous owner: %s" % e)
+
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)

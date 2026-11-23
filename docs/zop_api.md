@@ -32,7 +32,7 @@ end
 | `zop_on_target_taken` | `op_id, smart_name, index, info` | One assault target was cleared. `index` counts from 1. |
 | `zop_on_wave` | `op_id, wave, info` | A defence wave set out (1, 2, ...). |
 | `zop_on_base_captured` | `smart_name, faction, op_id` | A smart now belongs to a faction. |
-| `zop_on_base_released` | `smart_name, faction, op_id` | A failed operation gave back a smart it had taken. |
+| `zop_on_base_released` | `smart_name, faction, op_id` | A failed operation gave back a smart it had taken. If another faction held it before, it is theirs again and `zop_on_base_captured` follows with their faction and operation. |
 | `zop_on_services_arrived` | `smart_name, faction, op_id` | The base's trader, mechanic and the rest walked in. |
 
 - **`info` is a copy.** It is a copy of the operation's config plus `done` and `available`. Changing it has no effect on Zone Operations.
