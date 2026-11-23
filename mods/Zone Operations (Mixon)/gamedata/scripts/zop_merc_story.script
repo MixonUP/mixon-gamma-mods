@@ -64,9 +64,9 @@ local function smart(name) return zop_census.smart_by_name(name) end
 local function tm() return task_manager and task_manager.get_task_manager() end
 local function on_level() return level.name() == LEVEL end
 
-local function squad_men(sid)
+local function squad_men(sid, sec)
 	local out = {}
-	local sq = sid and zop_spawn.valid_squad(sid)
+	local sq = sid and zop_spawn.valid_squad(sid, sec)
 	if sq then
 		for m in sq:squad_members() do
 			local o = level.object_by_id(m.id)
@@ -79,7 +79,7 @@ local function squad_men(sid)
 end
 
 local function zmey()
-	for _, o in ipairs(squad_men(sst.outpost)) do
+	for _, o in ipairs(squad_men(sst.outpost, OUTPOST_SQUAD)) do
 		if o:section() == "zop_merc_zmey" then
 			return o
 		end
@@ -87,7 +87,7 @@ local function zmey()
 end
 
 local function guest()
-	local men = squad_men(sst.guest)
+	local men = squad_men(sst.guest, GUEST_SQUAD)
 	return men[1]
 end
 
@@ -166,7 +166,7 @@ local function gate_men()
 	if z then
 		out[1] = z
 	end
-	for _, o in ipairs(squad_men(sst.outpost)) do
+	for _, o in ipairs(squad_men(sst.outpost, OUTPOST_SQUAD)) do
 		if #out >= GATE_MEN then
 			break
 		end
@@ -291,11 +291,11 @@ local function blast(g)
 			blasts[s.id] = true
 		end
 	end
-	-- the blast takes Snake and whoever stood close with him (and the man himself)
+	-- the blast takes Snake and his men who stood close (not the player's companions or passers-by:
+	-- the real explosion hurts them as it may)
 	local r2 = BLAST_KILL_R * BLAST_KILL_R
-	for i = 1, #db.OnlineStalkers do
-		local o = level.object_by_id(db.OnlineStalkers[i])
-		if o and o:alive() and o:position():distance_to_sqr(p) < r2 then
+	for _, o in ipairs(squad_men(sst.outpost, OUTPOST_SQUAD)) do
+		if o:position():distance_to_sqr(p) < r2 then
 			pcall(function() o:kill(o) end)
 		end
 	end
@@ -312,6 +312,8 @@ local function blasts_update()
 		local o = level.object_by_id(id)
 		if o then
 			blasts[id] = nil
+			-- the player's protection window runs from the real explosion (the charge comes online late sometimes)
+			blast_until = time_global() + 3000
 			pcall(function() o:explode(0) end)
 		elseif not alife():object(id) then
 			blasts[id] = nil
@@ -341,6 +343,9 @@ local function spawn_sin()
 			{ x = p.x, y = p.y, z = p.z, lvid = v, gvid = se.m_game_vertex_id })
 		if sq then
 			sst.sin[#sst.sin + 1] = sq.id
+			-- alife ids are recycled: remember the section to tell our squad from a later one
+			sst.sin_sec = sst.sin_sec or {}
+			sst.sin_sec[sq.id] = sq:section_name()
 			pcall(level.map_add_object_spot_ser, sq.id, "red_location", tr("st_zop_story_mark_sin"))
 			-- weapons by the member's section (the snipers' SV-98s, the grenadier's RPG)
 			if spot and spot.gear then
@@ -361,6 +366,15 @@ local function spawn_sin()
 			end
 		end
 	end
+	-- the messenger still alive (Snake died before the talk): no longer protected, he fights with
+	-- his own and counts among them
+	local g = guest()
+	if g and #sst.sin > 0 then
+		pcall(function() g:invulnerable(false) end)
+		sst.sin[#sst.sin + 1] = sst.guest
+		sst.sin_sec = sst.sin_sec or {}
+		sst.sin_sec[sst.guest] = GUEST_SQUAD
+	end
 end
 
 -- Dushman's help: one squad of merc masters, from a smart 120-260 m out on the far side from the
@@ -379,6 +393,11 @@ local function spawn_help()
 	local se_near = zop_spawn.nearest_smart(p, se.m_game_vertex_id, se.id)
 	local sq = se_near and zop_spawn.squad_at_smart(HELP_SQUAD, se_near, OUTPOST,
 		{ x = p.x, y = p.y, z = p.z, lvid = HELP_AT.lvid, gvid = se.m_game_vertex_id })
+	-- squad_at_smart returns the squad even when its members failed to spawn: an empty one goes away
+	if sq and sq:npc_count() == 0 then
+		pcall(alife_release, sq)
+		sq = nil
+	end
 	if not sq then
 		-- fallback: a smart 120-260 m out, away from the first Sin squad
 		local s1 = SIN_SPOTS[1]
@@ -395,7 +414,16 @@ end
 local function sin_alive()
 	local n = 0
 	for _, sid in ipairs(sst.sin or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+		local sec = sst.sin_sec and sst.sin_sec[sid]
+		local sq = zop_spawn.valid_squad(sid, sec)
+		if not sq and sec then
+			-- wiped out: its map mark goes, and the id is not ours any more
+			pcall(level.map_remove_object_spot, sid, "red_location")
+			sst.sin_sec[sid] = false
+		end
+		if sec == false then
+			sq = nil
+		end
 		if sq then
 			n = n + sq:npc_count()
 			sq.force_online, sq.forced_online_status = true, true
@@ -438,8 +466,8 @@ local function tick()
 	local se = smart(OUTPOST)
 	-- the scene's people stay in the world while it plays (GAMMA keeps squads near the player offline)
 	if (st == "go" or st == "wait_guest" or st == "guest" or st == "talk") and on_level() then
-		for _, sid in ipairs({ sst.guest, sst.outpost }) do
-			local sq = sid and zop_spawn.valid_squad(sid)
+		for _, it in ipairs({ { sst.guest, GUEST_SQUAD }, { sst.outpost, OUTPOST_SQUAD } }) do
+			local sq = it[1] and zop_spawn.valid_squad(it[1], it[2])
 			if sq then
 				sq.force_online, sq.forced_online_status = true, true
 			end
@@ -538,8 +566,8 @@ local function tick()
 			-- Dushman calls everybody home: the surviving masters and what is left of the outpost
 			-- walk to the Dead City
 			local any = false
-			for _, sid in ipairs({ sst.help, sst.outpost }) do
-				local sq = sid and zop_spawn.valid_squad(sid)
+			for _, it in ipairs({ { sst.help, HELP_SQUAD }, { sst.outpost, OUTPOST_SQUAD } }) do
+				local sq = it[1] and zop_spawn.valid_squad(it[1], it[2])
 				if sq and sq:npc_count() > 0 then
 					sq.force_online, sq.forced_online_status = false, false
 					zop_spawn.steer(sq, RECALL_TO, false)

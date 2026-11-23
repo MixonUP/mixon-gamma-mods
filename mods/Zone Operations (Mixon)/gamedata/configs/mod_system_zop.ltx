@@ -118,9 +118,10 @@ frags_r           = 1
 
 ; crash fix: the smoke grenade's stock particle group explosions\explosion_dym has a child effect with no
 ; shader in the installed particles.xr (Particles Cinematic VFX) - a native crash in the render thread when
-; anybody throws it (seen in the Sin attack of the merc story). Use the Squad Grenades M18 smoke instead.
+; anybody throws it (seen in the Sin attack of the merc story). Use an M18 smoke instead: a copy of the
+; Squad Grenades V3 effect shipped with this mod (particles\zop\, stock texture), so it works without that mod.
 ![grenade_smoke]
-explode_particles = squad_grenades\smoke_m18
+explode_particles = zop\smoke_m18
 
 ; Salazar - Clear Sky's trader at the Jupiter checkpoint (post: configs\scripts\jupiter\zop_csky_jupiter_posts.ltx)
 [zop_csky_salazar]:stalker

@@ -202,7 +202,7 @@ local function spawn(section, se_at, target, at)
 end
 
 -- the Administration's spetsnaz: they hold it from the start and stay there
-local function spawn_garrison()
+local function spawn_garrison(op_id)
 	local se_a = smart(ADMIN)
 	if not se_a then
 		return
@@ -222,7 +222,7 @@ local function spawn_garrison()
 		if sq and not mst.garrison[sid] and sq.player_id ~= "army" and away and not get_object_story_id(sid) then
 			pcall(zop_spawn.steer, sq, away:name(), false)
 			-- released by zop_core when the operation ends
-			zop_core.add_squad(OP_DEF, "evicted", sid)
+			zop_core.add_squad(op_id or OP_DEF, "evicted", sid)
 		end
 	end
 end
@@ -678,7 +678,7 @@ local function on_start(op_id)
 			end
 		end
 		if left < 2 then
-			pcall(spawn_garrison)
+			pcall(spawn_garrison, OP_ADM)
 		end
 		if on_level() then
 			pcall(mines_place, MINES, ADMIN, "army")
