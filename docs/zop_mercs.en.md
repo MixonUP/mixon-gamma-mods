@@ -7,7 +7,7 @@
 <h1 align="center">💀 THE MERCENARY BRANCH · ZONE OPERATIONS</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/status-in%20development-b8860b?style=flat-square" alt="status: in development">
+  <img src="https://img.shields.io/badge/version-1.3.0-b8860b?style=flat-square" alt="version: 1.3.0">
   <img src="https://img.shields.io/badge/operations-3%20%2B%20mirror-556b2f?style=flat-square" alt="operations: 3 + mirror">
   <img src="https://img.shields.io/badge/radio-EN%20%2F%20RU-2f4f4f?style=flat-square" alt="radio: EN / RU">
   <img src="https://img.shields.io/badge/pay-20k%E2%80%9340k-8b4513?style=flat-square" alt="pay: 20k–40k">
@@ -21,7 +21,7 @@
 The mercs of the Dead City get a war of their own, and a story that keeps going. Three operations in a row, a gunship, snipers on the roofs, minefields, a radio voiced in English and Russian — and a Sin messenger who brought the outpost the wrong kind of news.
 
 > [!NOTE]
-> The branch is in development and comes in the next update. The 1.2.0 release on ModDB doesn't include it yet.
+> The branch is out in **1.3.0** — [download on ModDB](https://www.moddb.com/mods/stalker-anomaly/addons/zone-operations-mixon).
 
 ## 🎬 Video
 

@@ -32,7 +32,7 @@
   <br>
   <img src="https://img.shields.io/badge/in--game%20text-RU%20%2B%20EN-556b2f?style=for-the-badge" alt="in-game text: RU + EN">
   <img src="https://img.shields.io/badge/new%20game-not%20required-556b2f?style=for-the-badge" alt="new game: not required">
-  <img src="https://img.shields.io/badge/Zone%20Operations-1.1.0-b8860b?style=for-the-badge" alt="Zone Operations: 1.1.0">
+  <img src="https://img.shields.io/badge/Zone%20Operations-1.3.0-b8860b?style=for-the-badge" alt="Zone Operations: 1.3.0">
   <img src="https://img.shields.io/badge/Companion%20Training-v11-b8860b?style=for-the-badge" alt="Companion Training: v11">
   <img src="https://img.shields.io/badge/voices-4%20%C2%B7%20Russian-8b4513?style=for-the-badge" alt="voices: 4 · Russian">
 </p>
@@ -89,7 +89,7 @@
 ## ☢ ZONE OPERATIONS
 
 <p>
-  <img src="https://img.shields.io/badge/version-1.1.0-b8860b?style=flat-square" alt="version: 1.1.0">
+  <img src="https://img.shields.io/badge/version-1.3.0-b8860b?style=flat-square" alt="version: 1.3.0">
   <img src="https://img.shields.io/badge/factions-4-556b2f?style=flat-square" alt="factions: 4">
   <img src="https://img.shields.io/badge/operations-10-556b2f?style=flat-square" alt="operations: 10">
   <img src="https://img.shields.io/badge/bases%20with%20services-6-2f4f4f?style=flat-square" alt="bases with services: 6">
@@ -110,7 +110,7 @@ A faction leader gives you squads, you lead them into a battle across several po
 | **Duty** | Operation Yanov (Colonel Mixon and his tasks) |
 | **Army** | Special Operation Valley (Dark Valley bandits) |
 
-### 💀 The mercenary branch (in development)
+### 💀 The mercenary branch (1.3.0)
 
 <p align="center">
   <a href="docs/zop_mercs.en.md"><img src="docs/media/zop/special_man_teaser.gif" width="100%" alt="A Special Man: the Sin messenger at the campfire, the blast, Sin fighters in the yard"></a>
@@ -842,6 +842,14 @@ Close the training window, save, disable the mod in MO2. The save will load; the
 <a id="changelog"></a>
 
 ## ☢ CHANGELOG
+
+### Zone Operations (Mixon)
+
+| Version | What was added |
+|:-:|---|
+| **1.3.0** | The mercenary branch: Clean Field (hold Dushman's HQ against spetsnaz and a Mi-24, a sniper and an RPG on the roof, mines at the monument), the story task A Special Man (a Sin messenger at Snake's outpost, a blast, the Sin attack), the Administration, and the army's mirror operation. Voiced radio EN/RU, no blowouts or psi storms during operations, random pay 20,000–40,000. Fixed a smoke grenade crash with Particles Cinematic VFX. [Details](docs/zop_mercs.en.md) |
+
+### Mixon Companion Training
 
 Milestones of **Mixon Companion Training**. Details (in Russian) are in [`README_RU.txt`](mods/Mixon%20Companion%20Training/README_RU.txt).
 

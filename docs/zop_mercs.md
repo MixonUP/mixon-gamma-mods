@@ -7,7 +7,7 @@
 <h1 align="center">💀 ВЕТКА НАЁМНИКОВ · ZONE OPERATIONS</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%D1%81%D1%82%D0%B0%D1%82%D1%83%D1%81-%D0%B2%20%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B5-b8860b?style=flat-square" alt="статус: в разработке">
+  <img src="https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-1.3.0-b8860b?style=flat-square" alt="версия: 1.3.0">
   <img src="https://img.shields.io/badge/%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B9-3%20%2B%20%D0%B7%D0%B5%D1%80%D0%BA%D0%B0%D0%BB%D0%BE-556b2f?style=flat-square" alt="операций: 3 + зеркало">
   <img src="https://img.shields.io/badge/%D1%80%D0%B0%D1%86%D0%B8%D1%8F-RU%20%2F%20EN-2f4f4f?style=flat-square" alt="рация: RU / EN">
   <img src="https://img.shields.io/badge/%D0%BD%D0%B0%D0%B3%D1%80%D0%B0%D0%B4%D0%B0-20%E2%80%9340%20%D1%82%D1%8B%D1%81.-8b4513?style=flat-square" alt="награда: 20–40 тыс.">
@@ -21,7 +21,7 @@
 Наёмники Мёртвого города получают свою войну и сюжет, который продолжается. Три операции подряд, вертолёт, снайперы на крышах, минные поля, озвученная рация на русском и английском — и посланник Греха, который принёс на заставу не те новости.
 
 > [!NOTE]
-> Ветка в разработке и войдёт в следующее обновление. В версии 1.2.0 на ModDB её ещё нет.
+> Ветка вышла в версии **1.3.0** — [скачать на ModDB](https://www.moddb.com/mods/stalker-anomaly/addons/zone-operations-mixon).
 
 ## 🎬 Видео
 

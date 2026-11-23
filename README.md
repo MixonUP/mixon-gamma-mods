@@ -32,7 +32,7 @@
   <br>
   <img src="https://img.shields.io/badge/%D1%8F%D0%B7%D1%8B%D0%BA-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-556b2f?style=for-the-badge" alt="язык: русский">
   <img src="https://img.shields.io/badge/%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F%20%D0%B8%D0%B3%D1%80%D0%B0-%D0%BD%D0%B5%20%D0%BD%D1%83%D0%B6%D0%BD%D0%B0-556b2f?style=for-the-badge" alt="новая игра: не нужна">
-  <img src="https://img.shields.io/badge/Zone%20Operations-1.1.0-b8860b?style=for-the-badge" alt="Zone Operations: 1.1.0">
+  <img src="https://img.shields.io/badge/Zone%20Operations-1.3.0-b8860b?style=for-the-badge" alt="Zone Operations: 1.3.0">
   <img src="https://img.shields.io/badge/Companion%20Training-v11-b8860b?style=for-the-badge" alt="Companion Training: v11">
   <img src="https://img.shields.io/badge/%D0%BE%D0%B7%D0%B2%D1%83%D1%87%D0%BA%D0%B0-RU%20%2B%20EN-8b4513?style=for-the-badge" alt="озвучка: RU + EN">
 </p>
@@ -87,7 +87,7 @@
 ## ☢ ОПЕРАЦИИ ЗОНЫ · ZONE OPERATIONS
 
 <p>
-  <img src="https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-1.1.0-b8860b?style=flat-square" alt="версия: 1.1.0">
+  <img src="https://img.shields.io/badge/%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-1.3.0-b8860b?style=flat-square" alt="версия: 1.3.0">
   <img src="https://img.shields.io/badge/%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%BE%D0%BA-4-556b2f?style=flat-square" alt="группировок: 4">
   <img src="https://img.shields.io/badge/%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B9-10-556b2f?style=flat-square" alt="операций: 10">
   <img src="https://img.shields.io/badge/%D0%B1%D0%B0%D0%B7%20%D1%81%20%D1%81%D0%B5%D1%80%D0%B2%D0%B8%D1%81%D0%B0%D0%BC%D0%B8-6-2f4f4f?style=flat-square" alt="баз с сервисами: 6">
@@ -148,7 +148,7 @@
 - Откуда идёт атака и сами атакующие видны на карте КПК и на миникарте.
 - Сервисные NPC приходят через несколько часов после боя, садятся за столы и к верстаку, получают метки на карте.
 
-### 💀 Наёмники: новая ветка (в разработке)
+### 💀 Наёмники: новая ветка (1.3.0)
 
 <p align="center">
   <a href="docs/zop_mercs.md"><img src="docs/media/zop/special_man_teaser.gif" width="100%" alt="Особый человек: посланник Греха у костра, взрыв, бойцы Греха во дворе"></a>
@@ -915,6 +915,7 @@ git apply -p1 C:/path/to/patches/tlra_valid_vertex_id_fix.diff
 
 | Версия | Что появилось |
 |:-:|---|
+| **1.3.0** | Ветка наёмников: «Чистое поле» (оборона штаба Душмана от спецназа и Ми-24, снайпер и РПГ на крыше, мины у монумента), сюжетное задание «Особый человек» (посланник Греха на заставе Змея, взрыв, атака Греха), «Администрация», зеркальная операция за армию. Озвученная рация RU/EN, выбросы и пси-штормы не начинаются во время операций, случайная награда 20–40 тыс. Исправлен вылет от дымовой гранаты с Particles Cinematic VFX. [Подробно](docs/zop_mercs.md) |
 | **1.1.0** | Северная база ЧН: медик Ракуро и повар Фин вместо безымянных. У Холодного задания на редкие артефакты (Сердце оазиса, Компас, Волат-изумруд), вылазки со сканером, замеры аномалий и курьерские рейсы к Викингу; у Викинга — курьер на Юпитер. В диалоге с заданиями видны все задания, не только первые 10 |
 | **1.0.0** | Операции ЧН (Болота → Агропром → Янтарь → Юпитер), Свободы, Долга и Армии; гарнизоны, сервисные NPC на постах, механик Крюгер, контратаки, подкрепления, метки атаки на карте |
 
