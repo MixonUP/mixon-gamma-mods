@@ -18,6 +18,9 @@ local MUSTER_RADIUS    = 45
 local MUSTER_DAYS      = 3       -- game days to reach the muster point
 local ASSAULT_DAYS     = 2       -- game days for the fight itself
 local DEFENSE_HOURS    = 12      -- attackers give up after this many game hours
+local SPAWN_RETRY_S    = 60      -- real s a wave / counterattack that cannot be spawned is retried;
+                                 -- then it is skipped (author's call: a spawn failure is the mod's
+                                 -- fault, the player keeps his progress)
 
 local st = { active = nil, done = {}, cooldown = {}, done_at = {} }
 local pending_offer          -- op id remembered between dialog precondition and its script text
@@ -830,7 +833,6 @@ local function step_counter_wait(s, op)
 		printf("![ZOP] %s: no staging smart for the counterattack", op.id)
 		return finish(true)
 	end
-	unmark(s.counter_from_id)
 	s.attackers = {}
 	for _ = 1, op.counter_count do
 		local sq = zop_spawn.squad_at_smart(op.counter_squad, se_a, op.counter_target)
@@ -838,6 +840,19 @@ local function step_counter_wait(s, op)
 			s.attackers[sq.id] = zop_spawn.section_of(sq)
 		end
 	end
+	if not next(s.attackers) then
+		-- nothing spawned: try again on the next ticks, then the counterattack is skipped
+		s.spawn_retry = (s.spawn_retry or 0) + TICK_MS / 1000
+		if s.spawn_retry < SPAWN_RETRY_S then
+			return
+		end
+		printf("![ZOP] %s: counterattack %s could not be spawned, skipped", op.id, tostring(op.counter_squad))
+		s.spawn_retry = nil
+		unmark(s.counter_from_id)
+		return finish(true)
+	end
+	s.spawn_retry = nil
+	unmark(s.counter_from_id)
 	s.stage, s.t1 = "counter", now()
 	lost_since = nil
 	counter_track = {}
@@ -1061,8 +1076,18 @@ local function step_wait(s, op)
 	local w = op.waves[1]
 	local count = w.count + (tonumber(mcm("extra_squads", 0)) or 0)
 	if spawn_wave(op, w.section, count, se_a:name(), op.targets[1], nil, wave_point(op, 1)) == 0 then
-		return finish(false)
+		-- nothing spawned: try again on the next ticks; then the wave is skipped and the defense
+		-- goes on (step_defend finds no attackers and brings the next wave)
+		s.spawn_retry = (s.spawn_retry or 0) + TICK_MS / 1000
+		if s.spawn_retry < SPAWN_RETRY_S then
+			return
+		end
+		printf("![ZOP] %s: wave 1 (%s) could not be spawned, skipped", op.id, tostring(w.section))
+		s.spawn_retry = nil
+		s.stage, s.t1, s.staging, s.wave = "defend", now(), se_a:name(), 1
+		return
 	end
+	s.spawn_retry = nil
 	s.stage, s.t1, s.staging, s.wave = "defend", now(), se_a:name(), 1
 	s.enemy = w.enemy
 	mark_squads(s.squads, "st_zop_mark_attackers")
@@ -1073,20 +1098,31 @@ end
 local function step_defend(s, op)
 	local left = zop_census.alive_in_squads(s.squads)
 	if left == 0 then
-		local nw = op.waves[(s.wave or 1) + 1]
+		-- the next wave, or the one whose spawn is being retried (s.spawn_wave, saved)
+		local idx = s.spawn_wave or ((s.wave or 1) + 1)
+		local nw = op.waves[idx]
 		if not nw then
 			return finish(true)
 		end
+		if not s.spawn_wave then
+			for sid in pairs(s.squads) do
+				unmark(sid)
+			end
+			s.squads = {}
+		end
 		-- the next wave comes from the same staging point (or the operation's wave point)
-		s.wave = (s.wave or 1) + 1
-		for sid in pairs(s.squads) do
-			unmark(sid)
-		end
-		s.squads = {}
 		local count = nw.count + (tonumber(mcm("extra_squads", 0)) or 0)
-		if spawn_wave(op, nw.section, count, s.staging, op.targets[1], nil, wave_point(op, s.wave)) == 0 then
-			return finish(true)
+		if spawn_wave(op, nw.section, count, s.staging, op.targets[1], nil, wave_point(op, idx)) == 0 then
+			-- nothing spawned: try again on the next ticks, then this wave is skipped
+			s.spawn_wave = idx
+			s.spawn_retry = (s.spawn_retry or 0) + TICK_MS / 1000
+			if s.spawn_retry >= SPAWN_RETRY_S then
+				printf("![ZOP] %s: wave %d (%s) could not be spawned, skipped", op.id, idx, tostring(nw.section))
+				s.wave, s.spawn_wave, s.spawn_retry = idx, nil, nil
+			end
+			return
 		end
+		s.wave, s.spawn_wave, s.spawn_retry = idx, nil, nil
 		s.t1 = now()
 		s.wave_secs, s.wave_pulls = 0, 0
 		s.enemy = nw.enemy
@@ -1440,7 +1476,9 @@ function add_squad(op_id, set_name, squad_id)
 		return false
 	end
 	s[set_name] = s[set_name] or {}
-	s[set_name][squad_id] = true
+	-- sets keep the squad's section (see zop_spawn.valid_squad)
+	local se = zop_spawn.valid_squad(squad_id)
+	s[set_name][squad_id] = se and zop_spawn.section_of(se) or true
 	if set_name == "squads" and cur_op() and cur_op().kind == "defense" then
 		mark(squad_id, "st_zop_mark_attackers")
 	end

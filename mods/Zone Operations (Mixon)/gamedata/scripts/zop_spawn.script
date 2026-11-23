@@ -39,6 +39,16 @@ function squad_at_smart(section, se_at, target, at)
 	if not ok2 then
 		printf("![ZOP] squad %s members failed: %s", tostring(section), tostring(err))
 	end
+	-- a squad without members is no squad: callers count what they got (a wave of empty squads
+	-- would be "beaten" on the next tick), so it is removed and the spawn counts as failed
+	local okc, cnt = pcall(function() return se:npc_count() end)
+	if not (okc and cnt and cnt > 0) then
+		printf("![ZOP] squad %s spawned without members, removed", tostring(section))
+		if not pcall(function() se:remove_squad() end) then
+			pcall(function() alife():release(se, true) end)
+		end
+		return nil
+	end
 	steer(se, target, true)
 	return se
 end

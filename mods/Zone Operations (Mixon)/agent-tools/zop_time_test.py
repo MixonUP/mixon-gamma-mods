@@ -318,5 +318,85 @@ try:
 except Exception as e:
     check(False, "squad sets: %s" % e)
 
+# ---------------------------------------------------------------- 8. spawn failures
+print("8. spawn failures: empty squads removed, waves retried then skipped (no instant win)")
+try:
+    # 8a. squad_at_smart: create_npc gave no members -> removed, nil
+    lua.execute(r"""
+	REMOVED = 0
+	G.vector = function() return { set = function(self) return self end } end
+	G.alife_create = function(section)
+		return { id = 77, npc_count = function() return 0 end,
+			create_npc = function() error("no npc") end,
+			remove_squad = function() REMOVED = REMOVED + 1 end,
+			squad_members = function() return function() return nil end end }
+	end
+	G.SIMBOARD = { assign_squad_to_smart = function() end }
+	""")
+    spawn = load_module("zop_spawn", src("zop_spawn"))
+    r = spawn.squad_at_smart("zop_wave_sq", lua.eval("{ position = {}, m_level_vertex_id = 1, m_game_vertex_id = 1 }"), "t")
+    check(r is None and lua.globals().REMOVED == 1, "squad_at_smart: squad without members removed, returns nil")
+
+    # 8b. a defense: wave 1 beaten, wave 2 cannot be spawned for 30 s, then it can
+    lua.execute(r"""
+	T = 0
+	G.time_global = function() return T end
+	G.SIMBOARD = {}            -- no smarts_by_names: migrate() waits
+	SPAWN_OK_AT = 1e9
+	G.zop_spawn = setmetatable({
+		squad_at_smart = function() if T >= SPAWN_OK_AT then return { id = 500 + T } end return nil end,
+		section_of = function() return "zop_wave_sq" end,
+		valid_squad = function() return nil end,
+	}, { __index = function() return function() end end })
+	G.zop_census = setmetatable({
+		alive_in_squads = function(set) local n = 0; for _ in pairs(set or {}) do n = n + 4 end; return n end,
+		now = function() return 1e9 end, fix_time = function(t) return t end,
+		fix_map = function() end, fix_fields = function() end,
+		smart_by_name = function() return { id = 1, position = {}, name = function() return "t" end } end,
+		actor_near = function() return false end, count = function() return 0 end,
+		members = function() return {}, nil end,
+	}, { __index = function() return function() end end })
+	OP = { id = "op1", kind = "defense", targets = { "t" }, faction = "csky", enemy = "bandit",
+		waves = { { section = "w1", count = 1 }, { section = "w2", count = 1 } },
+		evacuate = {}, peace_on_success = {}, services = {}, reward = 0, reward_max = 0,
+		goodwill = 0, cooldown = 1, radius = 50 }
+	G.zop_registry = { get = function(id) if id == "op1" then return OP end end }
+	G.zop_world = setmetatable({ all = function() return {} end }, { __index = function() return function() end end })
+	G.zop_api = setmetatable({ operation = function() return {} end }, { __index = function() return function() end end })
+	G.zop_battle = setmetatable({}, { __index = function() return function() end end })
+	G.task_manager = { get_task_manager = function() return setmetatable({}, { __index = function() return function() end end }) end }
+	""")
+    lua.globals().reset_callbacks()
+    core = load_module("zop_core", src("zop_core"))
+    core.on_game_start()
+    def load_core(active):
+        lua.globals().fire("load_state", lua.eval("{ zop = { done = {}, cooldown = {}, done_at = {}, active = %s } }" % active))
+    def tick(n=1):
+        for _ in range(n):
+            lua.execute("T = T + 1000")
+            lua.globals().fire("actor_on_update")
+    ACTIVE = "{ op = 'op1', stage = 'defend', wave = 1, squads = {}, staging = 'stg', t1 = 1e9 }"
+
+    lua.execute("T = 0; SPAWN_OK_AT = 1e9")
+    load_core(ACTIVE)
+    tick(30)
+    s = core.debug_state().active
+    check(s is not None and s.spawn_wave == 2, "wave 2 failing: no win after 30 s, retry pending (spawn_wave=%s)" % (s and s.spawn_wave))
+    lua.execute("SPAWN_OK_AT = T + 1")
+    tick(1)
+    s = core.debug_state().active
+    check(s is not None and s.wave == 2 and s.spawn_wave is None and next(iter(dict(s.squads.items())), None) is not None,
+          "spawn works again: wave 2 comes, operation goes on")
+
+    lua.execute("SPAWN_OK_AT = 1e9")   # T keeps running: zop_core remembers its next tick
+    load_core(ACTIVE)
+    tick(59)
+    check(core.debug_state().active is not None, "wave 2 never spawns: still running after 59 s")
+    tick(3)
+    check(core.debug_state().active is None, "after 60 s wave 2 is skipped; no wave 3 -> the defense ends (author's call)")
+except Exception as e:
+    import traceback; traceback.print_exc()
+    check(False, "spawn failures: %s" % e)
+
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)
