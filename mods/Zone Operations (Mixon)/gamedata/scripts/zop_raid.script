@@ -92,15 +92,13 @@ end
 -- smarts of the actor's level that are not bases, as { se, dist_to_actor }
 local function level_smarts()
 	local out = {}
-	local gg = game_graph()
 	local lid = actor_level_id()
 	if not lid then
 		return out
 	end
 	local apos = db.actor:position()
-	for _, v in pairs(SIMBOARD.smarts) do
-		local s = v.smrt
-		if s and not is_base(s) and gg:vertex(s.m_game_vertex_id):level_id() == lid then
+	for _, s in ipairs(zop_spawn.smarts_of_level(lid)) do
+		if not is_base(s) then
 			out[#out + 1] = { se = s, d = s.position:distance_to(apos) }
 		end
 	end
@@ -172,10 +170,8 @@ function giver_of(npc)
 	if not (giver and giver.m_smart_terrain_id and giver.m_smart_terrain_id ~= 65535) then
 		-- fall back to the base smart nearest to the actor (on his level: other levels reuse coordinates)
 		local best, bd
-		local lid = actor_level_id()
-		for _, v in pairs(SIMBOARD.smarts) do
-			local s = v.smrt
-			if s and is_base(s) and level_id_of(s) == lid then
+		for _, s in ipairs(zop_spawn.smarts_of_level(actor_level_id())) do
+			if is_base(s) then
 				local d = s.position:distance_to(db.actor:position())
 				if d < 200 and (not bd or d < bd) then
 					best, bd = s, d

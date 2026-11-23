@@ -32,8 +32,11 @@ local obj_name_of = {
 }
 
 local ids = {}        -- [object name] = alife id
-local next_scan = {}  -- [object name] = time_global() until which a miss is not rescanned
-local RESCAN_MS = 5000
+local wanted = {}     -- [object name] = true: every field a sortie may ask for (filled by pick)
+local next_scan = 0   -- time_global() until which a miss is not rescanned
+-- A scan walks every alife id (~35 ms, two frames): it is made rarely and indexes all wanted
+-- fields at once, so the next field of the task is already known
+local RESCAN_MS = 60000
 
 local function field_id(name)
 	if type(name) ~= "string" then
@@ -46,20 +49,26 @@ local function field_id(name)
 		return id
 	end
 	ids[obj_name] = nil
+	wanted[obj_name] = true
 	local tg = time_global()
-	if next_scan[obj_name] and tg < next_scan[obj_name] then
+	if tg < next_scan then
 		return
 	end
-	next_scan[obj_name] = tg + RESCAN_MS
+	next_scan = tg + RESCAN_MS
 	local sim = alife()
 	for i = 1, 65534 do
 		local o = sim:object(i)
-		if o and o:name() == obj_name then
-			ids[obj_name] = i
-			next_scan[obj_name] = nil
-			return i
+		if o then
+			local n = o:name()
+			if wanted[n] then
+				ids[n] = i
+			end
 		end
 	end
+	if ids[obj_name] then
+		next_scan = 0   -- found: a later miss (another field) may scan again at once
+	end
+	return ids[obj_name]
 end
 
 local function pick(actor, npc, p)
@@ -72,6 +81,10 @@ local function pick(actor, npc, p)
 		if #fields == 0 then
 			printf("![ZOP] sortie %s: no possible_anomalies", task_id)
 			return
+		end
+		-- every field of the task is looked for in the same scan
+		for _, f in ipairs(fields) do
+			wanted[obj_name_of[f] or f] = true
 		end
 		local last = load_var(db.actor, task_id .. "_last")
 		local field = fields[math.random(#fields)]

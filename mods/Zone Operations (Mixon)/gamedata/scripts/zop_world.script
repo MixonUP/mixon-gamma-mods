@@ -421,7 +421,15 @@ local function fix_posts()
 	end
 end
 
+-- once a second is plenty: fix_posts runs every 3 s and the garrison check once a game hour;
+-- now() builds a CTime, so it is not asked every frame
+local next_frame_check = 0
 local function actor_on_update()
+	local tg = time_global()
+	if tg < next_frame_check then
+		return
+	end
+	next_frame_check = tg + 1000
 	pcall(fix_posts)
 	local t = now()
 	if t - last_check < 3600 then

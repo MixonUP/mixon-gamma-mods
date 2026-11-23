@@ -115,10 +115,26 @@ end
 
 -- squads named in an evacuate / restore list: the squad with that story id, or - for a stock
 -- squad that has none (e.g. dolg_medic_squad, the Bar's medic) - every squad of that section
+-- The section search walks every squad of the Zone (~0.6 ms): an operation asks for it several
+-- times a second (evac_skip, send_story_away, the task text), so the answer is kept for
+-- SQUAD_IDS_TTL_MS. A squad of that section that appears meanwhile is found a little later; ids
+-- that died meanwhile are filtered out by the callers (valid_squad / alife():object).
+local SQUAD_IDS_TTL_MS = 15000
+local squad_ids_cache = {}   -- [section] = { until = time_global, ids }
+
 function squad_ids(name)
 	local id = get_story_object_id(name)
 	if id then
 		return { id }
+	end
+	local tg = time_global()
+	local c = squad_ids_cache[name]
+	if c and tg < c.until_ms then
+		local copy = {}
+		for i = 1, #c.ids do
+			copy[i] = c.ids[i]
+		end
+		return copy
 	end
 	local out = {}
 	if SIMBOARD and SIMBOARD.squads and ini_sys:section_exist(name) then
@@ -128,7 +144,36 @@ function squad_ids(name)
 			end
 		end
 	end
-	return out
+	squad_ids_cache[name] = { until_ms = tg + SQUAD_IDS_TTL_MS, ids = out }
+	local copy = {}
+	for i = 1, #out do
+		copy[i] = out[i]
+	end
+	return copy
+end
+
+-- smarts by level id, built once per session (the set of smarts does not change in a game):
+-- the muster / nearest / raid searches walked all ~480 smarts and their graph vertices each time
+local smarts_by_level   -- [level id] = { se_smart, ... }
+
+function smarts_of_level(lid)
+	if not smarts_by_level then
+		if not (SIMBOARD and SIMBOARD.smarts and next(SIMBOARD.smarts)) then
+			return {}
+		end
+		local gg = game_graph()
+		local idx = {}
+		for _, v in pairs(SIMBOARD.smarts) do
+			local s = v.smrt
+			if s then
+				local l = gg:vertex(s.m_game_vertex_id):level_id()
+				idx[l] = idx[l] or {}
+				idx[l][#idx[l] + 1] = s
+			end
+		end
+		smarts_by_level = idx
+	end
+	return lid and smarts_by_level[lid] or {}
 end
 
 -- sends a story squad to another smart; story NPCs leave instead of dying
@@ -191,12 +236,10 @@ function nearest_smart(pos, gvid, skip_id)
 	if not (pos and gvid and SIMBOARD and SIMBOARD.smarts) then
 		return nil
 	end
-	local gg = game_graph()
-	local lid = gg:vertex(gvid):level_id()
+	local lid = game_graph():vertex(gvid):level_id()
 	local best, best_d
-	for id, v in pairs(SIMBOARD.smarts) do
-		local s = v.smrt
-		if s and id ~= skip_id and gg:vertex(s.m_game_vertex_id):level_id() == lid then
+	for _, s in ipairs(smarts_of_level(lid)) do
+		if s.id ~= skip_id then
 			local d = s.position:distance_to_sqr(pos)
 			if not best_d or d < best_d then
 				best, best_d = s, d
@@ -213,12 +256,10 @@ function muster_smart(se_target, min_d, max_d, away_pos)
 	if not (se_target and SIMBOARD and SIMBOARD.smarts) then
 		return nil
 	end
-	local gg = game_graph()
-	local lid = gg:vertex(se_target.m_game_vertex_id):level_id()
+	local lid = game_graph():vertex(se_target.m_game_vertex_id):level_id()
 	local best, best_d
-	for id, v in pairs(SIMBOARD.smarts) do
-		local s = v.smrt
-		if s and id ~= se_target.id and gg:vertex(s.m_game_vertex_id):level_id() == lid then
+	for _, s in ipairs(smarts_of_level(lid)) do
+		if s.id ~= se_target.id then
 			local is_base = s.props and s.props.base and s.props.base > 0
 			local d = s.position:distance_to(se_target.position)
 			local far_side = true

@@ -1036,19 +1036,23 @@ local function same_level(a_name, b_name)
 	return a and b and gg:vertex(a.m_game_vertex_id):level_id() == gg:vertex(b.m_game_vertex_id):level_id()
 end
 
+local staging_checked = false   -- runtime: the checks below run once per load (they cost a search)
 local function step_wait(s, op)
-	-- a save taken before the operation's target changed: pick the staging point again and
-	-- send our defenders to the right place
-	if s.staging_pre and not same_level(s.staging_pre, op.targets[1]) then
-		unmark(s.staging_id)
-		s.staging_pre, s.staging_id = nil, nil
-	end
-	-- ... or before the operation got its wave point: the mark moves to the smart next to it
-	if s.staging_pre and wave_point(op) then
-		local se_n = staging_for(op.targets[1], op)
-		if se_n and se_n:name() ~= s.staging_pre then
+	if not staging_checked then
+		staging_checked = true
+		-- a save taken before the operation's target changed: pick the staging point again and
+		-- send our defenders to the right place
+		if s.staging_pre and not same_level(s.staging_pre, op.targets[1]) then
 			unmark(s.staging_id)
 			s.staging_pre, s.staging_id = nil, nil
+		end
+		-- ... or before the operation got its wave point: the mark moves to the smart next to it
+		if s.staging_pre and wave_point(op) then
+			local se_n = staging_for(op.targets[1], op)
+			if se_n and se_n:name() ~= s.staging_pre then
+				unmark(s.staging_id)
+				s.staging_pre, s.staging_id = nil, nil
+			end
 		end
 	end
 	for sid, sec in pairs(s.defenders or {}) do
@@ -1197,11 +1201,16 @@ local function step_defend(s, op)
 		zop_battle.reveal(s.squads, se_t, sides, op.radius)
 		zop_battle.reveal_to(op.faction, se_t, op.radius * 2, s.squads)
 	end
-	local holders = zop_census.count(op.faction, se_t, op.radius)
-	for _, c in ipairs(op.allies) do
-		holders = holders + zop_census.count(c, se_t, op.radius)
+	-- who holds the place matters only while the player is there (count costs a pass over the
+	-- online NPCs per side)
+	local holders
+	if zop_census.actor_near(se_t, NEAR_TARGET) then
+		holders = zop_census.count(op.faction, se_t, op.radius)
+		for _, c in ipairs(op.allies) do
+			holders = holders + zop_census.count(c, se_t, op.radius)
+		end
 	end
-	if zop_census.actor_near(se_t, NEAR_TARGET) and holders == 0 then
+	if holders == 0 then
 		lost_since = lost_since or time_global()
 		if time_global() - lost_since > CLEAR_SECONDS * 1000 then
 			return finish(false)
@@ -1438,6 +1447,7 @@ local function load_state(m)
 	zop_census.fix_map(st.done_at)
 	zop_census.fix_fields(st.active, { "t0", "t1", "attack_at" })
 	migrated = false
+	staging_checked = false
 end
 
 -- debug entry points for the bridge / console

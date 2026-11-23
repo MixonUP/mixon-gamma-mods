@@ -32,8 +32,27 @@
 local courier_tasks = {} -- task ids whose on_init calls zop_courier_setup
 
 local ids = {}        -- [npc section] = alife id, found this session
-local next_scan = {}  -- [npc section] = time_global() until which a miss is not rescanned
-local RESCAN_MS = 5000
+local next_scan = {}  -- [npc section] = time_global() until which a full scan is not repeated
+-- the full scan of every alife id costs ~27 ms (two frames): it is the last resort, once a minute
+local RESCAN_MS = 60000
+local next_quick = {} -- [npc section] = time_global() until which a miss is not searched again
+local QUICK_MS = 5000
+
+-- the npc of this section among the members of a squad set / of SIMBOARD's squads
+local function in_squads(section, squad_ids)
+	local sim = alife()
+	for sid in pairs(squad_ids) do
+		local sq = sim:object(sid)
+		if sq and sq.squad_members then
+			for m in sq:squad_members() do
+				local o = m.object or sim:object(m.id)
+				if o and o:section_name() == section and IsStalker(nil, o:clsid()) and o:alive() then
+					return o
+				end
+			end
+		end
+	end
+end
 
 local function alive_npc(section, id)
 	local se = id and alife_object(id)
@@ -53,6 +72,25 @@ local function find(section)
 	end
 	ids[section] = nil
 	local tg = time_global()
+	if next_quick[section] and tg < next_quick[section] then
+		return
+	end
+	next_quick[section] = tg + QUICK_MS
+	-- the addressees are the bases' service NPCs: their squads first (a handful), then every
+	-- squad of the simulation (~1 ms), the full id scan only after that
+	local found
+	for _, o in pairs(zop_world.all()) do
+		found = o.services and o.services.squads and in_squads(section, o.services.squads)
+		if found then
+			break
+		end
+	end
+	found = found or (SIMBOARD and SIMBOARD.squads and in_squads(section, SIMBOARD.squads))
+	if found then
+		ids[section] = found.id
+		next_quick[section] = nil
+		return found
+	end
 	if next_scan[section] and tg < next_scan[section] then
 		return
 	end

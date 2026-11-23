@@ -225,7 +225,15 @@ try:
 	G.printf = function() end
 	SPAWNED = 0
 	G.zop_spawn = { squad_at_smart = function() SPAWNED = SPAWNED + 1; return { id = 900 + SPAWNED } end,
-		valid_squad = function() return nil end, steer = function() end, steer_by_id = function() end }
+		valid_squad = function() return nil end, steer = function() end, steer_by_id = function() end,
+		-- no cache here: the tests change the board between cases
+		smarts_of_level = function(lid)
+			local out = {}
+			for _, v in pairs(G.SIMBOARD.smarts) do
+				if v.smrt.m_game_vertex_id == lid then out[#out + 1] = v.smrt end
+			end
+			return out
+		end }
 	function smart(id, x, z, level, base)
 		local s = { id = id, position = vec(x, z), m_game_vertex_id = level,
 			props = { base = base and 1 or 0 }, name = function() return "smart_" .. id end }
@@ -590,6 +598,151 @@ def t_api_dialog():
 
 for name, fn in [("census", t_census), ("services", t_services), ("courier", t_courier),
                  ("battle", t_battle), ("api/dialog", t_api_dialog)]:
+    section(name, fn)
+
+# ---------------------------------------------------------------- 12. optimizations
+print("12. optimizations keep the behaviour")
+
+def t_mines():
+    lua.execute(r"""
+	T = 100000
+	G.time_global = function() return T end
+	local function P(x) return { x = x, y = 0, z = 0 } end
+	EXPLODED = {}
+	local function mine(id) return { explode = function() EXPLODED[#EXPLODED + 1] = id end } end
+	-- NPC 1: army at x=1 (near mine 50); NPC 2: killer at x=11 (near mine 51); player (killer) far
+	NPCS = { [1] = { alive = function() return true end, position = function() return P(1) end, comm = "army" },
+	         [2] = { alive = function() return true end, position = function() return P(11) end, comm = "killer" } }
+	G.db = { OnlineStalkers = { 1, 2 }, actor = { position = function() return P(500) end }, storage = {} }
+	G.level = { object_by_id = function(id) if NPCS[id] then return NPCS[id] end if id >= 50 then return mine(id) end end }
+	G.character_community = function(o) return o.comm end
+	G.get_actor_true_community = function() return "killer" end
+	G.alife = function() return { object = function(_, id) return {} end } end
+	""")
+    lua.globals().reset_callbacks()
+    M = load_module("zop_merc", src("zop_merc"))
+    M.on_game_start()
+    # mines_check is local: reach it through the module's upvalues via debug
+    lua.execute(r"""
+	MINES_CHECK = nil
+	local env = G.zop_merc
+	for k, v in pairs(env) do if type(v) == "function" then
+		local i = 1
+		while true do
+			local name, val = debug.getupvalue(v, i)
+			if not name then break end
+			if name == "mines_check" then MINES_CHECK = val end
+			if name == "mst" then MST = val end
+			i = i + 1
+		end
+	end end
+	""")
+    if lua.globals().MINES_CHECK is None:
+        lua.execute("""
+	-- fall back: actor_on_update holds mines_check as an upvalue
+	for _, fns in pairs(G.CALLBACKS) do for _, f in ipairs(fns) do
+		local i = 1
+		while true do
+			local name, val = debug.getupvalue(f, i)
+			if not name then break end
+			if name == "mines_check" then MINES_CHECK = val end
+			i = i + 1
+		end
+	end end
+	""")
+    check(lua.globals().MINES_CHECK is not None, "mines_check reachable for the test")
+    lua.execute(r"""
+	local mst
+	local i = 1
+	while true do
+		local name, val = debug.getupvalue(MINES_CHECK, i)
+		if not name then break end
+		if name == "mst" then mst = val end
+		i = i + 1
+	end
+	-- 50: army mine next to the army NPC (owner knows it) -> stays; 51: army mine next to the killer -> boom;
+	-- 52: killer mine far from everybody -> stays
+	mst.mines = { [50] = { x = 0, y = 0, z = 0, owner = "army" }, [51] = { x = 10, y = 0, z = 0, owner = "army" },
+	              [52] = { x = 300, y = 0, z = 0, owner = "killer" } }
+	MINES_CHECK()
+	LEFT = {}; for id in pairs(mst.mines) do LEFT[#LEFT + 1] = id end; table.sort(LEFT)
+	""")
+    ex = sorted(lua.globals().EXPLODED.values())
+    left = list(lua.globals().LEFT.values())
+    check(ex == [51] and left == [50, 52], "mines: only the army mine at the killer goes off (exploded %s, left %s)" % (ex, left))
+
+def t_squad_ids_and_index():
+    lua.execute(r"""
+	T = 0
+	G.time_global = function() return T end
+	G.get_story_object_id = function() return nil end
+	G.ini_sys = { section_exist = function() return true end }
+	G.clsid = { online_offline_group_s = 7 }
+	OBJ = { [1] = { clsid = function() return 7 end, section_name = function() return "dolg_medic_squad" end } }
+	G.alife = function() return { object = function(_, id) return OBJ[id] end } end
+	G.SIMBOARD = { squads = { [1] = true }, smarts = {
+		[10] = { smrt = { id = 10, m_game_vertex_id = 1 } }, [11] = { smrt = { id = 11, m_game_vertex_id = 2 } },
+		[12] = { smrt = { id = 12, m_game_vertex_id = 1 } } } }
+	G.game_graph = function() return { vertex = function(_, g) return { level_id = function() return g end } end } end
+	""")
+    S = load_module("zop_spawn", src("zop_spawn"))
+    a = list(S.squad_ids("dolg_medic_squad").values())
+    lua.execute("OBJ[2] = OBJ[1]; G.SIMBOARD.squads[2] = true; T = 5000")
+    b = list(S.squad_ids("dolg_medic_squad").values())
+    lua.execute("T = 20000")
+    c = sorted(S.squad_ids("dolg_medic_squad").values())
+    check(a == [1] and b == [1] and c == [1, 2], "squad_ids: kept 15 s, then searched again (%s %s %s)" % (a, b, c))
+    l1 = sorted(s.id for s in S.smarts_of_level(1).values())
+    check(l1 == [10, 12] and len(S.smarts_of_level(9)) == 0, "smarts_of_level: smarts of level 1 = %s" % l1)
+
+def t_courier_find():
+    lua.execute(r"""
+	T = 0
+	G.time_global = function() return T end
+	SCANNED = 0
+	VIKING = { id = 300, section_name = function() return "zop_csky_viking" end, clsid = function() return 1 end,
+		alive = function() return true end }
+	SQ = { squad_members = function() local done = false; return function() if done then return nil end; done = true; return { id = 300 } end end }
+	G.alife = function() return { object = function(_, id) SCANNED = SCANNED + 1; if id == 300 then return VIKING end if id == 77 then return SQ end end } end
+	G.alife_object = function(id) if id == 300 then return VIKING end end
+	G.IsStalker = function() return true end
+	G.zop_world = { all = function() return { base = { services = { squads = { [77] = "x" } } } } end }
+	G.SIMBOARD = { squads = {} }
+	""")
+    K = load_module("zop_courier", src("zop_courier"))
+    lua.globals().reset_callbacks()
+    K.on_game_start()
+    ok = G.xr_conditions.zop_courier_ready(None, None, lua.eval("{ 'zop_csky_viking' }"))
+    n = lua.globals().SCANNED
+    check(ok is True and n < 10, "courier: the addressee is found in the service squads without the id scan (%d lookups)" % n)
+
+def t_sortie():
+    lua.execute(r"""
+	T = 0
+	G.time_global = function() return T end
+	NAMES = { [100] = "field_a", [200] = "field_b" }
+	SCANS = 0
+	G.alife = function() return { object = function(_, id) if id == 1 then SCANS = SCANS + 1 end
+		local n = NAMES[id]; if n then return { name = function() return n end } end end } end
+	G.alife_object = function(id) local n = NAMES[id]; if n then return { name = function() return n end } end end
+	G.parse_list = function() return { "field_a", "field_b" } end
+	G.task_manager = { task_ini = {} }
+	G.dialogs = { relocate_item_section = function() end }
+	PSTOR = {}
+	""")
+    Z = load_module("zop_sortie", src("zop_sortie"))
+    lua.globals().reset_callbacks()
+    Z.on_game_start()
+    G.xr_effects.zop_sortie_pick(None, None, lua.eval("{ 'task21' }"))
+    tgt = G.task_functor.zop_sortie_target
+    lua.execute("PSTOR.task21 = 'field_a'")
+    a = tgt("task21", "target", None, lua.eval("{ stage = 1 }"))
+    lua.execute("PSTOR.task21 = 'field_b'")
+    b = tgt("task21", "target", None, lua.eval("{ stage = 1 }"))
+    check(a == 100 and b == 200 and lua.globals().SCANS == 1, "sortie: one scan finds both fields of the task (%s %s, scans %d)" % (a, b, lua.globals().SCANS))
+
+for name, fn in [("mines", t_mines), ("squad_ids/index", t_squad_ids_and_index),
+                 ("courier find", t_courier_find), ("sortie", t_sortie)]:
     section(name, fn)
 
 print("\nFAILS:", fails)
