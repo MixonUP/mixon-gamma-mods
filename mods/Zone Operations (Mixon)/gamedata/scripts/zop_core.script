@@ -982,9 +982,15 @@ local COUNTER_GIVE_UP = 600     -- real seconds: stragglers that never arrive ha
 local function step_counter(s, op)
 	local se_t = zop_census.smart_by_name(op.counter_target)
 	reinforce(s, op, s.squads, op.counter_target)
+	-- counter_secs paces the re-steers (runs always); the give-up clock runs only while the
+	-- player is at the base, as the defense waves' clock: nobody wins a counterattack from afar
+	-- (away, it is lost after DEFENSE_HOURS)
 	s.counter_secs = (s.counter_secs or 0) + TICK_MS / 1000
+	if zop_census.actor_near(se_t, NEAR_TARGET) then
+		s.counter_near_secs = (s.counter_near_secs or 0) + TICK_MS / 1000
+	end
 	local left = zop_census.alive_in_squads(s.attackers or {})
-	if left == 0 or (s.counter_secs > COUNTER_GIVE_UP and zop_census.count(op.faction, se_t, op.radius) > 0) then
+	if left == 0 or ((s.counter_near_secs or 0) > COUNTER_GIVE_UP and zop_census.count(op.faction, se_t, op.radius) > 0) then
 		-- they gave up: the enemy offers a truce
 		pcall(function() news(op_text(op, "truce")) end)
 		return finish(true)

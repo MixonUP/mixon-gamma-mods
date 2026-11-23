@@ -359,7 +359,11 @@ try:
 	OP = { id = "op1", kind = "defense", targets = { "t" }, faction = "csky", enemy = "bandit",
 		waves = { { section = "w1", count = 1 }, { section = "w2", count = 1 } },
 		evacuate = {}, peace_on_success = {}, services = {}, reward = 0, reward_max = 0,
-		goodwill = 0, cooldown = 1, radius = 50 }
+		goodwill = 0, cooldown = 1, radius = 50, reinforce_count = 0, reinforce_max = 0,
+		success_news = {}, success_spawn = {}, blocks = {}, restore = {}, peace_with = {}, start_news = {} }
+	-- a stage that throws is ended by the core: catch those so a test cannot pass by accident
+	FAILED = {}
+	G.printf = function(fmt, ...) if tostring(fmt):find("failed") then FAILED[#FAILED + 1] = string.format(fmt, ...) end end
 	G.zop_registry = { get = function(id) if id == "op1" then return OP end end }
 	G.zop_world = setmetatable({ all = function() return {} end }, { __index = function() return function() end end })
 	G.zop_api = setmetatable({ operation = function() return {} end }, { __index = function() return function() end end })
@@ -394,9 +398,36 @@ try:
     check(core.debug_state().active is not None, "wave 2 never spawns: still running after 59 s")
     tick(3)
     check(core.debug_state().active is None, "after 60 s wave 2 is skipped; no wave 3 -> the defense ends (author's call)")
+    errs = list(lua.globals().FAILED.values())
+    check(not errs, "no stage errors in the core's tick: %s" % errs[:1])
 except Exception as e:
     import traceback; traceback.print_exc()
     check(False, "spawn failures: %s" % e)
+
+# ---------------------------------------------------------------- 9. counterattack clock
+print("9. counterattack: the give-up clock runs only while the player is at the base")
+try:
+    # (uses the zop_core sandbox of section 8)
+    lua.execute(r"""
+	NEAR = false
+	OP.counter_target, OP.counter_squad, OP.counter_count = "t", "zop_counter_sq", 1
+	FAILED = {}
+	G.zop_census.actor_near = function() return NEAR end
+	G.zop_census.count = function() return 3 end       -- our garrison holds the base
+	""")
+    load_core("{ op = 'op1', stage = 'counter', target = 1, squads = {}, attackers = { [900] = 'zop_counter_sq' }, t1 = 1e9 }")
+    tick(700)
+    check(core.debug_state().active is not None, "player away for 700 s: the counterattack is still on (old code: truce win at 600 s)")
+    lua.execute("NEAR = true")
+    tick(590)
+    check(core.debug_state().active is not None, "player at the base for 590 s: still on")
+    tick(15)
+    check(core.debug_state().active is None, "player at the base for 600+ s with the base held: truce win")
+    errs = list(lua.globals().FAILED.values())
+    check(not errs, "no stage errors in the core's tick: %s" % errs[:1])
+except Exception as e:
+    import traceback; traceback.print_exc()
+    check(False, "counter clock: %s" % e)
 
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)
