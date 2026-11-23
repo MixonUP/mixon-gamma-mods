@@ -225,8 +225,12 @@ end
 local function cleanup(actor, npc, p)
 	local r = p and p[1] and raids[p[1]]
 	if r then
-		-- survivors go back to the free simulation
-		pcall(zop_spawn.steer_by_id, r.squad, nil, false)
+		-- survivors go back to the free simulation; the section check keeps a squad that got the
+		-- id of a dead raid squad untouched (r.section is nil in very old saves: id check only)
+		local se = zop_spawn.valid_squad(r.squad, r.section)
+		if se then
+			pcall(zop_spawn.steer, se, nil, false)
+		end
 		raids[p[1]] = nil
 	end
 end

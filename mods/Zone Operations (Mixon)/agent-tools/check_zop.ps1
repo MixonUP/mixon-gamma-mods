@@ -100,6 +100,24 @@ if ($ids.ContainsKey('rus')) {
     Write-Host "Literal st_zop_ references: $checked checked, $missing missing"
 }
 
+# 5b. every raid task cleans up on complete, fail AND cancel (cancel runs only on_cancel)
+$tm = Join-Path $gd 'configs\misc\task\mod_task_manager_zop.ltx'
+$sec = $null; $raid = @{}
+foreach ($row in [IO.File]::ReadAllLines($tm)) {
+    if ($row -match '^\[([^\]]+)\]') { $sec = $Matches[1]; continue }
+    if ($row -match '^\s*on_init\s*=.*zop_raid_setup\(') { $raid[$sec] = @{} }
+    if ($sec -and $raid.ContainsKey($sec) -and $row -match '^\s*(on_complete|on_fail|on_cancel)\s*=(.*)') {
+        $raid[$sec][$Matches[1]] = $Matches[2]
+    }
+}
+foreach ($s in $raid.Keys) {
+    foreach ($k in 'on_complete', 'on_fail', 'on_cancel') {
+        $v = $raid[$s][$k]
+        if (-not $v -or $v -notmatch "=zop_raid_cleanup\($([regex]::Escape($s))\)") { Bad "$s`: $k has no =zop_raid_cleanup($s)" }
+    }
+}
+Ok "$($raid.Count) raid tasks: cleanup on complete / fail / cancel"
+
 # 6. LuaJIT: syntax of every script + game clock and save migration (agent-tools\zop_time_test.py)
 $py = Join-Path $PSScriptRoot '.venv\Scripts\python.exe'
 if (Test-Path $py) {

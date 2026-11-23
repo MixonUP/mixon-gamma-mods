@@ -131,6 +131,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_dolg_commander_task_6:convoy:killer:bandit:greh:freedom)%
 on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_6) =zop_raid_cleanup(zop_dolg_commander_task_6) =drx_sl_unregister_task_giver(zop_dolg_commander_task_6) =drx_sl_reset_stored_task(zop_dolg_commander_task_6)%
 on_fail = %=fail_task_dec_goodwill(25:dolg) =zop_raid_cleanup(zop_dolg_commander_task_6) =drx_sl_unregister_task_giver(zop_dolg_commander_task_6) =drx_sl_reset_stored_task(zop_dolg_commander_task_6)%
+on_cancel = %=zop_raid_cleanup(zop_dolg_commander_task_6) =drx_sl_unregister_task_giver(zop_dolg_commander_task_6) =drx_sl_reset_stored_task(zop_dolg_commander_task_6)%
 condlist_0 = {!task_giver_alive(zop_dolg_commander_task_6)} fail
 
 
@@ -150,6 +151,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_dolg_commander_task_7:ambush:monolith:greh:killer:bandit)%
 on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_7) =zop_raid_cleanup(zop_dolg_commander_task_7) =drx_sl_unregister_task_giver(zop_dolg_commander_task_7) =drx_sl_reset_stored_task(zop_dolg_commander_task_7)%
 on_fail = %=fail_task_dec_goodwill(25:dolg) =zop_raid_cleanup(zop_dolg_commander_task_7) =drx_sl_unregister_task_giver(zop_dolg_commander_task_7) =drx_sl_reset_stored_task(zop_dolg_commander_task_7)%
+on_cancel = %=zop_raid_cleanup(zop_dolg_commander_task_7) =drx_sl_unregister_task_giver(zop_dolg_commander_task_7) =drx_sl_reset_stored_task(zop_dolg_commander_task_7)%
 condlist_0 = {!task_giver_alive(zop_dolg_commander_task_7)} fail
 
 
@@ -209,6 +211,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_dolg_commander_task_10:camp:greh)%
 on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:dolg) =inc_task_stage(zop_dolg_commander_task_10) =zop_raid_cleanup(zop_dolg_commander_task_10) =drx_sl_unregister_task_giver(zop_dolg_commander_task_10) =drx_sl_reset_stored_task(zop_dolg_commander_task_10)%
 on_fail = %=fail_task_dec_goodwill(25:dolg) =zop_raid_cleanup(zop_dolg_commander_task_10) =drx_sl_unregister_task_giver(zop_dolg_commander_task_10) =drx_sl_reset_stored_task(zop_dolg_commander_task_10)%
+on_cancel = %=zop_raid_cleanup(zop_dolg_commander_task_10) =drx_sl_unregister_task_giver(zop_dolg_commander_task_10) =drx_sl_reset_stored_task(zop_dolg_commander_task_10)%
 condlist_0 = {!task_giver_alive(zop_dolg_commander_task_10)} fail
 
 
@@ -395,6 +398,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(jup_a6_freedom_leader_task_6:convoy:dolg:army:greh)%
 on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_6) =zop_raid_cleanup(jup_a6_freedom_leader_task_6) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_6) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_6)%
 on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(jup_a6_freedom_leader_task_6) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_6) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_6)%
+on_cancel = %=zop_raid_cleanup(jup_a6_freedom_leader_task_6) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_6) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_6)%
 condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_6)} fail
 
 
@@ -414,6 +418,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(jup_a6_freedom_leader_task_7:ambush:dolg:monolith:greh)%
 on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_7) =zop_raid_cleanup(jup_a6_freedom_leader_task_7) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_7) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_7)%
 on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(jup_a6_freedom_leader_task_7) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_7) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_7)%
+on_cancel = %=zop_raid_cleanup(jup_a6_freedom_leader_task_7) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_7) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_7)%
 condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_7)} fail
 
 
@@ -473,6 +478,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(jup_a6_freedom_leader_task_10:camp:greh)%
 on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(jup_a6_freedom_leader_task_10) =zop_raid_cleanup(jup_a6_freedom_leader_task_10) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_10) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_10)%
 on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(jup_a6_freedom_leader_task_10) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_10) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_10)%
+on_cancel = %=zop_raid_cleanup(jup_a6_freedom_leader_task_10) =drx_sl_unregister_task_giver(jup_a6_freedom_leader_task_10) =drx_sl_reset_stored_task(jup_a6_freedom_leader_task_10)%
 condlist_0 = {!task_giver_alive(jup_a6_freedom_leader_task_10)} fail
 
 
@@ -658,6 +664,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_freedom_commander_task_6:convoy:dolg:army:greh)%
 on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_6) =zop_raid_cleanup(zop_freedom_commander_task_6) =drx_sl_unregister_task_giver(zop_freedom_commander_task_6) =drx_sl_reset_stored_task(zop_freedom_commander_task_6)%
 on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(zop_freedom_commander_task_6) =drx_sl_unregister_task_giver(zop_freedom_commander_task_6) =drx_sl_reset_stored_task(zop_freedom_commander_task_6)%
+on_cancel = %=zop_raid_cleanup(zop_freedom_commander_task_6) =drx_sl_unregister_task_giver(zop_freedom_commander_task_6) =drx_sl_reset_stored_task(zop_freedom_commander_task_6)%
 condlist_0 = {!task_giver_alive(zop_freedom_commander_task_6)} fail
 
 
@@ -677,6 +684,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_freedom_commander_task_7:ambush:dolg:monolith:greh)%
 on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_7) =zop_raid_cleanup(zop_freedom_commander_task_7) =drx_sl_unregister_task_giver(zop_freedom_commander_task_7) =drx_sl_reset_stored_task(zop_freedom_commander_task_7)%
 on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(zop_freedom_commander_task_7) =drx_sl_unregister_task_giver(zop_freedom_commander_task_7) =drx_sl_reset_stored_task(zop_freedom_commander_task_7)%
+on_cancel = %=zop_raid_cleanup(zop_freedom_commander_task_7) =drx_sl_unregister_task_giver(zop_freedom_commander_task_7) =drx_sl_reset_stored_task(zop_freedom_commander_task_7)%
 condlist_0 = {!task_giver_alive(zop_freedom_commander_task_7)} fail
 
 
@@ -736,6 +744,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_freedom_commander_task_10:camp:greh)%
 on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:freedom) =inc_task_stage(zop_freedom_commander_task_10) =zop_raid_cleanup(zop_freedom_commander_task_10) =drx_sl_unregister_task_giver(zop_freedom_commander_task_10) =drx_sl_reset_stored_task(zop_freedom_commander_task_10)%
 on_fail = %=fail_task_dec_goodwill(25:freedom) =zop_raid_cleanup(zop_freedom_commander_task_10) =drx_sl_unregister_task_giver(zop_freedom_commander_task_10) =drx_sl_reset_stored_task(zop_freedom_commander_task_10)%
+on_cancel = %=zop_raid_cleanup(zop_freedom_commander_task_10) =drx_sl_unregister_task_giver(zop_freedom_commander_task_10) =drx_sl_reset_stored_task(zop_freedom_commander_task_10)%
 condlist_0 = {!task_giver_alive(zop_freedom_commander_task_10)} fail
 
 
@@ -821,6 +830,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_csky_commander_task_1:camp:renegade)%
 on_complete = %=reward_random_money(9000:11000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_1) =zop_raid_cleanup(zop_csky_commander_task_1) =drx_sl_unregister_task_giver(zop_csky_commander_task_1) =drx_sl_reset_stored_task(zop_csky_commander_task_1)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_1) =drx_sl_unregister_task_giver(zop_csky_commander_task_1) =drx_sl_reset_stored_task(zop_csky_commander_task_1)%
+on_cancel = %=zop_raid_cleanup(zop_csky_commander_task_1) =drx_sl_unregister_task_giver(zop_csky_commander_task_1) =drx_sl_reset_stored_task(zop_csky_commander_task_1)%
 condlist_0 = {!task_giver_alive(zop_csky_commander_task_1)} fail
 
 
@@ -920,6 +930,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_csky_commander_task_6:convoy:army:bandit:renegade)%
 on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_6) =zop_raid_cleanup(zop_csky_commander_task_6) =drx_sl_unregister_task_giver(zop_csky_commander_task_6) =drx_sl_reset_stored_task(zop_csky_commander_task_6)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_6) =drx_sl_unregister_task_giver(zop_csky_commander_task_6) =drx_sl_reset_stored_task(zop_csky_commander_task_6)%
+on_cancel = %=zop_raid_cleanup(zop_csky_commander_task_6) =drx_sl_unregister_task_giver(zop_csky_commander_task_6) =drx_sl_reset_stored_task(zop_csky_commander_task_6)%
 condlist_0 = {!task_giver_alive(zop_csky_commander_task_6)} fail
 
 
@@ -939,6 +950,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_csky_commander_task_7:ambush:monolith:greh:renegade)%
 on_complete = %=reward_random_money(13000:16000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_7) =zop_raid_cleanup(zop_csky_commander_task_7) =drx_sl_unregister_task_giver(zop_csky_commander_task_7) =drx_sl_reset_stored_task(zop_csky_commander_task_7)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_7) =drx_sl_unregister_task_giver(zop_csky_commander_task_7) =drx_sl_reset_stored_task(zop_csky_commander_task_7)%
+on_cancel = %=zop_raid_cleanup(zop_csky_commander_task_7) =drx_sl_unregister_task_giver(zop_csky_commander_task_7) =drx_sl_reset_stored_task(zop_csky_commander_task_7)%
 condlist_0 = {!task_giver_alive(zop_csky_commander_task_7)} fail
 
 
@@ -998,6 +1010,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_csky_commander_task_10:camp:greh)%
 on_complete = %=reward_random_money(14000:17000) =reward_stash(true) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_commander_task_10) =zop_raid_cleanup(zop_csky_commander_task_10) =drx_sl_unregister_task_giver(zop_csky_commander_task_10) =drx_sl_reset_stored_task(zop_csky_commander_task_10)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_commander_task_10) =drx_sl_unregister_task_giver(zop_csky_commander_task_10) =drx_sl_reset_stored_task(zop_csky_commander_task_10)%
+on_cancel = %=zop_raid_cleanup(zop_csky_commander_task_10) =drx_sl_unregister_task_giver(zop_csky_commander_task_10) =drx_sl_reset_stored_task(zop_csky_commander_task_10)%
 condlist_0 = {!task_giver_alive(zop_csky_commander_task_10)} fail
 
 
@@ -1801,6 +1814,7 @@ status_functor = zop_raid_status
 on_init = %=zop_raid_setup(zop_csky_fin_barman_task_2:supply:bandit:renegade:killer)%
 on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =reward_item(vodka) =reward_item(kolbasa) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_fin_barman_task_2) =zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
+on_cancel = %=zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
 condlist_0 = {!task_giver_alive(zop_csky_fin_barman_task_2)} fail
 
 ; the mercs' story "A Special Man" (scripts\zop_merc_story.script)

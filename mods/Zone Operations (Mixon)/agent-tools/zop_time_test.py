@@ -170,5 +170,37 @@ try:
 except Exception as e:
     check(False, "courier: %s" % e)
 
+# ---------------------------------------------------------------- 5. raid cleanup
+print("5. zop_raid_cleanup (on_complete / on_fail / on_cancel)")
+try:
+    lua.execute(r"""
+	SQUADS_ALIVE = {}   -- [id] = section
+	STEERED = {}
+	G.zop_spawn = {
+		valid_squad = function(id, section)
+			local sec = id and SQUADS_ALIVE[id]
+			if not sec or (section and sec ~= section) then return nil end
+			return { id = id }
+		end,
+		steer = function(se, target, rush) STEERED[#STEERED + 1] = se.id end,
+	}
+	G.zop_spawn.steer_by_id = function(id, t, r)
+		local se = G.zop_spawn.valid_squad(id); if se then G.zop_spawn.steer(se, t, r) end
+	end
+	""")
+    m = module_load("zop_raid", "{ zop_raid = { a = { squad = 10, section = 'raid_sq' }, "
+                    "b = { squad = 20, section = 'raid_sq' }, c = { squad = 30 } } }")
+    cleanup = G.xr_effects.zop_raid_cleanup
+    lua.execute("SQUADS_ALIVE = { [10] = 'raid_sq', [20] = 'stranger_sq', [30] = 'old_sq' }")
+    for t in ("a", "b", "c"):
+        cleanup(None, None, lua.eval("{ '%s' }" % t))
+    steered = sorted(lua.globals().STEERED.values())
+    check(steered == [10, 30], "own squad released, stranger with reused id untouched, old save (no section) released: %s" % steered)
+    check(m.zop_raid.a is None and m.zop_raid.b is None and m.zop_raid.c is None, "raid records removed")
+    cleanup(None, None, lua.eval("{ 'a' }"))
+    check(True, "second cleanup of the same task is harmless")
+except Exception as e:
+    check(False, "raid cleanup: %s" % e)
+
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)
