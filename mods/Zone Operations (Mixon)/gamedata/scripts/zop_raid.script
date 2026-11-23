@@ -80,11 +80,20 @@ local function is_base(s)
 	return s.props and s.props.base and s.props.base > 0
 end
 
+-- level id of the actor / of a server object (nil if unknown)
+local function actor_level_id()
+	return db.actor and game_graph():vertex(alife():actor().m_game_vertex_id):level_id()
+end
+
+local function level_id_of(se)
+	return se and se.m_game_vertex_id and game_graph():vertex(se.m_game_vertex_id):level_id()
+end
+
 -- smarts of the actor's level that are not bases, as { se, dist_to_actor }
 local function level_smarts()
 	local out = {}
 	local gg = game_graph()
-	local lid = db.actor and gg:vertex(alife():actor().m_game_vertex_id):level_id()
+	local lid = actor_level_id()
 	if not lid then
 		return out
 	end
@@ -119,7 +128,10 @@ local function pick_faction(factions)
 end
 
 -- route: convoy = two ordinary smarts far apart, away from the player;
---        ambush = far smart -> the giver's base (the smart he stands at)
+--        ambush = far smart -> the giver's base (the smart he stands at, on the actor's level)
+-- Every random pick is made only among choices that complete a route, so ready() (the task
+-- precondition) and setup() (when the task is taken) agree: if ready() found a route, setup()
+-- finds one too, even though both pick at random.
 local function route(kind, giver)
 	local smarts = level_smarts()
 	if STAYS[kind] then
@@ -128,17 +140,24 @@ local function route(kind, giver)
 	end
 	if kind == "ambush" then
 		local base = giver and giver.m_smart_terrain_id and alife():object(giver.m_smart_terrain_id)
-		if not base then
+		-- the base must be on this level: positions of different levels are not comparable
+		if not base or level_id_of(base) ~= actor_level_id() then
 			return nil
 		end
 		local from = pick(smarts, function(e) return e.d > 450 and e.d < 1100 and e.se.position:distance_to(base.position) > 450 end)
 		return from and from.se, base
 	end
-	local from = pick(smarts, function(e) return e.d > 350 and e.d < 1000 end)
+	local function far_from(f)
+		return function(e) return e.se.id ~= f.se.id and e.se.position:distance_to(f.se.position) > 450 end
+	end
+	-- a start only counts if some destination is far enough from it
+	local from = pick(smarts, function(e)
+		return e.d > 350 and e.d < 1000 and pick(smarts, far_from(e)) ~= nil
+	end)
 	if not from then
 		return nil
 	end
-	local to = pick(smarts, function(e) return e.se.id ~= from.se.id and e.se.position:distance_to(from.se.position) > 450 end)
+	local to = pick(smarts, far_from(from))
 	return from.se, to and to.se
 end
 
@@ -151,11 +170,12 @@ function giver_of(npc)
 	end
 	local giver = spk and alife():object(spk:id())
 	if not (giver and giver.m_smart_terrain_id and giver.m_smart_terrain_id ~= 65535) then
-		-- fall back to the base smart nearest to the actor
+		-- fall back to the base smart nearest to the actor (on his level: other levels reuse coordinates)
 		local best, bd
+		local lid = actor_level_id()
 		for _, v in pairs(SIMBOARD.smarts) do
 			local s = v.smrt
-			if s and is_base(s) then
+			if s and is_base(s) and level_id_of(s) == lid then
 				local d = s.position:distance_to(db.actor:position())
 				if d < 200 and (not bd or d < bd) then
 					best, bd = s, d

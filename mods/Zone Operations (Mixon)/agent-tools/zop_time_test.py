@@ -202,5 +202,73 @@ try:
 except Exception as e:
     check(False, "raid cleanup: %s" % e)
 
+# ---------------------------------------------------------------- 6. raid routes
+print("6. zop_raid routes: ready() and setup() agree, ambush stays on the actor's level")
+try:
+    lua.execute(r"""
+	local V = {}
+	V.__index = V
+	function V:distance_to(o) local dx, dy, dz = self.x - o.x, self.y - o.y, self.z - o.z
+		return math.sqrt(dx * dx + dy * dy + dz * dz) end
+	function vec(x, z) return setmetatable({ x = x, y = 0, z = z or 0 }, V) end
+	OBJ = {}
+	-- game vertex id = level id in this sandbox
+	G.game_graph = function() return { vertex = function(_, g) return { level_id = function() return g end } end } end
+	G.alife = function() return {
+		actor = function() return { m_game_vertex_id = 1 } end,
+		object = function(_, id) return OBJ[id] end,
+	} end
+	G.db = { actor = { position = function() return vec(0, 0) end, id = function() return 0 end }, storage = {} }
+	G.AC_ID = 0
+	G.get_speaker = function() return nil end
+	G.ini_sys = { section_exist = function() return true end }
+	G.printf = function() end
+	SPAWNED = 0
+	G.zop_spawn = { squad_at_smart = function() SPAWNED = SPAWNED + 1; return { id = 900 + SPAWNED } end,
+		valid_squad = function() return nil end, steer = function() end, steer_by_id = function() end }
+	function smart(id, x, z, level, base)
+		local s = { id = id, position = vec(x, z), m_game_vertex_id = level,
+			props = { base = base and 1 or 0 }, name = function() return "smart_" .. id end }
+		OBJ[id] = s
+		return s
+	end
+	function board(list)
+		G.SIMBOARD = { smarts = {} }
+		for _, s in ipairs(list) do G.SIMBOARD.smarts[s.id] = { smrt = s } end
+	end
+	""")
+    load_module("zop_raid", src("zop_raid"))
+    lua.globals().reset_callbacks()
+    G.zop_raid.on_game_start()
+    ready, setup = G.xr_conditions.zop_raid_ready, G.xr_effects.zop_raid_setup
+    L = lua.globals()
+
+    # convoy: starts P (400 m) and Q (380 m); only P has a destination > 450 m away (R at -60)
+    L.board(lua.eval("{ smart(1, 400, 0, 1), smart(2, 380, 0, 1), smart(3, -60, 0, 1) }"))
+    lua.execute("math.randomseed(7)")
+    bad = 0
+    for i in range(200):
+        if ready(None, None, lua.eval("{ 'convoy' }")):
+            L.SPAWNED = 0
+            setup(None, None, lua.eval("{ 'convoy_task', 'convoy', 'bandit' }"))
+            if L.SPAWNED != 1:
+                bad += 1
+    check(bad == 0, "convoy: 200 x ready()+setup(), route lost after ready(): %d" % bad)
+
+    # ambush: the giver's base is on level 2 at the same coordinates as level-1 smarts
+    L.board(lua.eval("{ smart(1, 600, 0, 1), smart(2, 700, 0, 1), smart(10, 0, 0, 2, true) }"))
+    lua.execute("OBJ[50] = { m_smart_terrain_id = 10 }")
+    npc = lua.eval("{ id = function() return 50 end }")
+    check(not ready(None, npc, lua.eval("{ 'ambush' }")), "ambush: base on another level -> no route")
+    lua.execute("OBJ[10].m_game_vertex_id = 1")
+    check(bool(ready(None, npc, lua.eval("{ 'ambush' }"))), "ambush: base on the actor's level -> route")
+
+    # giver_of fallback (no speaker): nearest base within 200 m, only on the actor's level
+    L.board(lua.eval("{ smart(20, 50, 0, 2, true), smart(21, 150, 0, 1, true) }"))
+    g = G.zop_raid.giver_of(None)
+    check(g is not None and g.m_smart_terrain_id == 21, "giver_of: base of another level skipped (got %s)" % (g and g.m_smart_terrain_id))
+except Exception as e:
+    check(False, "raid routes: %s" % e)
+
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)
