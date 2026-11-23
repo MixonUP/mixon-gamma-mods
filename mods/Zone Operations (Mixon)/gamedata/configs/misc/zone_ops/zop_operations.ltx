@@ -65,7 +65,7 @@
 ; (+ _counter / _truce), defense: _attack (+ _wave2 ..), services: _services_go / _services_here
 
 [zop_ops]
-list = duty_yanov, freedom_yanov, csky_marsh, army_valley, freedom_garbage, freedom_yanov_retake, freedom_rostok, csky_factory, csky_rostok, csky_jupiter, killer_deadcity, killer_admin
+list = duty_yanov, freedom_yanov, csky_marsh, army_valley, freedom_garbage, freedom_yanov_retake, freedom_rostok, csky_factory, csky_rostok, csky_jupiter, killer_deadcity, killer_admin, army_deadcity
 
 [duty_yanov]
 actor_faction  = dolg
@@ -358,7 +358,8 @@ waves          = zop_army_spetsnaz:6, zop_army_spetsnaz:6
 wave_spawn     = -58.10,1.25,-48.30@95816@2418
 delay_seconds  = 300
 radius         = 50
-reward_money   = 60000
+reward_money   = 20000
+reward_money_max = 40000
 goodwill       = 300
 on_success_start = killer_admin
 on_success_delay = 90
@@ -380,6 +381,36 @@ radius         = 45
 capture        = true
 garrison_squad = zop_killer_garrison
 garrison_count = 2
-reward_money   = 90000
+reward_money   = 20000
+reward_money_max = 40000
+goodwill       = 400
+cooldown_days  = 3
+
+; ------------------------------------------------------------------------------------------
+; Army, Dead City: "Clean Field" from the other side (scripts\zop_merc.script, army mode: the
+; helicopter flies for us, the mercs' roof team and their minefield by the monument are against
+; us, merc reinforcements come every 3 minutes). Colonel Kovalski gives it.
+; ------------------------------------------------------------------------------------------
+[army_deadcity]
+actor_faction  = army
+giver          = agr_smart_terrain_1_6_near_2_military_colonel_kovalski
+type           = assault
+targets        = cit_killers
+enemy          = killer
+requires_goodwill = 1000
+muster         = cit_killers_vs_bandits
+ally_squad     = zop_army_spetsnaz
+ally_count     = 3
+; the mercs hold the HQ with 5 squads (2 more come later, zop_merc)
+occupy_squad   = zop_killer_reinforce
+occupy_count   = 5
+radius         = 60
+; the HQ's story NPCs leave instead of dying (and come back if the assault fails)
+evacuate       = cit_killers_merc_trader_stalker_squad:cit_killers_2, cit_killers_merc_mechanic_stalker_squad:cit_killers_2, cit_killers_merc_medic_stalker_squad:cit_killers_2, cit_killers_merc_stalker_aslan_squad:cit_killers_2, ds_killer_guide_main_base_squad:cit_killers_2
+capture        = true
+garrison_squad = zop_army_spetsnaz_hold
+garrison_count = 2
+reward_money   = 20000
+reward_money_max = 40000
 goodwill       = 400
 cooldown_days  = 3

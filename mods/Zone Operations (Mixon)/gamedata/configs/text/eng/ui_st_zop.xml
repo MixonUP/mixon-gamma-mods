@@ -1684,7 +1684,7 @@ Hold %s. Attackers left: %d.</text>
 		<text>Clean Field</text>
 	</string>
 	<string id="st_zop_killer_deadcity_offer">
-		<text>Listen up. My boys picked up an army channel: there's spetsnaz sitting in the Administration, and it's no patrol. Their operation is called Clean Field, and the target is us. They'll hit the HQ five minutes after they figure out we know. We hold the base to the last man, I'll send reinforcements. If we hold, we go take the Administration. Sixty thousand for the defense, ninety more for the assault.</text>
+		<text>Listen up. My boys picked up an army channel: there's spetsnaz sitting in the Administration, and it's no patrol. Their operation is called Clean Field, and the target is us. They'll hit the HQ five minutes after they figure out we know. We hold the base to the last man, I'll send reinforcements. If we hold, we go take the Administration. Twenty to forty thousand for each job.</text>
 	</string>
 	<string id="st_zop_killer_deadcity_muster">
 		<text>Mercenaries: the spetsnaz hit the HQ in %d min. Everybody to positions!</text>
@@ -1705,7 +1705,7 @@ Hold %s. Attackers left: %d.</text>
 		<text>Clean Field: the Administration</text>
 	</string>
 	<string id="st_zop_killer_admin_offer">
-		<text>The spetsnaz dug in at the Administration. Smoke them out and the Dead City is ours. Ninety thousand.</text>
+		<text>The spetsnaz dug in at the Administration. Smoke them out and the Dead City is ours. Twenty to forty thousand.</text>
 	</string>
 	<string id="st_zop_killer_admin_muster">
 		<text>Mercenaries: the assault groups gather at the HQ (%s). Come over.</text>
@@ -1817,5 +1817,30 @@ Hold %s. Attackers left: %d.</text>
 	</string>
 	<string id="st_zop_radio_a11">
 		<text>Granite: Granite to all. Operation Clean Field complete. The mercenary base is cleared. Out.</text>
+	</string>
+	<!-- army: Clean Field (army_deadcity) -->
+	<string id="st_zop_army_deadcity_name">
+		<text>Clean Field</text>
+	</string>
+	<string id="st_zop_army_deadcity_offer">
+		<text>Listen to your orders. Dushman's mercenaries have dug in at the Dead City and sell our own weapons. Operation Clean Field: the spetsnaz muster at the Administration and storm their HQ from there. Falcon One flies with us. Recon says they have a minefield by the monument and a sniper and an RPG gunner on the HQ roof. No prisoners. Twenty to forty thousand.</text>
+	</string>
+	<string id="st_zop_army_deadcity_muster">
+		<text>Army: the spetsnaz muster at %s. Come over - we move out when you get there.</text>
+	</string>
+	<string id="st_zop_army_deadcity_go">
+		<text>Army: go, at %s! Keep off the monument square - it's mined.</text>
+	</string>
+	<string id="st_zop_army_deadcity_next">
+		<text>Army: clear. Next - %s.</text>
+	</string>
+	<string id="st_zop_army_deadcity_won">
+		<text>Army: the mercenary HQ is taken. The Dead City is ours. Reward: %d RU.</text>
+	</string>
+	<string id="st_zop_army_deadcity_failed">
+		<text>Army: the assault failed. Fall back to the Administration.</text>
+	</string>
+	<string id="st_zop_army_merc_reinforce">
+		<text>Army: merc reinforcements coming in from the east!</text>
 	</string>
 </string_table>

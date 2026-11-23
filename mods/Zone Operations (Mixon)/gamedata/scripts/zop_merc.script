@@ -24,6 +24,8 @@
 ]]
 
 local OP_DEF, OP_ADM = "killer_deadcity", "killer_admin"
+-- the mirror for the army: the same Dead City battle, the player storms the merc HQ with the spetsnaz
+local OP_ARMY = "army_deadcity"
 local HQ, ADMIN, REINF_FROM = "cit_killers", "cit_killers_vs_bandits", "cit_killers_2"
 
 local GARRISON_SQUAD, GARRISON_COUNT = "zop_army_spetsnaz_hold", 6
@@ -348,7 +350,7 @@ local function roof_men()
 end
 
 -- once a second: who is to be held on the roof (the frame callback below does the holding)
-local function roof_hold()
+local function roof_hold(enemy)
 	roof_held = {}
 	for key, sid in pairs(mst.roof or {}) do
 		local sq = alive_squad(sid)
@@ -362,10 +364,13 @@ local function roof_hold()
 				roof_held[m.id] = vector():set(r.pos[1], r.pos[2], r.pos[3])
 				roof_down[m.id] = r.lvid
 				-- out in the open on the ridge they would be the first to die: unkillable while held
-				protected[m.id] = true
-				local o = level.object_by_id(m.id)
-				if o and o:alive() and not o:invulnerable() then
-					o:invulnerable(true)
+				-- (not in the army mirror: there they are the player's targets)
+				if not enemy then
+					protected[m.id] = true
+					local o = level.object_by_id(m.id)
+					if o and o:alive() and not o:invulnerable() then
+						o:invulnerable(true)
+					end
 				end
 			end
 		end
@@ -436,7 +441,9 @@ local function mines_check()
 		elseif o and tg > (mine_arm[id] or 0) then
 			local p = vector():set(mn.x, mn.y, mn.z)
 			local owner = mn.owner or "army"
-			local boom = owner ~= "killer" and db.actor and db.actor:position():distance_to_sqr(p) < MINE_R * MINE_R
+			-- the player sets off the other side's mines (the army mirror: the mercs' minefield)
+			local boom = owner ~= get_actor_true_community() and db.actor
+				and db.actor:position():distance_to_sqr(p) < MINE_R * MINE_R
 			if not boom then
 				for i = 1, #db.OnlineStalkers do
 					local s = level.object_by_id(db.OnlineStalkers[i])
@@ -586,6 +593,65 @@ local function tick_assault(s)
 	end
 end
 
+------------------------------------------------------------------ the army mirror
+-- the merc reinforcements that come during the army's assault: ARMY_REINF_AT real seconds after
+-- the assault starts, one squad each (enemies at the target: the assault must beat them too)
+local ARMY_REINF_AT = { 60, 180 }
+
+local function tick_army(s)
+	local m = ensure(s)
+	if s.stage ~= "assault" or not on_level() then
+		return
+	end
+	m.secs = (m.secs or 0) + 1
+	if not m.went then
+		m.went = true
+		say("a03")
+		m.heli_due = true
+		m.army = true    -- zop_merc_heli: no suppression fire around the player, he is on its side
+	end
+	if m.heli_due and m.secs >= HELI_AT_S then
+		m.heli_due = nil
+		local ok, err = pcall(zop_merc_heli.spawn, m)
+		if not ok then
+			printf("![ZOP] army heli spawn: %s", tostring(err))
+		end
+		mst.heli = m.heli
+		say("a06")
+	end
+	if m.secs >= ROOF_AT_S and not m.roof_done then
+		m.roof_done = true
+		pcall(roof_spawn)
+	end
+	m.merc_reinf = m.merc_reinf or {}
+	for i, at in ipairs(ARMY_REINF_AT) do
+		if m.secs >= at and not m.merc_reinf[i] then
+			local id = spawn(REINF_SQUAD, smart(REINF_FROM), HQ)
+			m.merc_reinf[i] = id or 0
+			if id then
+				say("d03")
+				news("st_zop_army_merc_reinforce")
+			end
+		end
+	end
+	for _, id in pairs(m.merc_reinf) do
+		local sq = id ~= 0 and zop_spawn.valid_squad(id)
+		if sq then
+			sq.force_online, sq.forced_online_status = true, true
+		end
+	end
+	-- the mercs' roof team stays up there while the heli flies (killable: they are the targets)
+	if m.heli and not m.heli_down then
+		roof_hold(true)
+	elseif next(roof_held) then
+		roof_let_go()
+	end
+	local ok, err = pcall(zop_merc_heli.update, m, roof_men())
+	if not ok then
+		printf("![ZOP] army heli: %s", tostring(err))
+	end
+end
+
 ------------------------------------------------------------------ events
 local function on_start(op_id)
 	local s = zop_core.active_state(op_id)
@@ -606,6 +672,15 @@ local function on_start(op_id)
 		if on_level() then
 			pcall(mines_place, MINES, ADMIN, "army")
 			news("st_zop_killer_admin_mines")
+		end
+	elseif op_id == OP_ARMY then
+		-- Granite gives the order; the mercs' channel is listened in on (Dushman)
+		zop_radio.clear()
+		say("a01")
+		say("d01")
+		say("a02")
+		if on_level() then
+			pcall(mines_place, merc_mine_spots(), HQ, "killer")
 		end
 	end
 end
@@ -653,6 +728,16 @@ local function on_end(op_id, success)
 		if success then
 			say("d07")
 		end
+	elseif op_id == OP_ARMY then
+		roof_let_go()
+		pcall(zop_merc_heli.leave, mst.heli)
+		mst.heli_leaving = mst.heli
+		mst.heli = nil
+		mines_clear()
+		release_roof()
+		zop_radio.clear()
+		-- won: Granite reports the operation done; lost: the mercs keep the city
+		say(success and "a11" or "d07")
 	end
 end
 
@@ -695,6 +780,8 @@ local function actor_on_update()
 		ok, err = pcall(tick_defense, s)
 	elseif info.op_id == OP_ADM then
 		ok, err = pcall(tick_assault, s)
+	elseif info.op_id == OP_ARMY then
+		ok, err = pcall(tick_army, s)
 	end
 	if not ok then
 		printf("![ZOP] merc %s: %s", info.op_id, tostring(err))

@@ -254,7 +254,8 @@ function update(m, men)
 		local ap = db.actor and db.actor:alive() and db.actor:position()
 		local roll = math.random()
 		local hp0 = se_hq.position
-		if ap and ap:distance_to(hp0) < 200 and roll < SUPPRESS_ACTOR then
+		-- (the army mirror: the player is on its side - no fire at him, only at the mercs and the HQ)
+		if not m.army and ap and ap:distance_to(hp0) < 200 and roll < SUPPRESS_ACTOR then
 			local a, r = math.random() * 6.283, 4 + math.random() * 6
 			spot = vector():set(ap.x + math.cos(a) * r, ap.y, ap.z + math.sin(a) * r)
 		elseif roll < SUPPRESS_ACTOR + SUPPRESS_LOW then

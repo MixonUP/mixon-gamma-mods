@@ -382,7 +382,12 @@ local function finish(success)
 	if success then
 		pcall(function() tm():set_task_completed("zop_task") end)
 		local mult = tonumber(mcm("reward_mult", 1)) or 1
-		local money = math.floor(op.reward * mult)
+		local base = op.reward
+		if op.reward_max > op.reward then
+			-- rounded to whole thousands, as a commander would pay
+			base = math.random(math.floor(op.reward / 1000), math.floor(op.reward_max / 1000)) * 1000
+		end
+		local money = math.floor(base * mult)
 		if money > 0 then
 			pcall(function() db.actor:give_money(money) end)
 		end

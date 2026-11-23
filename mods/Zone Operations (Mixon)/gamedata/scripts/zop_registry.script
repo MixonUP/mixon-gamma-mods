@@ -59,6 +59,8 @@ local function read_op(ini, id)
 		garrison_count = n("garrison_count", 1),
 		blocks         = split(s("blocks")),
 		reward         = n("reward_money", 0),
+		-- with reward_money_max the reward is random between reward_money and it
+		reward_max     = n("reward_money_max", 0),
 		goodwill       = n("goodwill", 0),
 		cooldown       = n("cooldown_days", 7),
 		evacuate       = {},
