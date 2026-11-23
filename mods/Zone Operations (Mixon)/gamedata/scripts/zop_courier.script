@@ -82,7 +82,16 @@ local function valid(actor, npc, p)
 		return true -- nothing to judge by yet
 	end
 	local var = load_var(db.actor, p[1])
-	return type(var) == "table" and var.target_id ~= nil
+	if not (type(var) == "table" and var.target_id ~= nil) then
+		return false
+	end
+	-- the addressee must still be there (ids are recycled: the section is checked when the record
+	-- has it - records of older versions do not)
+	local se = alife_object(var.target_id)
+	if not (se and IsStalker(nil, se:clsid()) and se:alive()) then
+		return false
+	end
+	return not var.target_sec or se:section_name() == var.target_sec
 end
 
 -- records of the other courier tasks that are not running (shown in the dialog, never taken)
@@ -110,13 +119,17 @@ local function setup(actor, npc, p)
 			return
 		end
 		local item = p[math.random(3, #p)]
+		-- no record can be written: drop the old one, so zop_courier_valid fails the task instead
+		-- of passing on an addressee that is gone
 		if not ini_sys:section_exist(item) then
 			printf("![ZOP] courier %s: no item section [%s]", task_id, tostring(item))
+			save_var(db.actor, task_id, nil)
 			return
 		end
 		local se_target = find(target_sec)
 		if not se_target then
 			printf("![ZOP] courier %s: addressee [%s] not found", task_id, target_sec)
+			save_var(db.actor, task_id, nil)
 			return
 		end
 		-- the giver is the npc the task id is named after: <npc section>_task_<n>
@@ -127,6 +140,7 @@ local function setup(actor, npc, p)
 			task_giver_comm = se_giver and alife_character_community(se_giver) or "csky",
 			task_giver_name = se_giver and se_giver:character_name() or "",
 			target_id       = se_target.id,
+			target_sec      = target_sec,   -- ours: zop_courier_valid checks the id still is him
 			target_comm     = alife_character_community(se_target),
 			item_1_sec      = item,
 		})

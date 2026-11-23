@@ -335,9 +335,14 @@ function hand_over(op, attackers)
 	if not win then
 		return
 	end
-	for _, t in ipairs(win.targets) do
+	for i, t in ipairs(win.targets) do
 		zop_world.capture(t, win, true)
-		zop_world.adopt(t, attackers)
+		-- the attackers stand at one place: they become the garrison of the last target only (one
+		-- squad in several garrisons walked to the last one and the others counted it as theirs);
+		-- the others are filled by the hourly top-up
+		if i == #win.targets then
+			zop_world.adopt(t, attackers)
+		end
 	end
 	for _, e in ipairs(win.evacuate) do
 		pcall(zop_spawn.evacuate, e.squad, e.to)
@@ -1380,7 +1385,10 @@ local function target_impl()
 	if not (s and op) then
 		return nil
 	end
-	local name = (s.stage == "muster") and s.muster or op.targets[s.target or 1]
+	local name = (s.stage == "muster") and s.muster
+		-- the counterattack goes for counter_target, which need not be the last target taken
+		or ((s.stage == "counter_wait" or s.stage == "counter") and op.counter_target)
+		or op.targets[s.target or 1]
 	local se = zop_census.smart_by_name(name)
 	return se and se.id
 end

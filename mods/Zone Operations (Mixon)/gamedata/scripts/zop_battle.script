@@ -136,12 +136,32 @@ local function install()
 end
 
 ------------------------------------------------------------------ engage
+-- [npc id] = { tbl = the overrides table, combat_ignore, enemy_ignore, no_combat_job }: what
+-- clear_overrides took away, given back by restore_overrides_all with the friendly-fire check
+local saved_overrides = {}
+
 local function clear_overrides(id)
 	local st = db.storage[id] and db.storage[id].overrides
 	if st then
+		if not saved_overrides[id] then
+			saved_overrides[id] = { tbl = st, combat_ignore = st.combat_ignore,
+				enemy_ignore = st.enemy_ignore, no_combat_job = st.no_combat_job }
+		end
 		st.combat_ignore = nil
 		st.enemy_ignore = nil
 		st.no_combat_job = nil
+	end
+end
+
+-- only into the same table: if the NPC's logic switched section meanwhile, xr_logic built new
+-- overrides for him and those are right as they are
+local function restore_overrides_all()
+	for id, s in pairs(saved_overrides) do
+		local st = db.storage[id] and db.storage[id].overrides
+		if st and rawequal(st, s.tbl) then
+			st.combat_ignore, st.enemy_ignore, st.no_combat_job = s.combat_ignore, s.enemy_ignore, s.no_combat_job
+		end
+		saved_overrides[id] = nil
 	end
 end
 
@@ -389,11 +409,12 @@ function stop()
 	zones, revealed, next_run, next_reveal = {}, {}, {}, {}
 	next_reveal_to = 0
 	ff_restore_all()
+	restore_overrides_all()
 end
 
 -- once the zone has expired (fight over, player left), give the fighters their checks back
 local function actor_on_update()
-	if not next(ff_swapped) then
+	if not (next(ff_swapped) or next(saved_overrides)) then
 		return
 	end
 	local tg = time_global()
@@ -404,6 +425,7 @@ local function actor_on_update()
 	end
 	if not next(zones) then
 		ff_restore_all()
+		restore_overrides_all()
 	end
 end
 

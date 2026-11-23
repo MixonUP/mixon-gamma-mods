@@ -121,15 +121,16 @@ end
 local function smart(name) return zop_census.smart_by_name(name) end
 local function say(id) zop_radio.say(id) end
 
-local function alive_squad(sid)
-	local sq = zop_spawn.valid_squad(sid)
+-- sec: the squad's section when known (sets keep it; true from older saves = id only)
+local function alive_squad(sid, sec)
+	local sq = zop_spawn.valid_squad(sid, sec)
 	return sq and sq:npc_count() > 0 and sq or nil
 end
 
 local function count_alive(set)
 	local n = 0
-	for sid in pairs(set or {}) do
-		if alive_squad(sid) then
+	for sid, sec in pairs(set or {}) do
+		if alive_squad(sid, sec) then
 			n = n + 1
 		end
 	end
@@ -137,8 +138,8 @@ local function count_alive(set)
 end
 
 local function force_online(set)
-	for sid in pairs(set or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(set or {}) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq then
 			sq.force_online = true
 			sq.forced_online_status = true
@@ -147,8 +148,8 @@ local function force_online(set)
 end
 
 local function unforce(set)
-	for sid in pairs(set or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(set or {}) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq then
 			sq.force_online, sq.forced_online_status = nil, nil
 		end
@@ -211,7 +212,7 @@ local function spawn_garrison(op_id)
 	for _ = 1, GARRISON_COUNT do
 		local id = spawn(GARRISON_SQUAD, se_a, ADMIN)
 		if id then
-			mst.garrison[id] = true
+			mst.garrison[id] = GARRISON_SQUAD
 		end
 	end
 	-- whoever lived there moves out (bandits, loners)
@@ -228,8 +229,8 @@ local function spawn_garrison(op_id)
 end
 
 local function keep_garrison()
-	for sid in pairs(mst.garrison) do
-		local sq = alive_squad(sid)
+	for sid, sec in pairs(mst.garrison) do
+		local sq = alive_squad(sid, sec)
 		if not sq then
 			mst.garrison[sid] = nil
 		elseif sq.scripted_target ~= ADMIN then
@@ -241,8 +242,8 @@ end
 
 local function release_garrison()
 	unforce(mst.garrison)
-	for sid in pairs(mst.garrison) do
-		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	for sid, sec in pairs(mst.garrison) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 	end
 	mst.garrison = {}
 end
@@ -266,8 +267,8 @@ end
 
 local function reinforce(s, m)
 	local live = 0
-	for sid in pairs(m.reinf or {}) do
-		if alive_squad(sid) then
+	for sid, sec in pairs(m.reinf or {}) do
+		if alive_squad(sid, sec) then
 			live = live + 1
 		end
 	end
@@ -277,7 +278,7 @@ local function reinforce(s, m)
 	local id = spawn(REINF_SQUAD, smart(REINF_FROM), HQ)
 	if id then
 		m.reinf = m.reinf or {}
-		m.reinf[id] = true
+		m.reinf[id] = REINF_SQUAD
 		zop_core.add_squad(OP_DEF, "defenders", id)
 		say("d03")
 		news("st_zop_killer_reinforce")
@@ -309,7 +310,7 @@ local function roof_spawn()
 	end
 	mst.roof = mst.roof or {}
 	for key, r in pairs(ROOF) do
-		if not (mst.roof[key] and alive_squad(mst.roof[key])) then
+		if not (mst.roof[key] and alive_squad(mst.roof[key], r.section)) then
 			local pos = level.vertex_position(r.lvid)
 			local at = { x = pos.x, y = pos.y, z = pos.z, lvid = r.lvid, gvid = se_hq.m_game_vertex_id }
 			local id = spawn(r.section, se_hq, HQ, at)
@@ -336,7 +337,7 @@ end
 local function roof_men()
 	local out = {}
 	for key, sid in pairs(mst.roof or {}) do
-		local sq = alive_squad(sid)
+		local sq = alive_squad(sid, ROOF[key] and ROOF[key].section)
 		if sq then
 			for m in sq:squad_members() do
 				local o = level.object_by_id(m.id)
@@ -353,7 +354,7 @@ end
 local function roof_hold(enemy)
 	roof_held = {}
 	for key, sid in pairs(mst.roof or {}) do
-		local sq = alive_squad(sid)
+		local sq = alive_squad(sid, ROOF[key] and ROOF[key].section)
 		local r = ROOF[key]
 		if sq and r then
 			sq.force_online, sq.forced_online_status = true, true
@@ -393,8 +394,8 @@ local function roof_hold_frame()
 end
 
 local function release_roof()
-	for _, sid in pairs(mst.roof or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for key, sid in pairs(mst.roof or {}) do
+		local sq = zop_spawn.valid_squad(sid, ROOF[key] and ROOF[key].section)
 		if sq then
 			sq.force_online, sq.forced_online_status = nil, nil
 		end
@@ -539,7 +540,7 @@ local function tick_defense(s)
 		local id = spawn(REINF_SQUAD, smart(HQ), HQ)
 		if id then
 			m.reinf = m.reinf or {}
-			m.reinf[id] = true
+			m.reinf[id] = REINF_SQUAD
 			zop_core.add_squad(OP_DEF, "defenders", id)
 		end
 	end
@@ -635,7 +636,7 @@ local function tick_army(s)
 		end
 	end
 	for _, id in pairs(m.merc_reinf) do
-		local sq = id ~= 0 and zop_spawn.valid_squad(id)
+		local sq = id ~= 0 and zop_spawn.valid_squad(id, REINF_SQUAD)
 		if sq then
 			sq.force_online, sq.forced_online_status = true, true
 		end
@@ -672,8 +673,8 @@ local function on_start(op_id)
 		-- a day and more passed since the defense (the story comes between): the spetsnaz who held
 		-- the Administration may be gone - a fresh garrison holds it for the assault
 		local left = 0
-		for sid in pairs(mst.garrison or {}) do
-			if alive_squad(sid) then
+		for sid, sec in pairs(mst.garrison or {}) do
+			if alive_squad(sid, sec) then
 				left = left + 1
 			end
 		end
@@ -806,8 +807,8 @@ local function on_before_hit(npc, s_hit, bone_id, flags)
 		return
 	end
 	local id = npc:id()
-	for _, sid in pairs(mst.roof) do
-		local sq = zop_spawn.valid_squad(sid)
+	for key, sid in pairs(mst.roof) do
+		local sq = zop_spawn.valid_squad(sid, ROOF[key] and ROOF[key].section)
 		if sq then
 			for m in sq:squad_members() do
 				if m.id == id then

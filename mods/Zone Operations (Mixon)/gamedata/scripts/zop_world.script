@@ -184,6 +184,7 @@ local function send_services(name, o, op, se, only, at_home)
 		return false
 	end
 	o.services.at = o.services.at or {}
+	local created = 0
 	for i, section in ipairs(op.services) do
 		if not only or only[section] then
 			local at = op.services_at[i] or name
@@ -191,8 +192,14 @@ local function send_services(name, o, op, se, only, at_home)
 			if sq then
 				o.services.squads[sq.id] = section
 				o.services.at[sq.id] = at
+				created = created + 1
 			end
 		end
+	end
+	if created == 0 then
+		-- nobody could be spawned: no news and no "sent", the hourly check tries again
+		printf("![ZOP] %s: no service squad could be spawned for %s", op.id, name)
+		return false
 	end
 	if op.services_escort and not only then
 		local esc = zop_spawn.squad_at_smart(op.services_escort, from, name)

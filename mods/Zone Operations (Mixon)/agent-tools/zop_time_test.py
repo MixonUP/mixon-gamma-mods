@@ -60,7 +60,7 @@ G.load_var = function(_, k, d) local v = PSTOR[k]; if v == nil then return d end
 G.db = { actor = {}, storage = {} }
 for _, k in ipairs({ "pairs", "ipairs", "type", "tostring", "tonumber", "math", "string",
 	"table", "pcall", "next", "select", "unpack", "setmetatable", "getmetatable", "rawget",
-	"rawset", "error", "assert", "print", "os", "bit", "loadstring" }) do
+	"rawset", "rawequal", "error", "assert", "print", "os", "bit", "loadstring" }) do
 	G[k] = _G[k]
 end
 setmetatable(G, { __index = function(_, k) return stub() end })
@@ -462,6 +462,135 @@ try:
 except Exception as e:
     import traceback; traceback.print_exc()
     check(False, "previous owner: %s" % e)
+
+# ---------------------------------------------------------------- 11. small review items
+print("11. small review items")
+def section(name, fn):
+    try:
+        fn()
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        check(False, "%s: %s" % (name, e))
+
+def t_census():
+    lua.execute(r"""
+	-- vertex id = level id; actor on level 1
+	G.game_graph = function() return { vertex = function(_, g) return { level_id = function() return g end } end } end
+	OBJ = {}
+	G.alife = function() return { actor = function() return { m_game_vertex_id = 1 } end,
+		object = function(_, id) return OBJ[id] end } end
+	local V = {}; V.__index = V
+	function V:distance_to(o) return math.abs(self.x - o.x) end
+	local function v(x) return setmetatable({ x = x }, V) end
+	G.db = { actor = {}, storage = {}, OnlineStalkers = { 11 } }
+	G.level = { object_by_id = function(id) if id == 11 then return { alive = function() return true end,
+		position = function() return v(5) end } end end }
+	G.character_community = function() return "army" end
+	-- an offline army squad of 4 assigned to the smart, standing on level 2 at the same x
+	OBJ[20] = { position = v(0), m_game_vertex_id = 2, online = false,
+		get_squad_community = function() return "army" end, npc_count = function() return 4 end }
+	G.SIMBOARD = { smarts = { [100] = { squads = { [20] = true } }, [200] = { squads = { [20] = true } } } }
+	""")
+    C = load_module("zop_census", src("zop_census"))
+    other = lua.eval("{ id = 100, position = setmetatable({ x = 0 }, { __index = { distance_to = function(s, o) return math.abs(s.x - o.x) end } }), m_game_vertex_id = 2 }")
+    here = lua.eval("{ id = 200, position = setmetatable({ x = 0 }, { __index = { distance_to = function(s, o) return math.abs(s.x - o.x) end } }), m_game_vertex_id = 1 }")
+    n_other, n_here = C.count("army", other, 50), C.count("army", here, 50)
+    check(n_other == 4, "census.count, smart on level 2: the online NPC of level 1 is not counted, the level-2 squad is (%d, want 4)" % n_other)
+    check(n_here == 1, "census.count, smart on level 1: the online NPC counts, the level-2 squad does not (%d, want 1)" % n_here)
+
+def t_services():
+    lua.execute(r"""
+	NEWS = 0
+	G.news_manager = { send_tip = function() NEWS = NEWS + 1 end }
+	G.zop_spawn = setmetatable({ squad_at_smart = function() return nil end, muster_smart = function() return nil end,
+		section_of = function() return "x" end }, { __index = function() return function() end end })
+	G.zop_census = setmetatable({ smart_by_name = function() return { id = 1, position = {}, name = function() return "base" end } end,
+		actor_near = function() return false end, now = function() return 1e9 end }, { __index = function() return function() end end })
+	SOPS = { op_s = { id = "op_s", faction = "csky", services = { "trader_sq" }, services_at = {}, services_home = "base", services_delay = 0 } }
+	G.zop_registry = { get = function(id) return SOPS[id] end }
+	G.zop_api = { emit = function() end }
+	""")
+    W = load_module("zop_world", src("zop_world"))
+    W.all()["base"] = lua.eval("{ faction = 'csky', op = 'op_s', garrison = {}, services = { due = 0, squads = {} } }")
+    W.services_update("base", True)
+    sv = W.all()["base"].services
+    check(not sv.sent and lua.globals().NEWS == 0, "send_services: nothing spawned -> not 'sent', no news, retried later")
+
+def t_courier():
+    lua.execute(r"""
+	PSTOR = {}
+	OBJ = { [5] = { clsid = function() return 1 end, alive = function() return true end, section_name = function() return "viking" end },
+	        [6] = { clsid = function() return 1 end, alive = function() return true end, section_name = function() return "stranger" end } }
+	G.alife_object = function(id) return OBJ[id] end
+	G.IsStalker = function() return true end
+	""")
+    K = load_module("zop_courier", src("zop_courier"))
+    lua.globals().reset_callbacks()
+    K.on_game_start()
+    valid = G.xr_conditions.zop_courier_valid
+    p = lua.eval("{ 'task' }")
+    lua.execute("PSTOR = { task = { target_id = 5, target_sec = 'viking' } }")
+    check(valid(None, None, p) is True, "courier valid: the addressee is there")
+    lua.execute("PSTOR = { task = { target_id = 6, target_sec = 'viking' } }")
+    check(valid(None, None, p) is False, "courier valid: the id now belongs to somebody else -> false")
+    lua.execute("PSTOR = { task = { target_id = 7, target_sec = 'viking' } }")
+    check(valid(None, None, p) is False, "courier valid: the addressee is gone -> false (old code: true)")
+    lua.execute("PSTOR = { task = { target_id = 5 } }")
+    check(valid(None, None, p) is True, "courier valid: a record of an older version (no section) still works")
+
+def t_battle():
+    lua.execute(r"""
+	OV = { combat_ignore = 'cond', enemy_ignore = true, no_combat_job = true }
+	G.db = { storage = { [7] = { overrides = OV } }, OnlineStalkers = { 7 }, actor = {} }
+	local P = { distance_to_sqr = function() return 0 end }
+	NPC = { id = function() return 7 end, alive = function() return true end, position = function() return P end,
+		invulnerable = function() return false end, make_object_visible_somewhen = function() end }
+	G.level = { object_by_id = function(id) if id == 7 or id == 8 then return NPC end end }
+	G.db.OnlineStalkers = { 7, 8 }
+	G.character_community = function(o) return "csky" end
+	G.time_global = function() return T end
+	G.rx_ff = nil
+	""")
+    B = load_module("zop_battle", src("zop_battle"))
+    lua.globals().reset_callbacks()
+    B.on_game_start()
+    lua.execute("T = 0; G.character_community = function(o) if o == NPC then return CNT_A and 'csky' or 'bandit' end end")
+    # two sides needed: make object 8 a bandit
+    lua.execute(r"""
+	NPC8 = setmetatable({ id = function() return 8 end }, { __index = NPC })
+	G.level.object_by_id = function(id) if id == 7 then return NPC elseif id == 8 then return NPC8 end end
+	G.character_community = function(o) if o == NPC8 then return 'bandit' end return 'csky' end
+	""")
+    se = lua.eval("{ id = 1, position = {} }")
+    B.engage(se, "csky", "bandit", 50)
+    ov = lua.globals().OV
+    check(ov.combat_ignore is None and ov.no_combat_job is None, "engage clears the peace overrides")
+    B.stop()
+    check(ov.combat_ignore == "cond" and ov.enemy_ignore is True and ov.no_combat_job is True, "stop() gives them back (old code: left cleared)")
+
+def t_api_dialog():
+    A = load_module("zop_api", src("zop_api"))
+    lua.execute("SEEN = nil")
+    A.add_condition("t", lua.eval("function(id, op) op.faction = 'changed'; SEEN = op end"))
+    op = lua.eval("{ id = 'op_x', faction = 'csky' }")
+    A.check_conditions(op)
+    check(op.faction == "csky" and lua.globals().SEEN is not None, "api add_condition: a handler changes only its copy")
+    lua.execute(r"""
+	NEXTS, LAST = 0, nil
+	G.dialog_manager = { dm_init_dynamic_task_dialog = function() end,
+		add_script_dialog = function() end,
+		add_dialog = function(a, b, text) if text == "st_ordered_task_next" then NEXTS = NEXTS + 1; LAST = a end end }
+	""")
+    D = load_module("zop_task_dialog", src("zop_task_dialog"))
+    if D.on_game_start:
+        D.on_game_start()
+    G.dialog_manager.dm_init_dynamic_task_dialog(lua.eval("{}"))
+    n = lua.globals().NEXTS
+    check(n == 29, "task dialog: 'another one' on blocks 11..39 only (%d, want 29; old code 30)" % n)
+
+for name, fn in [("census", t_census), ("services", t_services), ("courier", t_courier),
+                 ("battle", t_battle), ("api/dialog", t_api_dialog)]:
+    section(name, fn)
 
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)

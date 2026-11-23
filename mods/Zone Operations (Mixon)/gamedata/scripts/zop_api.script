@@ -134,8 +134,11 @@ end
 
 -- used by zop_core.available
 function check_conditions(op)
+	-- a copy, as operation() gives: a handler must not change the registry's own record
+	-- (not operation(op.id) itself: it calls available() -> check_conditions again)
+	local view = next(conditions) and copy(op)
 	for key, fn in pairs(conditions) do
-		local ok, res = pcall(fn, op.id, op)
+		local ok, res = pcall(fn, op.id, view)
 		if not ok then
 			printf("![ZOP] api: condition %s failed: %s", tostring(key), tostring(res))
 		elseif res == false then
