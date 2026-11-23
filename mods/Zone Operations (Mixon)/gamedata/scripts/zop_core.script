@@ -256,8 +256,8 @@ end
 -- force_online is set every tick on the operation's squads (see actor_on_update); once the
 -- operation is over they must be able to go offline again like everybody else
 local function unforce(set)
-	for sid in pairs(set or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(set or {}) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq and sq.force_online then
 			sq.force_online = nil
 			sq.forced_online_status = nil
@@ -373,13 +373,13 @@ local function finish(success)
 		end
 	end
 	-- our defenders were only lent for the operation
-	for sid in pairs(s.defenders or {}) do
-		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	for sid, sec in pairs(s.defenders or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 	end
 	-- the counterattack's leftovers, the occupiers and the evicted go back to the simulation
 	for _, set in ipairs({ s.attackers or {}, s.occupiers or {}, s.evicted or {} }) do
-		for sid in pairs(set) do
-			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		for sid, sec in pairs(set) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 		end
 	end
 	if success then
@@ -404,8 +404,8 @@ local function finish(success)
 			pcall(zop_world.capture, op.targets[1], op)
 		end
 		if op.release_allies then
-			for sid in pairs(s.squads or {}) do
-				pcall(zop_spawn.steer_by_id, sid, nil, false)
+			for sid, sec in pairs(s.squads or {}) do
+				pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 			end
 		elseif op.kind == "assault" and op.capture then
 			-- reinforcements that came during the counterattack stay as garrison with the others
@@ -451,8 +451,8 @@ local function finish(success)
 		pcall(function() tm():set_task_failed("zop_task") end)
 		st.cooldown[op.id] = now() + op.cooldown * 86400
 		-- release whoever is left back to the free simulation; story NPCs go home
-		for sid in pairs(s.squads or {}) do
-			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		for sid, sec in pairs(s.squads or {}) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 		end
 		pcall(return_evacuated, s, op)
 		-- whatever this attempt captured is lost again, so the operation can be tried again
@@ -513,7 +513,7 @@ function start(op_id)
 		for _ = 1, op.defender_count do
 			local sq = se_d and zop_spawn.squad_at_smart(op.defender_squad, se_d, op.targets[1])
 			if sq then
-				st.active.defenders[sq.id] = true
+				st.active.defenders[sq.id] = zop_spawn.section_of(sq)
 			end
 		end
 	end
@@ -538,7 +538,7 @@ function start(op_id)
 				if c and c ~= op.enemy and c ~= op.faction and away and not get_object_story_id(sid) then
 					pcall(zop_spawn.steer, sq, away:name(), false)
 					st.active.evicted = st.active.evicted or {}
-					st.active.evicted[sid] = true
+					st.active.evicted[sid] = zop_spawn.section_of(sq)
 				end
 			end
 		end
@@ -550,7 +550,7 @@ function start(op_id)
 			for _ = 1, op.occupy_count do
 				local ok, sq = pcall(zop_spawn.squad_at_smart, op.occupy_squad, se_t, tname)
 				if ok and sq then
-					st.active.occupiers[sq.id] = true
+					st.active.occupiers[sq.id] = zop_spawn.section_of(sq)
 				end
 			end
 		end
@@ -580,10 +580,10 @@ local function spawn_wave(op, section, count, at_name, target_name, flank, at)
 	for _ = 1, count do
 		local sq = zop_spawn.squad_at_smart(section, se_at, target_name, at)
 		if sq then
-			st.active.squads[sq.id] = true
+			st.active.squads[sq.id] = zop_spawn.section_of(sq)
 			if flank then
 				st.active.flank = st.active.flank or {}
-				st.active.flank[sq.id] = true
+				st.active.flank[sq.id] = zop_spawn.section_of(sq)
 			end
 			n = n + 1
 		end
@@ -676,7 +676,7 @@ local function reinforce(s, op, set, target_name)
 	for _ = 1, op.reinforce_count do
 		local sq = zop_spawn.squad_at_smart(op.reinforce_squad, se_from, target_name)
 		if sq then
-			set[sq.id] = true
+			set[sq.id] = zop_spawn.section_of(sq)
 			n = n + 1
 		end
 	end
@@ -693,7 +693,7 @@ local function flank_squads(s, op)
 		for sid in pairs(s.flank) do
 			-- dead or recycled squads drop out, so the flank fight ends with its group
 			if s.squads[sid] and zop_spawn.valid_squad(sid, op.flank_squad) then
-				out[sid] = true
+				out[sid] = s.squads[sid]
 			end
 		end
 	end
@@ -757,9 +757,9 @@ local function step_assault(s, op)
 	send_story_away(s, op, se_t)
 	zop_battle.engage(se_t, op.faction, op.enemy, op.radius * 1.7)
 	local main = {}
-	for sid in pairs(s.squads) do
+	for sid, sec in pairs(s.squads) do
 		if not fl[sid] then
-			main[sid] = true
+			main[sid] = sec
 		end
 	end
 	zop_battle.reveal(main, se_t, op.enemy, op.radius)
@@ -785,9 +785,9 @@ local function step_assault(s, op)
 		local nxt = op.targets[s.target]
 		-- the flank group keeps its own target until the main group gets there
 		local keep = flank_squads(s, op)
-		for sid in pairs(s.squads) do
+		for sid, sec in pairs(s.squads) do
 			if not keep[sid] then
-				zop_spawn.steer_by_id(sid, nxt, true)
+				zop_spawn.steer_by_id(sid, nxt, true, sec)
 			end
 		end
 		news(string.format(op_text(op, "next"), place_title(nxt)))
@@ -835,7 +835,7 @@ local function step_counter_wait(s, op)
 	for _ = 1, op.counter_count do
 		local sq = zop_spawn.squad_at_smart(op.counter_squad, se_a, op.counter_target)
 		if sq then
-			s.attackers[sq.id] = true
+			s.attackers[sq.id] = zop_spawn.section_of(sq)
 		end
 	end
 	s.stage, s.t1 = "counter", now()
@@ -917,9 +917,9 @@ end
 local function counter_push(s, op, se_t, steer_now)
 	local tg, tp = time_global(), se_t.position
 	local k = 0
-	for sid in pairs(s.attackers or {}) do
+	for sid, sec in pairs(s.attackers or {}) do
 		k = k + 1
-		local sq = zop_spawn.valid_squad(sid)
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq then
 			local far, d = {}, nil
 			for m in sq:squad_members() do
@@ -1025,8 +1025,8 @@ local function step_wait(s, op)
 			s.staging_pre, s.staging_id = nil, nil
 		end
 	end
-	for sid in pairs(s.defenders or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(s.defenders or {}) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq and sq.scripted_target ~= op.targets[1] then
 			zop_spawn.steer(sq, op.targets[1], true)
 		end
@@ -1117,8 +1117,8 @@ local function step_defend(s, op)
 		elseif (s.wave_pulls or 0) < 3 then
 			s.wave_pulls = (s.wave_pulls or 0) + 1
 			s.wave_secs = 600
-			for sid in pairs(s.squads) do
-				pcall(zop_spawn.steer_by_id, sid, op.targets[1], true)
+			for sid, sec in pairs(s.squads) do
+				pcall(zop_spawn.steer_by_id, sid, op.targets[1], true, sec)
 			end
 			local far = {}
 			for _, o in ipairs(list) do
@@ -1131,9 +1131,9 @@ local function step_defend(s, op)
 			end
 		else
 			pcall(unforce, s.squads)
-			for sid in pairs(s.squads) do
+			for sid, sec in pairs(s.squads) do
 				unmark(sid)
-				pcall(zop_spawn.steer_by_id, sid, nil, false)
+				pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 			end
 			s.squads = {}
 		end
@@ -1191,6 +1191,15 @@ local function migrate()
 		end
 		st.fixed.yanov_lost = true
 	end
+	-- 1.3.1: squad sets keep the squad's section (alife ids are recycled); every load, since a
+	-- save of an older version may come at any time (cheap: only entries that are still true)
+	local s = st.active
+	for _, k in ipairs({ "squads", "flank", "defenders", "attackers", "occupiers", "evicted" }) do
+		zop_spawn.upgrade_set(s and s[k])
+	end
+	for _, o in pairs(zop_world.all()) do
+		zop_spawn.upgrade_set(o.garrison)
+	end
 end
 
 local function actor_on_update()
@@ -1243,8 +1252,8 @@ local function actor_on_update()
 		sets[#sets + 1] = set
 	end
 	for _, set in ipairs(sets) do
-		for sid in pairs(set) do
-			local sq = zop_spawn.valid_squad(sid)
+		for sid, sec in pairs(set) do
+			local sq = zop_spawn.valid_squad(sid, sec)
 			if sq then
 				sq.force_online = true
 				sq.forced_online_status = true
@@ -1259,8 +1268,8 @@ local function actor_on_update()
 	end
 	local still = {}
 	for _, set in ipairs(enemy_sets) do
-		for sid in pairs(set) do
-			local sq = zop_spawn.valid_squad(sid)
+		for sid, sec in pairs(set) do
+			local sq = zop_spawn.valid_squad(sid, sec)
 			if sq then
 				for m in sq:squad_members() do
 					local o = level.object_by_id(m.id)

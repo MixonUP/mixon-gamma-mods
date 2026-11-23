@@ -80,12 +80,12 @@ function actor_near(se_smart, dist)
 	return a:position():distance_to(se_smart.position) <= dist
 end
 
-local forced = {}   -- [squad id] = true: enemy squads made to come online by count(..., force)
+local forced = {}   -- [squad id] = section: enemy squads made to come online by count(..., force)
 
 -- lets go of the enemy squads count() forced online (when an operation is over)
 function release_forced()
-	for sid in pairs(forced) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(forced) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq then
 			sq.force_online = nil
 			sq.forced_online_status = nil
@@ -130,7 +130,7 @@ function count(community, se_smart, radius, skip, force)
 					if force and not forced[sid] then
 						sq.force_online = true
 						sq.forced_online_status = true
-						forced[sid] = true
+						forced[sid] = zop_spawn.section_of(sq)
 					end
 				end
 			end
@@ -144,8 +144,8 @@ end
 function members(squad_ids, pos)
 	local list, best = {}, nil
 	local sim = alife()
-	for sid in pairs(squad_ids or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(squad_ids or {}) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq then
 			for m in sq:squad_members() do
 				local o = level.object_by_id(m.id)
@@ -174,8 +174,8 @@ end
 -- living members of tracked squads (ids of squad server objects)
 function alive_in_squads(squad_ids)
 	local n = 0
-	for sid in pairs(squad_ids or {}) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(squad_ids or {}) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		if sq then
 			local ok, c = pcall(function() return sq:npc_count() end)
 			if ok and c then

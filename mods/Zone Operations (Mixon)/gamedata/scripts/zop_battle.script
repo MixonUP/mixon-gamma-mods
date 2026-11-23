@@ -283,8 +283,8 @@ function reveal(squad_ids, se_smart, enemy, radius, max_dist, opts)
 		next_reveal[se_smart.id] = tg + PERIOD_MS
 	end
 	local A, B = {}, {}
-	for sid in pairs(squad_ids or {}) do
-		local se = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(squad_ids or {}) do
+		local se = zop_spawn.valid_squad(sid, sec)
 		if se then
 			for m in se:squad_members() do
 				local o = level.object_by_id(m.id)
@@ -351,8 +351,8 @@ function reveal_to(faction, se_smart, radius, attacker_ids)
 	end
 	next_reveal_to = time_global() + PERIOD_MS
 	local B = {}
-	for sid in pairs(attacker_ids or {}) do
-		local se = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(attacker_ids or {}) do
+		local se = zop_spawn.valid_squad(sid, sec)
 		if se then
 			for m in se:squad_members() do
 				local o = level.object_by_id(m.id)

@@ -35,11 +35,11 @@ function capture(smart_name, op, no_top_up)
 	local old = owners[smart_name]
 	if old and old.faction ~= op.faction then
 		-- the place changed hands: the old garrison and services are no longer ours to keep
-		for sid in pairs(old.garrison or {}) do
-			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		for sid, sec in pairs(old.garrison or {}) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 		end
-		for sid in pairs(old.services and old.services.squads or {}) do
-			pcall(zop_spawn.steer_by_id, sid, nil, false)
+		for sid, sec in pairs(old.services and old.services.squads or {}) do
+			pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 		end
 		old = nil
 	end
@@ -66,18 +66,19 @@ function adopt(smart_name, squad_ids)
 	if not o then
 		return
 	end
-	for sid in pairs(squad_ids or {}) do
-		if zop_spawn.valid_squad(sid) then
-			o.garrison[sid] = true
-			zop_spawn.steer_by_id(sid, smart_name, false)
+	for sid, sec in pairs(squad_ids or {}) do
+		local se = zop_spawn.valid_squad(sid, sec)
+		if se then
+			o.garrison[sid] = zop_spawn.section_of(se)
+			zop_spawn.steer(se, smart_name, false)
 		end
 	end
 end
 
 local function garrison_alive(o)
 	local n = 0
-	for sid in pairs(o.garrison) do
-		local sq = zop_spawn.valid_squad(sid)
+	for sid, sec in pairs(o.garrison) do
+		local sq = zop_spawn.valid_squad(sid, sec)
 		local ok, c = pcall(function() return sq and sq:npc_count() or 0 end)
 		if ok and c and c > 0 then
 			n = n + 1
@@ -103,7 +104,7 @@ function top_up(smart_name, force)
 	for _ = 1, need do
 		local sq = zop_spawn.squad_at_smart(op.garrison_squad, se, smart_name)
 		if sq then
-			o.garrison[sq.id] = true
+			o.garrison[sq.id] = zop_spawn.section_of(sq)
 		end
 	end
 end
@@ -190,7 +191,7 @@ local function send_services(name, o, op, se, only, at_home)
 	if op.services_escort and not only then
 		local esc = zop_spawn.squad_at_smart(op.services_escort, from, name)
 		if esc then
-			o.garrison[esc.id] = true
+			o.garrison[esc.id] = zop_spawn.section_of(esc)
 		end
 	end
 	o.services.arrived = false
@@ -317,11 +318,11 @@ function release(smart_name, op_id)
 	if not (o and o.op == op_id) then
 		return
 	end
-	for sid in pairs(o.garrison or {}) do
-		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	for sid, sec in pairs(o.garrison or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 	end
-	for sid in pairs(o.services and o.services.squads or {}) do
-		pcall(zop_spawn.steer_by_id, sid, nil, false)
+	for sid, sec in pairs(o.services and o.services.squads or {}) do
+		pcall(zop_spawn.steer_by_id, sid, nil, false, sec)
 	end
 	owners[smart_name] = nil
 	index_services()
@@ -372,8 +373,8 @@ local function fix_posts()
 	end
 	next_post_fix = tg + 3000
 	for _, o in pairs(owners) do
-		for sid in pairs(o.services and o.services.squads or {}) do
-			local sq = zop_spawn.valid_squad(sid)
+		for sid, sec in pairs(o.services and o.services.squads or {}) do
+			local sq = zop_spawn.valid_squad(sid, sec)
 			if sq then
 				for m in sq:squad_members() do
 					local npc = level.object_by_id(m.id)

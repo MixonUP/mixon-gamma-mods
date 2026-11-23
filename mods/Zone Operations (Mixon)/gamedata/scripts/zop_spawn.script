@@ -59,20 +59,43 @@ function steer(se_squad, target, rush)
 end
 
 -- alife ids are recycled: an id stored earlier must still be a squad (and of the same section,
--- when it is known) before we touch it
+-- when it is known) before we touch it.
+-- Squad sets of the mod are {[squad id] = section}, so a reader passes the value it got from
+-- pairs() as section. Saves of older versions have {[squad id] = true}: anything that is not a
+-- string means "section unknown" and only the id is checked.
 function valid_squad(squad_id, section)
 	local se = squad_id and alife():object(squad_id)
 	if not (se and se.clsid and se:clsid() == clsid.online_offline_group_s) then
 		return nil
 	end
-	if section and se:section_name() ~= section then
+	if type(section) == "string" and se:section_name() ~= section then
 		return nil
 	end
 	return se
 end
 
-function steer_by_id(squad_id, target, rush)
-	local se = valid_squad(squad_id)
+-- the value to keep for a squad in a squad set: its section (true if it cannot be read)
+function section_of(se)
+	local ok, sec = pcall(function() return se:section_name() end)
+	return ok and type(sec) == "string" and sec or true
+end
+
+-- old saves: {[id] = true} entries get the section of the squad that has the id now (still ours:
+-- ids are not reused while the squad lives); ids that are no squad any more are dropped
+function upgrade_set(set)
+	if type(set) ~= "table" then
+		return
+	end
+	for sid, v in pairs(set) do
+		if type(v) ~= "string" then
+			local se = valid_squad(sid)
+			set[sid] = se and section_of(se) or nil
+		end
+	end
+end
+
+function steer_by_id(squad_id, target, rush, section)
+	local se = valid_squad(squad_id, section)
 	if se then
 		steer(se, target, rush)
 		return true

@@ -270,5 +270,53 @@ try:
 except Exception as e:
     check(False, "raid routes: %s" % e)
 
+# ---------------------------------------------------------------- 7. recycled squad ids
+print("7. squad sets keep sections: a squad that got a dead squad's id is not ours")
+try:
+    lua.execute(r"""
+	G.clsid = { online_offline_group_s = 7 }
+	STEER = {}
+	function squad(id, section, count)
+		OBJ[id] = { id = id, clsid = function() return 7 end,
+			section_name = function() return section end,
+			npc_count = function() return count or 4 end,
+			squad_members = function() return function() return nil end end }
+		return OBJ[id]
+	end
+	""")
+    spawn = load_module("zop_spawn", src("zop_spawn"))
+    real_steer = spawn.steer
+    lua.execute("G.zop_spawn.steer = function(se, t, r) STEER[se.id] = t or 'sim' end")
+    load_module("zop_census", src("zop_census"))
+    vs = spawn.valid_squad
+    L = lua.globals()
+    lua.execute("OBJ = {}; squad(1, 'zop_wave_sq'); squad(2, 'stalker_sim_sq')")
+    check(vs(1, "zop_wave_sq") is not None and vs(2, "zop_wave_sq") is None, "valid_squad: section string is checked")
+    check(vs(2, True) is not None, "valid_squad: true (old save) = id check only")
+
+    # a wave squad died; its id 2 now belongs to a simulation squad of 4 men
+    alive = G.zop_census.alive_in_squads(lua.eval("{ [1] = 'zop_wave_sq', [2] = 'zop_wave_sq' }"))
+    check(alive == 4, "alive_in_squads counts only the real wave squad: %d (old code: 8)" % alive)
+
+    # upgrade of an old save: true -> section, dead ids dropped
+    st_ = lua.eval("{ [1] = true, [2] = 'zop_wave_sq', [3] = true }")
+    spawn.upgrade_set(st_)
+    check(st_[1] == "zop_wave_sq" and st_[2] == "zop_wave_sq" and st_[3] is None, "upgrade_set: true -> section, dead id dropped, strings kept")
+
+    # world: adopt keeps sections, release lets go only of its own squads
+    load_module("zop_world", src("zop_world"))
+    lua.execute("G.zop_registry = { get = function() return nil end }; G.zop_api = { emit = function() end }")
+    W = G.zop_world
+    W.all()["base"] = lua.eval("{ faction = 'csky', op = 'op1', garrison = {} }")
+    W.adopt("base", lua.eval("{ [1] = 'zop_wave_sq', [2] = 'zop_garrison_sq' }"))
+    g = W.all()["base"].garrison
+    check(g[1] == "zop_wave_sq" and g[2] is None, "adopt: own squad kept with section, recycled id skipped")
+    lua.execute("STEER = {}")
+    W.release("base", "op1")
+    st2 = dict(L.STEER.items())
+    check(st2 == {1: "sim"}, "release: only the real garrison squad goes back to the simulation: %s" % st2)
+except Exception as e:
+    check(False, "squad sets: %s" % e)
+
 print("\nFAILS:", fails)
 sys.exit(1 if fails else 0)
