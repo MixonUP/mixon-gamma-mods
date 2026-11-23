@@ -13,7 +13,7 @@ Clips: `Videos\ZOP_A_Special_Man_Discord.mp4` (8.7 MB) for message 2, `Videos\ZO
 The mercs of the Dead City finally get their own line in **G.A.M.M.A.** It starts with a fight for their home.
 
 🛡️ **CLEAN FIELD — hold Dushman's HQ**
-Five minutes after the alarm, army spetsnaz hit the base in waves, and a separate group swings round the flank. A **Mi-24** circles the city: rockets, suppression fire on you and the lower floors. Two mercs climb onto the roof to bring it down — the sniper **Gyurza** with an anti-materiel rifle and **Kuvalda** with an RPG. Reinforcements check in over the radio, and the mercs lay a minefield round the monument.
+Five minutes after the alarm, army spetsnaz hit the base in waves, and a separate group swings round the flank. A **Mi-24** circles the city: rockets, suppression fire on you and the lower floors. Two mercs climb onto the roof to bring it down — the sniper **Viper** with an anti-materiel rifle and **Sledge** with an RPG. Reinforcements check in over the radio, and the mercs lay a minefield round the monument.
 
 ⚔️ **THE ADMINISTRATION — strike back**
 Mines at the door, spetsnaz dug in inside. Take the building and a merc garrison moves in.
@@ -35,7 +35,7 @@ A day after the defence, Dushman gets on the radio. Something is going on at the
 
 The outpost commander, **Snake** — a bald man in an exoskeleton — is waiting for a guest. A man who proved himself in the fight for the Dead City, they say, with information about a **very secret project**.
 
-The guest arrives. He is **Sin**. He sits down by the campfire with Snake and his men, and he talks… in a voice you won't forget.
+The guest arrives. He is **Sin**. He walks up to Snake by the campfire and preaches… in a voice you won't forget.
 
 Then Sin comes in force — three squads, preaching over the radio, a team of snipers and a grenadier on the height above the outpost. Dushman sends his best, a squad of masters, and you hold what is left of the outpost.
 

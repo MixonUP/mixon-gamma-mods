@@ -110,6 +110,20 @@ A faction leader gives you squads, you lead them into a battle across several po
 | **Duty** | Operation Yanov (Colonel Mixon and his tasks) |
 | **Army** | Special Operation Valley (Dark Valley bandits) |
 
+### 💀 The mercenary branch (in development)
+
+<p align="center">
+  <a href="docs/zop_mercs.en.md"><img src="docs/media/zop/special_man_teaser.gif" width="100%" alt="A Special Man: the Sin messenger at the campfire, the blast, Sin fighters in the yard"></a>
+</p>
+
+The mercs of the Dead City get a war of their own and a story. **Clean Field**: hold Dushman's HQ against spetsnaz and the Mi-24 "Falcon One", with the sniper Viper and Sledge's RPG on the roof and mines round the monument. **A Special Man**: a story task where a Sin messenger comes to Snake's outpost at the Army Warehouses, and the talk at the campfire ends with a blast. **The Administration**: strike back. Army players get a mirror operation. The radio is voiced in English and Russian.
+
+| | | |
+|---|---|---|
+| ![The Mi-24 over the Dead City](docs/media/zop/mercs/merc_heli_sky.jpg) | ![The messenger at the campfire](docs/media/zop/mercs/merc_messenger.jpg) | ![Sin fighters in the yard](docs/media/zop/mercs/merc_sin_attack.jpg) |
+
+▶ [Trailer](docs/media/zop/mercs/mercs_trailer.mp4) · ▶ [A Special Man](docs/media/zop/mercs/a_special_man.mp4) · **[The whole branch: story, operations, what's next →](docs/zop_mercs.en.md)**
+
 ![Kholodny rallies Clear Sky to the assault](docs/media/zop/art/kholodny_assault.jpg)
 
 | | |

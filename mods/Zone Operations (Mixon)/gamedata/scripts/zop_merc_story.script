@@ -271,18 +271,10 @@ local function surround(g)
 end
 
 local blasts = {}
--- the blast is a scene, not a trap: the player standing by the campfire is hurt, not killed
--- (it killed the author through god mode while filming)
-local blast_until = 0
-local function actor_on_before_hit(s_hit)
-	if time_global() < blast_until and s_hit and s_hit.type ~= hit.fire_wound then
-		s_hit.power = s_hit.power * 0.15
-	end
-end
+-- (the blast hurts the player like any explosion: standing at the campfire is the player's risk - the author's call)
 
 local function blast(g)
 	local p = g:position()
-	blast_until = time_global() + 3000
 	local se = smart(OUTPOST)
 	local lv = level.vertex_id(p)
 	if se and lv and lv < 4294967295 then
@@ -312,8 +304,6 @@ local function blasts_update()
 		local o = level.object_by_id(id)
 		if o then
 			blasts[id] = nil
-			-- the player's protection window runs from the real explosion (the charge comes online late sometimes)
-			blast_until = time_global() + 3000
 			pcall(function() o:explode(0) end)
 		elseif not alife():object(id) then
 			blasts[id] = nil
@@ -669,7 +659,6 @@ function on_game_start()
 	RegisterScriptCallback("save_state", save_state)
 	RegisterScriptCallback("load_state", load_state)
 	RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
-	RegisterScriptCallback("actor_on_before_hit", actor_on_before_hit)
 	if task_functor then
 		task_functor.zop_story_title = title_impl
 		task_functor.zop_story_descr = descr_impl
