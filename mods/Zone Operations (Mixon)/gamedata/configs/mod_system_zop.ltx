@@ -82,6 +82,46 @@ blast             = 3.0
 blast_r           = 6.0
 frags             = 0
 
+; ---- the mercs' story "A Special Man" (scripts\zop_merc_story.script)
+; Snake, the merc outpost commander at the Army Warehouses (profile added by modxml_zop.script)
+[zop_merc_zmey]:stalker
+$spawn            = "respawn\zop_merc_zmey"
+character_profile = zop_merc_zmey
+spec_rank         = legend
+community         = killer
+
+; the Sin man who comes to the outpost with "news" and blows himself up
+[zop_greh_emissary]:stalker
+$spawn            = "respawn\zop_greh_emissary"
+character_profile = zop_greh_emissary
+spec_rank         = master
+community         = greh
+
+; the Sin squad on the height over the outpost: snipers (an SV-98 from the script), assault men,
+; a grenadier (an RPG-7 from the script)
+[zop_greh_sniper]:sim_default_greh_4
+spec_rank         = legend
+
+[zop_greh_stormer]:sim_default_greh_4
+spec_rank         = legend
+
+[zop_greh_grenadier]:sim_default_greh_4
+spec_rank         = legend
+
+; his blast: kills everybody close
+[zop_emissary_blast]:explosive_barrel
+visual            = dynamics\weapons\wpn_grenades\wpn_f1.ogf
+blast             = 5.0
+blast_r           = 7.0
+frags             = 0
+frags_r           = 1
+
+; crash fix: the smoke grenade's stock particle group explosions\explosion_dym has a child effect with no
+; shader in the installed particles.xr (Particles Cinematic VFX) - a native crash in the render thread when
+; anybody throws it (seen in the Sin attack of the merc story). Use the Squad Grenades M18 smoke instead.
+![grenade_smoke]
+explode_particles = squad_grenades\smoke_m18
+
 ; Salazar - Clear Sky's trader at the Jupiter checkpoint (post: configs\scripts\jupiter\zop_csky_jupiter_posts.ltx)
 [zop_csky_salazar]:stalker
 $spawn            = "respawn\zop_csky_salazar"

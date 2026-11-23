@@ -1843,4 +1843,98 @@ Hold %s. Attackers left: %d.</text>
 	<string id="st_zop_army_merc_reinforce">
 		<text>Army: merc reinforcements coming in from the east!</text>
 	</string>
+	<!-- mercs: A Special Man (zop_merc_story) -->
+	<string id="st_zop_story_title">
+		<text>A Special Man</text>
+	</string>
+	<string id="st_zop_story_descr_go">
+		<text>Dushman wants you to ask Snake, the commander of the merc outpost at the Army Warehouses, what is going on there and how to help.</text>
+	</string>
+	<string id="st_zop_story_descr_wait">
+		<text>Snake is waiting for a man with news of a secret project. Stay close.</text>
+	</string>
+	<string id="st_zop_story_descr_attack">
+		<text>Sin is attacking the outpost. Fight them off.</text>
+	</string>
+	<string id="st_zop_story_descr_report">
+		<text>Return to Dushman in the Dead City.</text>
+	</string>
+	<string id="st_zop_story_start">
+		<text>Mercenaries: Dushman is calling. The outpost at the Army Warehouses, commander Snake.</text>
+	</string>
+	<string id="st_zop_story_sin_attack">
+		<text>Sin is attacking the outpost!</text>
+	</string>
+	<string id="st_zop_story_return">
+		<text>The attack is beaten off. Go back to Dushman.</text>
+	</string>
+	<string id="st_zop_story_mark_sin">
+		<text>Sin</text>
+	</string>
+	<string id="st_zop_story_won">
+		<text>Mercenaries: Dushman paid for the Warehouses: %d RU.</text>
+	</string>
+	<string id="st_zop_zmey_name">
+		<text>Snake</text>
+	</string>
+	<string id="st_zop_zmey_bio">
+		<text>Commander of the merc outpost at the Army Warehouses.</text>
+	</string>
+	<string id="st_zop_emissary_name">
+		<text>The Messenger</text>
+	</string>
+	<string id="st_zop_emissary_bio">
+		<text>He does not speak in his own voice.</text>
+	</string>
+	<string id="st_zop_story_dlg_ask">
+		<text>Dushman, trouble at the Warehouses. A Sin man came and blew himself up with Snake. Then Sin attacked - we beat them off.</text>
+	</string>
+	<string id="st_zop_story_dlg_answer">
+		<text>You're back... So Snake didn't make it. Yes. There is one very secret project. The client is very serious. When the time comes, you'll learn everything.</text>
+	</string>
+	<string id="st_zop_story_dlg_bye">
+		<text>Got it.</text>
+	</string>
+	<string id="st_zop_radio_d08">
+		<text>Dushman: Listen. You proved yourself in the defense - I've got a job. Our outpost at the Army Warehouses, the commander's called Snake. Go see what's going on there and how to help. I'm sending a special man to him.</text>
+	</string>
+	<string id="st_zop_radio_z01">
+		<text>Snake: You're from Dushman? Good. We're waiting for a man - he promised to leak us something about one very secret project. Stay close. One minute.</text>
+	</string>
+	<string id="st_zop_radio_z02">
+		<text>Snake: There he is. Well, talk. What's the project, and who's behind it?</text>
+	</string>
+	<string id="st_zop_radio_z03">
+		<text>Snake: Enough preaching. Names, places. Or my boys will help you remember.</text>
+	</string>
+	<string id="st_zop_radio_s01">
+		<text>Messenger: You are blind... You dig in the dirt, and He watches you from above. The project is a door. And it is already open.</text>
+	</string>
+	<string id="st_zop_radio_s02">
+		<text>Messenger: Names... He already knows your names. Every one. He has seen you in His dream.</text>
+	</string>
+	<string id="st_zop_radio_s03">
+		<text>Messenger: I am His voice. And I am His gift to you. Receive it!</text>
+	</string>
+	<string id="st_zop_radio_g01">
+		<text>Sin: Brothers! Fire cleanses. Those who are left - send them to Him!</text>
+	</string>
+	<string id="st_zop_radio_g02">
+		<text>Sin: He sees every one of you. You will become part of His dream.</text>
+	</string>
+	<string id="st_zop_radio_g03">
+		<text>Sin: Do not fear death, brothers. Death is only the awakening.</text>
+	</string>
+	<string id="st_zop_radio_d09">
+		<text>Dushman: You're back... So Snake didn't make it. Yes. There is one very secret project. The client is very serious. When the time comes, you'll learn everything.</text>
+	</string>
+	<string id="st_zop_story_help">
+		<text>Mercenaries: Dushman sent a squad of masters to the Warehouses.</text>
+	</string>
+	<string id="st_zop_radio_d10">
+		<text>Dushman: What's going on there?! Snake! Snake, answer me!.. Hold on, boys! I'm sending my best - they're on their way!</text>
+	</string>
+	<string id="st_zop_story_recall">
+		<text>Dushman: Everybody who made it - back to me, in the Dead City. We'll drink to Snake.</text>
+	</string>
 </string_table>

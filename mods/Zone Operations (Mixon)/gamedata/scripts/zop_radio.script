@@ -77,6 +77,11 @@ function clear()
 	queue = {}
 end
 
+-- nothing queued and the last line has finished
+function is_idle()
+	return #queue == 0 and time_global() >= busy_until
+end
+
 local function actor_on_update()
 	if #queue == 0 or time_global() < busy_until or not db.actor then
 		return

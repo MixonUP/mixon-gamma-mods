@@ -1843,4 +1843,98 @@
 	<string id="st_zop_army_merc_reinforce">
 		<text>Армия: к наёмникам подходит подкрепление с востока!</text>
 	</string>
+	<!-- mercs: A Special Man (zop_merc_story) -->
+	<string id="st_zop_story_title">
+		<text>Особый человек</text>
+	</string>
+	<string id="st_zop_story_descr_go">
+		<text>Душман просит узнать у Змея, командира блокпоста наёмников на Армейских складах, что у них происходит и чем помочь.</text>
+	</string>
+	<string id="st_zop_story_descr_wait">
+		<text>Змей ждёт человека с информацией о секретном проекте. Будьте рядом.</text>
+	</string>
+	<string id="st_zop_story_descr_attack">
+		<text>Грех атакует блокпост. Отбейтесь.</text>
+	</string>
+	<string id="st_zop_story_descr_report">
+		<text>Вернитесь к Душману в Мёртвый город.</text>
+	</string>
+	<string id="st_zop_story_start">
+		<text>Наёмники: Душман вызывает. Блокпост на Армейских складах, командир Змей.</text>
+	</string>
+	<string id="st_zop_story_sin_attack">
+		<text>Грех атакует блокпост!</text>
+	</string>
+	<string id="st_zop_story_return">
+		<text>Атака отбита. Возвращайтесь к Душману.</text>
+	</string>
+	<string id="st_zop_story_mark_sin">
+		<text>Грех</text>
+	</string>
+	<string id="st_zop_story_won">
+		<text>Наёмники: Душман заплатил за Склады: %d RU.</text>
+	</string>
+	<string id="st_zop_zmey_name">
+		<text>Змей</text>
+	</string>
+	<string id="st_zop_zmey_bio">
+		<text>Командир блокпоста наёмников на Армейских складах.</text>
+	</string>
+	<string id="st_zop_emissary_name">
+		<text>Посланник</text>
+	</string>
+	<string id="st_zop_emissary_bio">
+		<text>Он говорит не своим голосом.</text>
+	</string>
+	<string id="st_zop_story_dlg_ask">
+		<text>Душман, на Складах беда. Пришёл греховец, подорвал себя вместе со Змеем. Потом налетел Грех — отбились.</text>
+	</string>
+	<string id="st_zop_story_dlg_answer">
+		<text>Вернулся... Значит, Змей не дождался. Да. Есть один очень секретный проект. Заказчик очень серьёзный. Будет время — обо всём узнаешь.</text>
+	</string>
+	<string id="st_zop_story_dlg_bye">
+		<text>Понял.</text>
+	</string>
+	<string id="st_zop_radio_d08">
+		<text>Душман: Слушай. Ты на обороне себя показал — есть дело. На Складах наш блокпост, командир — Змей. Сходи, узнай, что у них там и чем помочь. Я отправляю к нему особого человека.</text>
+	</string>
+	<string id="st_zop_radio_z01">
+		<text>Змей: Ты от Душмана? Хорошо. Ждём человека — обещал слить нам кое-что про один очень секретный проект. Стой рядом. Минуту.</text>
+	</string>
+	<string id="st_zop_radio_z02">
+		<text>Змей: Пришёл. Ну, говори. Что за проект, и кто за ним стоит?</text>
+	</string>
+	<string id="st_zop_radio_z03">
+		<text>Змей: Хватит проповедей. Имена, места. Или мои ребята помогут тебе вспомнить.</text>
+	</string>
+	<string id="st_zop_radio_s01">
+		<text>Посланник: Вы слепы... Вы копаете в земле, а Он смотрит на вас сверху. Проект — это дверь. И она уже открыта.</text>
+	</string>
+	<string id="st_zop_radio_s02">
+		<text>Посланник: Имена... Ваши имена Он уже знает. Каждое. Он видел вас во сне.</text>
+	</string>
+	<string id="st_zop_radio_s03">
+		<text>Посланник: Я — Его голос. И я — Его дар вам. Примите его!</text>
+	</string>
+	<string id="st_zop_radio_g01">
+		<text>Грех: Братья! Огонь очищает. Тех, кто остался, — к Нему!</text>
+	</string>
+	<string id="st_zop_radio_g02">
+		<text>Грех: Он видит каждого из вас. Вы станете частью Его сна.</text>
+	</string>
+	<string id="st_zop_radio_g03">
+		<text>Грех: Не бойтесь смерти, братья. Смерть — это только пробуждение.</text>
+	</string>
+	<string id="st_zop_radio_d09">
+		<text>Душман: Вернулся... Значит, Змей не дождался. Да. Есть один очень секретный проект. Заказчик очень серьёзный. Будет время — обо всём узнаешь.</text>
+	</string>
+	<string id="st_zop_story_help">
+		<text>Наёмники: Душман выслал на Склады отряд мастеров.</text>
+	</string>
+	<string id="st_zop_radio_d10">
+		<text>Душман: Что там у вас?! Змей! Змей, ответь!.. Держитесь, мужики! Высылаю лучших — уже идут к вам!</text>
+	</string>
+	<string id="st_zop_story_recall">
+		<text>Душман: Всем, кто уцелел, — ко мне, в Мёртвый город. Змея помянем.</text>
+	</string>
 </string_table>

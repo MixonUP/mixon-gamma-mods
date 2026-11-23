@@ -669,6 +669,17 @@ local function on_start(op_id)
 			pcall(mines_place, merc_mine_spots(), HQ, "killer")
 		end
 	elseif op_id == OP_ADM then
+		-- a day and more passed since the defense (the story comes between): the spetsnaz who held
+		-- the Administration may be gone - a fresh garrison holds it for the assault
+		local left = 0
+		for sid in pairs(mst.garrison or {}) do
+			if alive_squad(sid) then
+				left = left + 1
+			end
+		end
+		if left < 2 then
+			pcall(spawn_garrison)
+		end
 		if on_level() then
 			pcall(mines_place, MINES, ADMIN, "army")
 			news("st_zop_killer_admin_mines")

@@ -1802,3 +1802,15 @@ on_init = %=zop_raid_setup(zop_csky_fin_barman_task_2:supply:bandit:renegade:kil
 on_complete = %=reward_random_money(12000:15000) =reward_stash(true) =reward_item(vodka) =reward_item(kolbasa) =complete_task_inc_goodwill(75:csky) =inc_task_stage(zop_csky_fin_barman_task_2) =zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
 on_fail = %=fail_task_dec_goodwill(25:csky) =zop_raid_cleanup(zop_csky_fin_barman_task_2) =drx_sl_unregister_task_giver(zop_csky_fin_barman_task_2) =drx_sl_reset_stored_task(zop_csky_fin_barman_task_2)%
 condlist_0 = {!task_giver_alive(zop_csky_fin_barman_task_2)} fail
+
+; the mercs' story "A Special Man" (scripts\zop_merc_story.script)
+[zop_story_task]
+icon = ui_inGame2_Mesta_evakuatsii
+prior = 130
+storyline = false
+title = st_zop_story_title
+title_functor = zop_story_title
+descr = st_zop_story_title
+descr_functor = zop_story_descr
+target_functor = zop_story_target
+dont_send_update_news = true

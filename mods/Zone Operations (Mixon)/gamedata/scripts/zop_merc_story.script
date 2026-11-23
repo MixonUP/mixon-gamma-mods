@@ -1,0 +1,660 @@
+--[[
+	Zone Operations (Mixon) - the mercs' story after the Dead City defense: "A Special Man".
+
+	A game day after killer_deadcity is won, Dushman calls on the radio: the merc outpost at the
+	Army Warehouses (commander Snake) is waiting for an informer with news of a very secret project,
+	go and see what they need. Snake meets the player; a minute later a Sin man (neutral for the
+	scene) walks in, Snake and his men surround him, he preaches in that voice of theirs - and blows
+	himself up, taking Snake and whoever stands close with him. Three Sin squads (8-10 each) attack
+	the outpost with their radio preaching. Beaten -> back to Dushman: "there is a very secret
+	project for a very serious client; when the time comes you'll learn everything". After this,
+	Dushman offers the assault on the Administration (killer_admin).
+
+	Stages (m_data.zop_merc_story.stage): nil -> go -> wait_guest -> guest -> talk -> attack ->
+	report -> done. Voice lines: zop_radio (d08, z01-z03, s01-s03, g01-g03, d09).
+]]
+
+local LEVEL = "l07_military"
+local OUTPOST = "mil_smart_terrain_2_2"          -- the author's spot: -368.62, -14.03, 389.84
+local OUTPOST_SQUAD = "zop_merc_zmey_squad"
+local GUEST_SQUAD = "zop_greh_emissary_squad"
+local SIN_SQUAD, SIN_COUNT = "zop_greh_assault", 3
+local DUSHMAN = "cit_killers_merc_trader_stalker"
+local DAY = 86400                                  -- game seconds after the defense
+local MEET_R, GUEST_AFTER_S = 20, 60
+-- where the Sin squads come out right after the blast (the author's spots in game; a squad with
+-- no spot here comes from 130 m out on its own side)
+local SIN_SPOTS = {
+	{ x = -319.84, y = -13.54, z = 376.09, lvid = 27108 },
+	{ x = -347.27, y = -17.82, z = 337.05, lvid = 9616 },
+	-- the third: a Sin legend squad on the height, 14 m above the outpost - three snipers, three
+	-- assault men and a grenadier; they hold it
+	-- (not held on the spot - that made them jump; they stay at the smart next to it on their own)
+	{ x = -306.94, y = 0.66, z = 424.50, lvid = 36910, squad = "zop_greh_snipers", stay = true,
+		gear = {
+			zop_greh_sniper    = { "wpn_sv98", "ammo_7.62x54_7h14", 4 },
+			zop_greh_grenadier = { "wpn_rpg7", "ammo_og-7b", 5 },
+		} },
+}
+local HOLD_R = 6        -- a sniper farther than this from his spot is put back on it
+-- the entrance with the sandbags (the author's spot): Snake and three men wait for the guest here
+local GATE = { x = -335.16, y = -13.59, z = 391.26, lvid = 16748 }
+local GATE_MEN, GATE_R, GATE_HOLD_R = 4, 2.6, 4
+local held = {}                 -- [npc id] = spot: held there every frame (runtime)
+local HELD_R2 = 0.25 * 0.25
+local BLAST = "zop_emissary_blast"
+local BLAST_KILL_R = 9
+
+local sst = {}                                     -- saved state
+local next_tick = 0
+local guest_id                                     -- runtime: the guest NPC's id (re-found by squad)
+
+local function now()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+end
+local function tr(id) return game.translate_string(id) end
+local function news(id)
+	if db.actor then
+		pcall(news_manager.send_tip, db.actor, tr(id), nil, nil, 10000)
+	end
+end
+local function say(id) zop_radio.say(id) end
+local function smart(name) return zop_census.smart_by_name(name) end
+local function tm() return task_manager and task_manager.get_task_manager() end
+local function on_level() return level.name() == LEVEL end
+
+local function squad_men(sid)
+	local out = {}
+	local sq = sid and zop_spawn.valid_squad(sid)
+	if sq then
+		for m in sq:squad_members() do
+			local o = level.object_by_id(m.id)
+			if o and o:alive() then
+				out[#out + 1] = o
+			end
+		end
+	end
+	return out
+end
+
+local function zmey()
+	for _, o in ipairs(squad_men(sst.outpost)) do
+		if o:section() == "zop_merc_zmey" then
+			return o
+		end
+	end
+end
+
+local function guest()
+	local men = squad_men(sst.guest)
+	return men[1]
+end
+
+------------------------------------------------------------------ the guest is no one's enemy for the scene
+local function on_enemy_eval(obj, enemy, flags)
+	if not (sst.stage == "guest" or sst.stage == "talk") then
+		return
+	end
+	local g = guest_id
+	if g and (obj:id() == g or enemy:id() == g) then
+		flags.override = true
+		flags.result = false
+	end
+end
+
+------------------------------------------------------------------ stages
+local function start()
+	local se = smart(OUTPOST)
+	if not se then
+		return
+	end
+	local sq = zop_spawn.squad_at_smart(OUTPOST_SQUAD, se, OUTPOST)
+	sst.outpost = sq and sq.id
+	sst.stage, sst.t = "go", now()
+	pcall(function() tm():give_task("zop_story_task") end)
+	say("d08")
+	news("st_zop_story_start")
+end
+
+-- a point of the AI mesh about `r` metres from `c` (tried around the circle, starting at angle a0;
+-- the outpost stands in a walled yard, so walking "in a direction" stops at the first wall)
+local function ring_vertex(c, radii, a0)
+	for _, r in ipairs(radii) do
+		for k = 0, 11 do
+			local a = (a0 or 0) + k * 0.5236
+			local want = vector():set(c.x + math.cos(a) * r, c.y, c.z + math.sin(a) * r)
+			local v = level.vertex_id(vector():set(want.x, c.y + 3, want.z))
+			if v and v < 4294967295 then
+				local p = level.vertex_position(v)
+				if math.abs(p.y - c.y) < 4 and p:distance_to(want) < 5 then
+					return v, p
+				end
+			end
+		end
+	end
+end
+
+local function gate_pos()
+	return vector():set(GATE.x, GATE.y, GATE.z)
+end
+
+-- spots around a point on the AI mesh, each strictly close to where it was asked for
+-- (level.vertex_id of a point off the mesh can return a vertex far away)
+local function spots_around(c, n, r)
+	local out = {}
+	for k = 0, 11 do
+		if #out >= n then
+			break
+		end
+		local a = k * 0.5236 + 0.3
+		local want = vector():set(c.x + math.cos(a) * r, c.y, c.z + math.sin(a) * r)
+		local v = level.vertex_id(vector():set(want.x, c.y + 1.5, want.z))
+		if v and v < 4294967295 then
+			local p = level.vertex_position(v)
+			if p:distance_to(want) < 1.5 and math.abs(p.y - c.y) < 2 then
+				out[#out + 1] = p
+			end
+		end
+	end
+	return out
+end
+
+-- Snake first, then up to three of his men, at the gate
+local function gate_men()
+	local out, z = {}, zmey()
+	if z then
+		out[1] = z
+	end
+	for _, o in ipairs(squad_men(sst.outpost)) do
+		if #out >= GATE_MEN then
+			break
+		end
+		-- (game objects cannot be compared with ~=: by id)
+		if not z or o:id() ~= z:id() then
+			out[#out + 1] = o
+		end
+	end
+	return out
+end
+
+-- Snake and his guard stand at the gate (the author's spot) from the moment they wait until the
+-- blast: their smart's jobs would walk them back to the campfire. With `tight` (the talk) they are
+-- kept close on a ring around the gate, where the guest stands.
+local gate_spots
+local function hold_gate(tight)
+	if not on_level() then
+		return
+	end
+	if not gate_spots then
+		-- (a ring close round the gate; where sandbags block it, a little wider)
+		gate_spots = spots_around(gate_pos(), GATE_MEN, GATE_R)
+		for _, r in ipairs({ 3.4, 4.2 }) do
+			for _, p in ipairs(spots_around(gate_pos(), GATE_MEN - #gate_spots, r)) do
+				gate_spots[#gate_spots + 1] = p
+			end
+		end
+	end
+	-- (held every frame, as the merc roof team: checked once a second they would walk off to the
+	-- fire and be snapped back - visible jumps)
+	for i, o in ipairs(gate_men()) do
+		held[o:id()] = gate_spots[i] or gate_pos()
+	end
+end
+
+-- the guest stands in the middle of them, at the gate, while he talks
+local function hold_guest(g)
+	held[g:id()] = gate_pos()
+end
+
+local function release_held()
+	held = {}
+end
+
+-- every frame: whoever is held and has moved off his spot is put back on it
+function hold_frame()
+	if not next(held) then
+		return
+	end
+	for id, spot in pairs(held) do
+		local o = level.object_by_id(id)
+		if not (o and o:alive()) then
+			held[id] = nil
+		elseif o:position():distance_to_sqr(spot) > HELD_R2 then
+			pcall(function() o:set_npc_position(spot) end)
+		end
+	end
+end
+
+-- the outpost and its commander, read from the server (works offline too)
+local function zmey_alive()
+	local sq = sst.outpost and zop_spawn.valid_squad(sst.outpost, OUTPOST_SQUAD)
+	if not sq then
+		return false
+	end
+	for m in sq:squad_members() do
+		local se = alife():object(m.id)
+		if se and se:section_name() == "zop_merc_zmey" and (not se.alive or se:alive()) then
+			return true
+		end
+	end
+	return false
+end
+
+local function spawn_guest()
+	local se = smart(OUTPOST)
+	local z = zmey()
+	if not (se and z) then
+		return false
+	end
+	-- he walks in from 30-40 m out, toward the gate
+	local lv = ring_vertex(gate_pos(), { 35, 28, 42, 22, 15 }, math.random() * 6.283)
+	if not lv then
+		return false
+	end
+	local p = level.vertex_position(lv)
+	local se_near = zop_spawn.nearest_smart(p, se.m_game_vertex_id, se.id) or se
+	local sq = zop_spawn.squad_at_smart(GUEST_SQUAD, se_near, OUTPOST,
+		{ x = p.x, y = p.y, z = p.z, lvid = lv, gvid = se.m_game_vertex_id })
+	sst.guest = sq and sq.id
+	return sst.guest ~= nil
+end
+
+-- Snake and three of his men step up around the guest (only onto spots really next to him)
+local function surround(g)
+	local spots = spots_around(g:position(), GATE_MEN, GATE_R)
+	for i, o in ipairs(gate_men()) do
+		if spots[i] then
+			pcall(function() o:set_npc_position(spots[i]) end)
+		end
+	end
+end
+
+local blasts = {}
+-- the blast is a scene, not a trap: the player standing by the campfire is hurt, not killed
+-- (it killed the author through god mode while filming)
+local blast_until = 0
+local function actor_on_before_hit(s_hit)
+	if time_global() < blast_until and s_hit and s_hit.type ~= hit.fire_wound then
+		s_hit.power = s_hit.power * 0.15
+	end
+end
+
+local function blast(g)
+	local p = g:position()
+	blast_until = time_global() + 3000
+	local se = smart(OUTPOST)
+	local lv = level.vertex_id(p)
+	if se and lv and lv < 4294967295 then
+		local ok, s = pcall(alife_create, BLAST, p, lv, se.m_game_vertex_id)
+		if ok and s then
+			blasts[s.id] = true
+		end
+	end
+	-- the blast takes Snake and whoever stood close with him (and the man himself)
+	local r2 = BLAST_KILL_R * BLAST_KILL_R
+	for i = 1, #db.OnlineStalkers do
+		local o = level.object_by_id(db.OnlineStalkers[i])
+		if o and o:alive() and o:position():distance_to_sqr(p) < r2 then
+			pcall(function() o:kill(o) end)
+		end
+	end
+	-- Snake dies in the blast whatever: he stood face to face with the man
+	local z = zmey()
+	if z and z:alive() then
+		pcall(function() z:kill(z) end)
+	end
+	pcall(function() g:kill(g) end)
+end
+
+local function blasts_update()
+	for id in pairs(blasts) do
+		local o = level.object_by_id(id)
+		if o then
+			blasts[id] = nil
+			pcall(function() o:explode(0) end)
+		elseif not alife():object(id) then
+			blasts[id] = nil
+		end
+	end
+end
+
+local function spawn_sin()
+	local se = smart(OUTPOST)
+	if not se then
+		return
+	end
+	sst.sin = {}
+	for i = 1, SIN_COUNT do
+		local v, p
+		local spot = SIN_SPOTS[i]
+		if spot then
+			v, p = spot.lvid, vector():set(spot.x, spot.y, spot.z)
+		else
+			-- three sides, 130 m out (closer if there is no ground there)
+			v, p = ring_vertex(se.position, { 130, 100, 75 }, (i - 1) * 2.094)
+		end
+		local se_near = p and zop_spawn.nearest_smart(p, se.m_game_vertex_id, se.id)
+		-- the snipers stay at their own smart (they hold the height), the others go for the outpost
+		local target = spot and (spot.stay or spot.hold) and se_near and se_near:name() or OUTPOST
+		local sq = p and se_near and zop_spawn.squad_at_smart(spot and spot.squad or SIN_SQUAD, se_near, target,
+			{ x = p.x, y = p.y, z = p.z, lvid = v, gvid = se.m_game_vertex_id })
+		if sq then
+			sst.sin[#sst.sin + 1] = sq.id
+			pcall(level.map_add_object_spot_ser, sq.id, "red_location", tr("st_zop_story_mark_sin"))
+			-- weapons by the member's section (the snipers' SV-98s, the grenadier's RPG)
+			if spot and spot.gear then
+				for m in sq:squad_members() do
+					local npc = alife():object(m.id)
+					local g = npc and spot.gear[npc:section_name()]
+					if g then
+						pcall(alife_create_item, g[1], npc)
+						for _ = 1, g[3] or 3 do
+							pcall(alife_create_item, g[2], npc)
+						end
+					end
+				end
+			end
+			if spot and spot.hold then
+				sst.hold = sst.hold or {}
+				sst.hold[sq.id] = { x = p.x, y = p.y, z = p.z }
+			end
+		end
+	end
+end
+
+-- Dushman's help: one squad of merc masters, from a smart 120-260 m out on the far side from the
+-- first Sin squad, straight to the outpost
+local HELP_SQUAD, HELP_AT_S = "zop_killer_masters", 15
+-- after the fight Dushman calls the survivors to his base in the Dead City
+local RECALL_TO = "cit_killers"
+-- the spot the user picked for the help squad (west of the outpost gate)
+local HELP_AT = { x = -384.87, y = -14.18, z = 399.56, lvid = 1372 }
+local function spawn_help()
+	local se = smart(OUTPOST)
+	if not se then
+		return
+	end
+	local p = vector():set(HELP_AT.x, HELP_AT.y, HELP_AT.z)
+	local se_near = zop_spawn.nearest_smart(p, se.m_game_vertex_id, se.id)
+	local sq = se_near and zop_spawn.squad_at_smart(HELP_SQUAD, se_near, OUTPOST,
+		{ x = p.x, y = p.y, z = p.z, lvid = HELP_AT.lvid, gvid = se.m_game_vertex_id })
+	if not sq then
+		-- fallback: a smart 120-260 m out, away from the first Sin squad
+		local s1 = SIN_SPOTS[1]
+		local away = s1 and vector():set(s1.x, s1.y, s1.z)
+		local se_from = zop_spawn.muster_smart(se, 120, 260, away) or zop_spawn.muster_smart(se, 80, 350)
+		sq = se_from and zop_spawn.squad_at_smart(HELP_SQUAD, se_from, OUTPOST)
+	end
+	if sq then
+		sst.help = sq.id
+		news("st_zop_story_help")
+	end
+end
+
+local function sin_alive()
+	local n = 0
+	for _, sid in ipairs(sst.sin or {}) do
+		local sq = zop_spawn.valid_squad(sid)
+		if sq then
+			n = n + sq:npc_count()
+			sq.force_online, sq.forced_online_status = true, true
+			-- the snipers do not come down from their height
+			local h = sst.hold and sst.hold[sid]
+			if h then
+				local spot = vector():set(h.x, h.y, h.z)
+				for m in sq:squad_members() do
+					local o = level.object_by_id(m.id)
+					if o and o:alive() and o:position():distance_to_sqr(spot) > HOLD_R * HOLD_R then
+						pcall(function() o:set_npc_position(spot) end)
+					end
+				end
+			end
+		end
+	end
+	return n
+end
+
+local function tick()
+	local st = sst.stage
+	if st == nil then
+		if not zop_core.is_done("killer_deadcity") then
+			return
+		end
+		-- (saves from before done_at was kept have none: the day is counted from now)
+		local done_at = zop_core.debug_state().done_at.killer_deadcity
+		if not done_at then
+			sst.t0 = sst.t0 or now()
+			done_at = sst.t0
+		end
+		if now() >= done_at + DAY then
+			start()
+		end
+		return
+	end
+	if st == "done" then
+		return
+	end
+	local se = smart(OUTPOST)
+	-- the scene's people stay in the world while it plays (GAMMA keeps squads near the player offline)
+	if (st == "go" or st == "wait_guest" or st == "guest" or st == "talk") and on_level() then
+		for _, sid in ipairs({ sst.guest, sst.outpost }) do
+			local sq = sid and zop_spawn.valid_squad(sid)
+			if sq then
+				sq.force_online, sq.forced_online_status = true, true
+			end
+		end
+	end
+	-- Snake is dead before the scene (the player shot him, a blowout, a raid): no scene, the Sin attack still comes
+	if (st == "go" or st == "wait_guest" or st == "guest") and on_level() and not zmey_alive() then
+		release_held()
+		sst.stage, sst.secs = "attack", 0
+		return
+	end
+	if st == "go" then
+		local z = zmey()
+		-- the player came to the outpost's gate (Snake is somewhere in the yard; he steps to the gate now)
+		if z and db.actor and db.actor:position():distance_to(gate_pos()) < MEET_R + 10 then
+			say("z01")
+			sst.stage, sst.secs = "wait_guest", 0
+		end
+	elseif st == "wait_guest" then
+		if not on_level() then
+			return
+		end
+		sst.secs = (sst.secs or 0) + 1
+		if sst.secs >= GUEST_AFTER_S and spawn_guest() then
+			sst.stage, sst.secs = "guest", 0
+		end
+	elseif st == "guest" or st == "talk" then
+		local g, z = guest(), zmey()
+		guest_id = g and g:id()
+		if not on_level() then
+			return
+		end
+		if not g then
+			-- the guest is gone (killed before he got there, released): straight to the attack
+			sst.lost_guest = (sst.lost_guest or 0) + 1
+			if sst.lost_guest > 15 or not zop_spawn.valid_squad(sst.guest, GUEST_SQUAD) then
+				release_held()
+		sst.stage, sst.secs = "attack", 0
+			end
+			return
+		end
+		sst.lost_guest = nil
+		pcall(function() g:invulnerable(true) end)
+		sst.secs = (sst.secs or 0) + 1
+		if st == "guest" then
+			-- he walks up to Snake (by the campfire, where the outpost's jobs keep them - holding the
+			-- men elsewhere made them jump, the author dropped it); arrived, or walked long enough: talk
+			local near = z and g:position():distance_to(z:position()) < 6
+			if near or sst.secs > 40 then
+				-- a wall held him up: he is put next to Snake, once
+				if not near and z then
+					local p = select(2, ring_vertex(z:position(), { 2.5, 3.5 }, 0))
+					if p then
+						pcall(function() g:set_npc_position(p) end)
+					end
+				end
+				sst.stage, sst.secs = "talk", 0
+				for _, id in ipairs({ "z02", "s01", "z03", "s02", "s03" }) do
+					say(id)
+				end
+			end
+		else
+			-- the preaching is over: the last word, and the blast
+			if sst.secs > 4 and zop_radio.is_idle() then
+				pcall(function() g:invulnerable(false) end)
+				blast(g)
+				release_held()
+				sst.stage, sst.secs = "attack", 0
+				guest_id = nil
+			end
+		end
+	elseif st == "attack" then
+		if not on_level() then
+			return
+		end
+		sst.secs = (sst.secs or 0) + 1
+		-- (a failed spawn - no ground found - is tried again on the next tick)
+		if sst.secs >= 1 and #(sst.sin or {}) == 0 then
+			spawn_sin()
+			if #(sst.sin or {}) > 0 then
+				say("g01")
+				news("st_zop_story_sin_attack")
+			end
+		elseif sst.secs == HELP_AT_S then
+			-- Dushman heard it on the radio: he shouts for Snake and sends a squad of masters
+			say("d10")
+			spawn_help()
+		elseif sst.secs == 45 then
+			say("g02")
+		elseif sst.secs == 100 then
+			say("g03")
+		end
+		if sst.secs > 10 and #(sst.sin or {}) > 0 and sin_alive() == 0 then
+			sst.stage = "report"
+			news("st_zop_story_return")
+			-- Dushman calls everybody home: the surviving masters and what is left of the outpost
+			-- walk to the Dead City
+			local any = false
+			for _, sid in ipairs({ sst.help, sst.outpost }) do
+				local sq = sid and zop_spawn.valid_squad(sid)
+				if sq and sq:npc_count() > 0 then
+					sq.force_online, sq.forced_online_status = false, false
+					zop_spawn.steer(sq, RECALL_TO, false)
+					any = true
+				end
+			end
+			if any then
+				news("st_zop_story_recall")
+			end
+		end
+	end
+end
+
+------------------------------------------------------------------ task functors, dialog
+local function title_impl()
+	return tr("st_zop_story_title")
+end
+
+local function descr_impl()
+	local st = sst.stage
+	if st == "go" then
+		return tr("st_zop_story_descr_go")
+	elseif st == "wait_guest" or st == "guest" or st == "talk" then
+		return tr("st_zop_story_descr_wait")
+	elseif st == "attack" then
+		return tr("st_zop_story_descr_attack")
+	elseif st == "report" then
+		return tr("st_zop_story_descr_report")
+	end
+	return ""
+end
+
+local function target_impl()
+	if sst.stage == "report" then
+		return get_story_object_id(DUSHMAN)
+	end
+	local se = smart(OUTPOST)
+	return se and se.id
+end
+
+function dlg_can_report(a1, a2)
+	return sst.stage == "report"
+end
+
+function dlg_report_done(a1, a2)
+	sst.stage = "done"
+	pcall(function() tm():set_task_completed("zop_story_task") end)
+	local mult = (ui_mcm and ui_mcm.get and tonumber(ui_mcm.get("zop/reward_mult"))) or 1
+	local money = math.floor(math.random(20, 40) * 1000 * mult)
+	pcall(function() db.actor:give_money(money) end)
+	pcall(relation_registry.change_community_goodwill, "killer", AC_ID, 200)
+	say("d09")
+	pcall(function()
+		news_manager.send_tip(db.actor, string.format(tr("st_zop_story_won"), money), nil, nil, 10000)
+	end)
+end
+
+function is_done()
+	return sst.stage == "done"
+end
+
+function debug_state()
+	return sst
+end
+
+-- for testing: start now, or jump to a stage
+function debug_start()
+	sst = {}
+	start()
+end
+
+------------------------------------------------------------------ callbacks
+local function actor_on_update()
+	hold_frame()
+	blasts_update()
+	local tg = time_global()
+	if tg < next_tick then
+		return
+	end
+	next_tick = tg + 1000
+	local ok, err = pcall(tick)
+	if not ok then
+		printf("![ZOP] merc story: %s", tostring(err))
+	end
+end
+
+local function save_state(m)
+	m.zop_merc_story = sst
+end
+
+local function load_state(m)
+	sst = m.zop_merc_story or {}
+	guest_id = nil
+	held = {}       -- rebuilt by the tick within a second
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("load_state", load_state)
+	RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
+	RegisterScriptCallback("actor_on_before_hit", actor_on_before_hit)
+	if task_functor then
+		task_functor.zop_story_title = title_impl
+		task_functor.zop_story_descr = descr_impl
+		task_functor.zop_story_target = target_impl
+	end
+	-- the assault on the Administration comes after this story
+	if zop_api and zop_api.add_condition then
+		zop_api.add_condition("zop_merc_story", function(op_id)
+			if op_id == "killer_admin" then
+				-- (a save where the assault already ran or runs is not held back)
+				return sst.stage == "done" or zop_core.is_done("killer_admin")
+					or (zop_core.active_info() and zop_core.active_info().op_id == "killer_admin") and true or false
+			end
+		end)
+	end
+end

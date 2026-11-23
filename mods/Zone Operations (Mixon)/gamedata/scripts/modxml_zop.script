@@ -410,6 +410,81 @@ local CSKY2_DESC = [[
 </specific_character>
 ]]
 
+-- the mercs' story "A Special Man" (zop_merc_story): Snake, the Sin man, and Dushman's report talk
+local STORY_PROFILE = [[
+<character id="zop_merc_zmey">
+	<class>zop_merc_zmey</class>
+</character>
+<character id="zop_greh_emissary">
+	<class>zop_greh_emissary</class>
+</character>
+]]
+
+local STORY_DESC = [[
+<specific_character id="zop_merc_zmey" team_default="1">
+	<name>st_zop_zmey_name</name>
+	<icon>ui_inGame2_merc_2</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_zmey_bio</bio>
+	<class>zop_merc_zmey</class>
+	<community>killer</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\killer_3\</snd_config>
+	<rank>60000</rank>
+	<reputation>500</reputation>
+	<money min="3000" max="6000" infinitive="0"/>
+	<visual>actors\stalker_merc\stalker_merc_exo_proto</visual>
+	<supplies>
+		[spawn] \n
+		wpn_g36 \n
+		ammo_5.56x45_ss190 = 2 \n
+		hand_radio \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+<specific_character id="zop_greh_emissary" team_default="1">
+	<name>st_zop_emissary_name</name>
+	<icon>ui_inGame2_bandit_5</icon>
+	<map_icon x="1" y="0"></map_icon>
+	<bio>st_zop_emissary_bio</bio>
+	<class>zop_greh_emissary</class>
+	<community>greh</community>
+	<terrain_sect>stalker_terrain</terrain_sect>
+	<snd_config>characters_voice\human\greh_1\</snd_config>
+	<rank>45000</rank>
+	<reputation>-500</reputation>
+	<money min="100" max="300" infinitive="0"/>
+	<visual>actors\stalker_greh\stalker_greh_0d</visual>
+	<supplies>
+		[spawn] \n
+		wpn_pm \n
+	</supplies>
+	<start_dialog>hello_dialog</start_dialog>
+	<actor_dialog>actor_break_dialog</actor_dialog>
+</specific_character>
+]]
+
+local STORY_DIALOG = [[
+<dialog id="zop_story_report_dialog">
+	<precondition>zop_merc_story.dlg_can_report</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>st_zop_story_dlg_ask</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>st_zop_story_dlg_answer</text>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>st_zop_story_dlg_bye</text>
+			<action>zop_merc_story.dlg_report_done</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+]]
+
 local warned = false
 
 local function inject(xml, text, what)
@@ -428,7 +503,9 @@ function on_xml_read()
 				printf("![ZOP] DXML dialog patch failed: %s", tostring(err))
 			end
 			inject(xml, mixon_talk(), "Mixon talk")
+			inject(xml, STORY_DIALOG, "story report dialog")
 		elseif name == [[gameplay\npc_profile.xml]] then
+			inject(xml, STORY_PROFILE, "story npc_profile")
 			inject(xml, COMMANDER_PROFILE, "npc_profile")
 			inject(xml, FREEDOM_PROFILE, "freedom npc_profile")
 			inject(xml, CSKY_PROFILE, "csky npc_profile")
@@ -438,6 +515,7 @@ function on_xml_read()
 			inject(xml, FREEDOM_DESC, "freedom commander profile")
 			inject(xml, CSKY_DESC, "csky commander profile")
 			inject(xml, CSKY2_DESC, "csky2 profiles")
+			inject(xml, STORY_DESC, "story profiles")
 		end
 	end)
 end
@@ -447,6 +525,10 @@ function on_game_start()
 		RegisterScriptCallback("on_specific_character_dialog_list", function(character_id, dialog_list)
 			if zop_registry.is_giver(character_id) then
 				dialog_list:add("zop_offer_dialog")
+			end
+			-- Dushman: the report after "A Special Man" (zop_merc_story)
+			if character_id == "cit_killers_merc_trader_stalker" then
+				dialog_list:add("zop_story_report_dialog")
 			end
 			-- Loki gives Freedom's mirror of Colonel Mixon's tasks (jup_a6_freedom_leader_task_N);
 			-- his stock profile has no generic task dialogs

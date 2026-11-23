@@ -251,6 +251,36 @@ faction = killer
 npc = zop_killer_roof_rpg_npc
 always_arrived = true
 
+; ---- the mercs' story "A Special Man"
+; the merc outpost at the Army Warehouses: commander Snake and four men
+[zop_merc_zmey_squad]:online_offline_group
+faction = killer
+npc = zop_merc_zmey
+npc_random = sim_default_killer_3, sim_default_killer_4
+npc_in_squad = 4, 4
+always_arrived = true
+
+[zop_greh_emissary_squad]:online_offline_group
+faction = greh
+npc = zop_greh_emissary
+
+; the Sin squads that attack after the blast: 8-10 men each
+[zop_greh_assault]:online_offline_group
+faction = greh
+npc_random = sim_default_greh_3, sim_default_greh_3, sim_default_greh_4, sim_default_greh_4, sim_default_greh_1
+npc_in_squad = 8, 10
+
+; Dushman's help after the blast: a squad of merc masters
+[zop_killer_masters]:online_offline_group
+faction = killer
+npc_random = sim_default_killer_4, sim_default_killer_4, sim_default_killer_5
+npc_in_squad = 5, 6
+
+; the Sin legend squad on the height over the outpost: 3 snipers, 3 assault men, a grenadier
+[zop_greh_snipers]:online_offline_group
+faction = greh
+npc = zop_greh_sniper, zop_greh_sniper, zop_greh_sniper, zop_greh_stormer, zop_greh_stormer, zop_greh_stormer, zop_greh_grenadier
+
 ; Monolith: zop_monolith_wave belonged to the first version of csky_rostok (not used now, kept for
 ; saves); zop_monolith_pro are the veterans holding the Jupiter checkpoint
 [zop_monolith_wave]:online_offline_group
