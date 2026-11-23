@@ -303,7 +303,11 @@ function place_props(op)
 			lvid = se_h.m_level_vertex_id
 		end
 		local rot = vector():set(0, math.rad(pr.yaw), 0)
-		if placeable_furniture and placeable_furniture.create_object and string.find(pr.section, "^placeable_") then
+		if not ini_sys:section_exist(pr.section) then
+			-- a prop from a mod that isn't installed (Hideout Furniture outside G.A.M.M.A.): skip it,
+			-- alife():create on a missing section is a fatal error
+			printf("![ZOP] place_props: section %s not found, prop skipped", pr.section)
+		elseif placeable_furniture and placeable_furniture.create_object and string.find(pr.section, "^placeable_") then
 			-- Hideout Furniture objects: created through its own API (its binders need their data),
 			-- marked as world objects (no pickup), lamps switched on
 			local id = placeable_furniture.create_object(pr.section, pos, rot, lvid, se_h.m_game_vertex_id)
