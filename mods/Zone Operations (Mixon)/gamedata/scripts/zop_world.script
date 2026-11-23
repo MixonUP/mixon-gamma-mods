@@ -18,8 +18,7 @@ local owners = {}
 local last_check = 0
 
 local function now()
-	local y, m, d, h, mi, s = game.get_game_time():get()
-	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+	return zop_census.now()
 end
 
 function owner(smart_name)
@@ -418,6 +417,9 @@ local function load_state(m)
 		local home = not op or op.services_home == name
 		if o.services then
 			o.services.squads = o.services.squads or {}
+			-- stamps saved by versions with the 31-day-month clock
+			zop_census.fix_fields(o.services, { "due" })
+			zop_census.fix_map(o.services.due_sec)
 			if not home then
 				-- older versions gave every captured target its own set: keep only the home one,
 				-- the others go back to the simulation

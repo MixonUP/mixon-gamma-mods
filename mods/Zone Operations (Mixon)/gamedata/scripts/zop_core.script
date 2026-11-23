@@ -28,8 +28,7 @@ local clear_since, lost_since
 
 ------------------------------------------------------------------ helpers
 local function now()
-	local y, m, d, h, mi, s = game.get_game_time():get()
-	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+	return zop_census.now()
 end
 
 local function tr(id)
@@ -1371,6 +1370,10 @@ local function load_state(m)
 	st.cooldown = st.cooldown or {}
 	st.done_at = st.done_at or {}
 	st.fixed = st.fixed or {}
+	-- stamps saved by versions with the 31-day-month clock
+	zop_census.fix_map(st.cooldown)
+	zop_census.fix_map(st.done_at)
+	zop_census.fix_fields(st.active, { "t0", "t1", "attack_at" })
 	migrated = false
 end
 

@@ -94,7 +94,8 @@ robocopy "E:\GAMMA\GAMMA RC3\mods\Zone Operations (Mixon)" "E:\GAMMA\mixon-gamma
    - нет `file_list_open_ex` на `$game_meshes$`;
    - LF в `zop_operations.ltx`;
    - xml читаются в cp1251, id в RU и EN совпадают;
-   - каждый буквальный `st_zop_...` из `.script` и `.ltx` есть в таблице строк.
+   - каждый буквальный `st_zop_...` из `.script` и `.ltx` есть в таблице строк;
+   - если есть `agent-tools\.venv`: все скрипты компилируются в LuaJIT 2.1, плюс тесты игровых часов и миграции сейвов (`agent-tools\zop_time_test.py`).
 
    Папка называется `agent-tools`, а не `.agents`: `.agents` у Codex служебная и закрыта для записи.
 2. **Синтаксис Lua** — в запущенной игре через MCP `stalker`, инструмент `game_lua`:
@@ -102,7 +103,12 @@ robocopy "E:\GAMMA\GAMMA RC3\mods\Zone Operations (Mixon)" "E:\GAMMA\mixon-gamma
    local p = getFS():update_path("$game_scripts$", "zop_core.script")
    local f, err = loadfile(p); return err or "ok"
    ```
-   Офлайн-интерпретатора Lua на машине нет. Если игра не запущена, напиши в HANDOFF.md, что синтаксис в игре не проверен.
+   Без игры: LuaJIT 2.1 через Python-пакет `lupa` (тот же Lua, что в движке). Один раз создать окружение:
+   ```powershell
+   python -m venv "E:\GAMMA\GAMMA RC3\mods\Zone Operations (Mixon)\agent-tools\.venv"
+   & "E:\GAMMA\GAMMA RC3\mods\Zone Operations (Mixon)\agent-tools\.venv\Scripts\python.exe" -m pip install lupa
+   ```
+   После этого `check_zop.ps1` сам прогоняет `zop_time_test.py`. Тест работает на заглушках X-Ray и не заменяет проверку в игре; новые офлайн-тесты добавлять туда же по тому же образцу.
 3. **Поведение** — `game_lua`, например `zop_core.debug_state()`, плюс `game_log` с фильтром `ZOP`. После вылета — `game_crash`.
    Автор проверяет сам: для каждой правки кода напиши точные шаги проверки в игре (какой сейв, какой NPC, что должно произойти, какая строка в логе).
 

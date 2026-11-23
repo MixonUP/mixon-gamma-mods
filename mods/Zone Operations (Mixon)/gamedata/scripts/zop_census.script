@@ -2,7 +2,61 @@
 	Zone Operations (Mixon) - census: who is alive around a smart.
 	Online NPCs are counted by distance; offline squads by the smart they are assigned to.
 	Only the stalker communities matter here, monsters and zombies are ignored.
+	Also the mod's game clock (now / fix_time), shared by every zop_* script.
 ]]
+
+------------------------------------------------------------------ game clock
+-- days from 1970-01-01 to y-m-d of the real calendar (month lengths and leap years counted)
+local function days_from_civil(y, m, d)
+	if m <= 2 then
+		y = y - 1
+	end
+	local era = math.floor(y / 400)
+	local yoe = y - era * 400
+	local doy = math.floor((153 * ((m + 9) % 12) + 2) / 5) + d - 1
+	local doe = yoe * 365 + math.floor(yoe / 4) - math.floor(yoe / 100) + doy
+	return era * 146097 + doe - 719468
+end
+
+-- game time in seconds; saved stamps (cooldowns, deadlines) are compared against it
+function now()
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	return ((days_from_civil(y, m, d) * 24 + h) * 60 + mi) * 60 + s
+end
+
+-- Older versions counted every month as 31 days (d + m*31 + y*372): a day was lost or skipped
+-- at the end of 30-day months and February. Their stamps are ~6.5e10, ours ~1.3e9 for the
+-- game's years, so an old stamp is recognized by its size and moved to this clock keeping
+-- the time left (or passed) as it was. Values below OLD_STAMP (0, nil, new stamps) stay.
+local OLD_STAMP = 1e10
+function fix_time(t)
+	if type(t) ~= "number" or t < OLD_STAMP then
+		return t
+	end
+	local y, m, d, h, mi, s = game.get_game_time():get()
+	local old_now = ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+	return t - old_now + now()
+end
+
+-- fix_time for tbl[k] for every key k of keys (tbl may be nil)
+function fix_fields(tbl, keys)
+	if type(tbl) ~= "table" then
+		return
+	end
+	for _, k in ipairs(keys) do
+		tbl[k] = fix_time(tbl[k])
+	end
+end
+
+-- fix_time for every value of a map {[id] = stamp} (map may be nil)
+function fix_map(map)
+	if type(map) ~= "table" then
+		return
+	end
+	for k, v in pairs(map) do
+		map[k] = fix_time(v)
+	end
+end
 
 function smart_by_name(name)
 	return SIMBOARD and SIMBOARD.smarts_by_names and SIMBOARD.smarts_by_names[name]

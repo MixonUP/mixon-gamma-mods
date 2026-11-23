@@ -48,8 +48,7 @@ local raids = {}        -- [task_id] = { squad, section, kind, faction, to, dead
                         --   members = {[npc_id] = true}, size, deaths, actor_kills, actor_hits, near_at }
 
 local function now()
-	local y, m, d, h, mi, s = game.get_game_time():get()
-	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+	return zop_census.now()
 end
 
 local function tr(id, ...)
@@ -428,6 +427,10 @@ end
 
 local function load_state(m)
 	raids = m.zop_raid or {}
+	-- deadlines saved by versions with the 31-day-month clock
+	for _, r in pairs(raids) do
+		zop_census.fix_fields(r, { "deadline" })
+	end
 end
 
 function on_game_start()

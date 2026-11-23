@@ -100,6 +100,15 @@ if ($ids.ContainsKey('rus')) {
     Write-Host "Literal st_zop_ references: $checked checked, $missing missing"
 }
 
+# 6. LuaJIT: syntax of every script + game clock and save migration (agent-tools\zop_time_test.py)
+$py = Join-Path $PSScriptRoot '.venv\Scripts\python.exe'
+if (Test-Path $py) {
+    & $py -I (Join-Path $PSScriptRoot 'zop_time_test.py') (Join-Path $gd 'scripts')
+    if ($LASTEXITCODE -ne 0) { Bad "zop_time_test.py failed (see above)" } else { Ok "LuaJIT tests passed" }
+} else {
+    Write-Host "skip  LuaJIT tests: no agent-tools\.venv (setup: see zop_time_test.py header)" -ForegroundColor Yellow
+}
+
 if ($fail) { Write-Host "$fail check(s) failed" -ForegroundColor Red; exit 1 }
 Write-Host "all checks passed" -ForegroundColor Green
 exit 0

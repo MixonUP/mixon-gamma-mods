@@ -50,8 +50,7 @@ local next_tick = 0
 local guest_id                                     -- runtime: the guest NPC's id (re-found by squad)
 
 local function now()
-	local y, m, d, h, mi, s = game.get_game_time():get()
-	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+	return zop_census.now()
 end
 local function tr(id) return game.translate_string(id) end
 local function news(id)
@@ -650,6 +649,8 @@ end
 
 local function load_state(m)
 	sst = m.zop_merc_story or {}
+	-- stamps saved by versions with the 31-day-month clock
+	zop_census.fix_fields(sst, { "t", "t0" })
 	guest_id = nil
 	held = {}       -- rebuilt by the tick within a second
 end

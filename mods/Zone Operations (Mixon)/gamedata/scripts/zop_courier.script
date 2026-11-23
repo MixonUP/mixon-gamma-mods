@@ -139,8 +139,7 @@ end
 -- a time limit for a task: on_init = %=zop_task_deadline(<task id>:<game hours>)%,
 -- condlist_N = {=zop_task_overdue(<task id>)} fail, and =pstor_reset(<task id>_due) when it ends
 local function game_secs()
-	local y, m, d, h, mi, s = game.get_game_time():get()
-	return ((((d + m * 31 + y * 372) * 24 + h) * 60 + mi) * 60 + s)
+	return zop_census.now()
 end
 
 local function deadline(actor, npc, p)
@@ -152,7 +151,16 @@ end
 
 local function overdue(actor, npc, p)
 	local due = p and p[1] and db.actor and load_var(db.actor, p[1] .. "_due")
-	return type(due) == "number" and game_secs() > due
+	if type(due) ~= "number" then
+		return false
+	end
+	-- a deadline saved by a version with the 31-day-month clock: move it to the new clock once
+	local fixed = zop_census.fix_time(due)
+	if fixed ~= due then
+		save_var(db.actor, p[1] .. "_due", fixed)
+		due = fixed
+	end
+	return game_secs() > due
 end
 
 -- item menu of the cargo boxes: no entry, no action
